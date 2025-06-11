@@ -1,0 +1,42 @@
+[
+	{
+		"id": "testimonial-1",
+		"name": "Ananya Gupta",
+		"program": "M.A. English Literature",
+		"year": "2023",
+		"image": "/images/testimonials/ananya-gupta.jpg",
+		"quote": "AIESR provided me with the perfect blend of academic rigor and creative freedom. The faculty's mentorship helped me discover my passion for literary research.",
+		"currentPosition": "Research Scholar",
+		"company": "JNU"
+	},
+	{
+		"id": "testimonial-2",
+		"name": "Rohit Sharma",
+		"program": "B.A. (Hons.) English Literature",
+		"year": "2022",
+		"image": "/images/testimonials/rohit-sharma.jpg",
+		"quote": "The literary society at AIESR and the diverse curriculum opened doors to opportunities I never imagined. I'm now working as a content strategist at a leading firm.",
+		"currentPosition": "Content Strategist",
+		"company": "Ogilvy"
+	},
+	{
+		"id": "testimonial-3",
+		"name": "Meera Patel",
+		"program": "Ph.D. English Literature",
+		"year": "2021",
+		"image": "/images/testimonials/meera-patel.jpg",
+		"quote": "The research environment at AIESR is unparalleled. The faculty's guidance and the university's resources helped me publish my work in top-tier journals.",
+		"currentPosition": "Assistant Professor",
+		"company": "Delhi University"
+	},
+	{
+		"id": "testimonial-4",
+		"name": "Arjun Krishnan",
+		"program": "Creative Writing Certificate",
+		"year": "2023",
+		"image": "/images/testimonials/arjun-krishnan.jpg",
+		"quote": "The creative writing program at AIESR transformed my writing. I went from being a hobbyist to getting my first novel published within a year.",
+		"currentPosition": "Published Author",
+		"company": "Penguin Random House"
+	}
+]

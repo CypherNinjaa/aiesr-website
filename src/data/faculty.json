@@ -1,0 +1,110 @@
+[
+	{
+		"id": "dr-rajesh-kumar",
+		"name": "Dr. Rajesh Kumar",
+		"designation": "Head of Department & Professor",
+		"specialization": [
+			"Victorian Literature",
+			"Postcolonial Studies",
+			"Literary Theory"
+		],
+		"education": [
+			"Ph.D. in English Literature - JNU",
+			"M.A. English Literature - Delhi University",
+			"B.A. (Hons.) English - St. Stephen's College"
+		],
+		"experience": 25,
+		"publications": [
+			"Postcolonial Narratives in Indian English Literature",
+			"Victorian Sensibilities: A Critical Study",
+			"Theory and Practice in Literary Criticism"
+		],
+		"awards": [
+			"Best Teacher Award - Amity University 2023",
+			"Outstanding Research Contribution - UGC 2022"
+		],
+		"image": "/images/faculty/dr-rajesh-kumar.jpg",
+		"bio": "Dr. Rajesh Kumar is a distinguished scholar with over 25 years of experience in English literature. His research focuses on postcolonial narratives and Victorian literature.",
+		"email": "rkumar@amity.edu",
+		"researchAreas": [
+			"Postcolonial Literature",
+			"Victorian Studies",
+			"Literary Theory"
+		]
+	},
+	{
+		"id": "dr-priya-sharma",
+		"name": "Dr. Priya Sharma",
+		"designation": "Professor",
+		"specialization": [
+			"Modern Poetry",
+			"Feminist Literary Criticism",
+			"Creative Writing"
+		],
+		"education": [
+			"Ph.D. in English Literature - BHU",
+			"M.A. English Literature - Pune University",
+			"B.A. English Literature - Miranda House, DU"
+		],
+		"experience": 20,
+		"publications": [
+			"Voices of Resistance: Women in Modern Poetry",
+			"Feminist Perspectives in Contemporary Literature",
+			"The Art of Creative Expression"
+		],
+		"image": "/images/faculty/dr-priya-sharma.jpg",
+		"bio": "Dr. Priya Sharma specializes in modern poetry and feminist literary criticism. She has published extensively on women's voices in literature.",
+		"email": "psharma@amity.edu",
+		"researchAreas": ["Modern Poetry", "Feminist Criticism", "Creative Writing"]
+	},
+	{
+		"id": "dr-amit-singh",
+		"name": "Dr. Amit Singh",
+		"designation": "Associate Professor",
+		"specialization": ["Linguistics", "Phonetics", "Language Teaching"],
+		"education": [
+			"Ph.D. in Linguistics - Central University of Hyderabad",
+			"M.A. Linguistics - EFL University",
+			"B.A. English - Patna University"
+		],
+		"experience": 15,
+		"publications": [
+			"Phonetic Variations in Indian English",
+			"Language Teaching Methodologies",
+			"Sociolinguistics and Society"
+		],
+		"image": "/images/faculty/dr-amit-singh.jpg",
+		"bio": "Dr. Amit Singh is an expert in linguistics and phonetics, with special focus on Indian English variations and language teaching methodologies.",
+		"email": "asingh@amity.edu",
+		"researchAreas": ["Applied Linguistics", "Phonetics", "TESOL"]
+	},
+	{
+		"id": "prof-sarah-williams",
+		"name": "Prof. Sarah Williams",
+		"designation": "Visiting Professor",
+		"specialization": [
+			"Shakespeare Studies",
+			"Renaissance Literature",
+			"Drama"
+		],
+		"education": [
+			"Ph.D. in English Literature - Oxford University",
+			"M.A. English Literature - Cambridge University",
+			"B.A. English Literature - King's College London"
+		],
+		"experience": 30,
+		"publications": [
+			"Shakespeare's Timeless Relevance",
+			"Renaissance Drama: A Critical Analysis",
+			"The Bard's Influence on Modern Theatre"
+		],
+		"image": "/images/faculty/prof-sarah-williams.jpg",
+		"bio": "Prof. Sarah Williams is a renowned Shakespeare scholar from Oxford University, currently serving as a visiting professor at AIESR.",
+		"email": "swilliams@amity.edu",
+		"researchAreas": [
+			"Shakespeare Studies",
+			"Renaissance Literature",
+			"Elizabethan Drama"
+		]
+	}
+]

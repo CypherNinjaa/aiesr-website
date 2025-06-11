@@ -1,0 +1,155 @@
+[
+	{
+		"id": "ba-english-literature",
+		"title": "B.A. (Hons.) English Literature",
+		"description": "A comprehensive undergraduate program focusing on classical and contemporary English literature, literary theory, and critical analysis.",
+		"shortDescription": "Explore the rich world of English literature with our comprehensive undergraduate program.",
+		"duration": "3 Years",
+		"level": "undergraduate",
+		"eligibility": [
+			"12th Pass with minimum 50% marks",
+			"English as a compulsory subject",
+			"Valid entrance test score"
+		],
+		"curriculum": [
+			"Classical Literature",
+			"Modern Poetry",
+			"Drama Studies",
+			"Literary Theory",
+			"Creative Writing",
+			"Comparative Literature"
+		],
+		"careerProspects": [
+			"Content Writer",
+			"Journalist",
+			"Editor",
+			"Teacher",
+			"Civil Services",
+			"Publishing Industry"
+		],
+		"highlights": [
+			"Industry-aligned curriculum",
+			"Expert faculty guidance",
+			"Research opportunities",
+			"Literary society participation"
+		],
+		"image": "/images/programs/ba-literature.jpg",
+		"slug": "ba-english-literature",
+		"fees": "₹2,50,000 per year"
+	},
+	{
+		"id": "ma-english-literature",
+		"title": "M.A. English Literature",
+		"description": "Advanced postgraduate program for in-depth study of English literature, research methodologies, and literary criticism.",
+		"shortDescription": "Advance your literary expertise with our comprehensive postgraduate program.",
+		"duration": "2 Years",
+		"level": "postgraduate",
+		"eligibility": [
+			"Bachelor's degree in English Literature",
+			"Minimum 55% marks in graduation",
+			"Entrance test and interview"
+		],
+		"curriculum": [
+			"Advanced Literary Theory",
+			"Research Methodology",
+			"Post-Colonial Literature",
+			"Contemporary Criticism",
+			"Dissertation Project",
+			"Comparative Studies"
+		],
+		"careerProspects": [
+			"Research Scholar",
+			"University Professor",
+			"Literary Critic",
+			"Publisher",
+			"Cultural Analyst",
+			"PhD Preparation"
+		],
+		"highlights": [
+			"Research-focused curriculum",
+			"Published faculty mentors",
+			"Conference presentations",
+			"Publication opportunities"
+		],
+		"image": "/images/programs/ma-literature.jpg",
+		"slug": "ma-english-literature",
+		"fees": "₹3,00,000 per year"
+	},
+	{
+		"id": "phd-english-literature",
+		"title": "Ph.D. in English Literature",
+		"description": "Doctoral program for advanced research in English literature, linguistics, and interdisciplinary studies.",
+		"shortDescription": "Pursue cutting-edge research in English literature and make scholarly contributions.",
+		"duration": "3-5 Years",
+		"level": "doctoral",
+		"eligibility": [
+			"Master's degree in English Literature",
+			"Minimum 55% marks in post-graduation",
+			"UGC-NET/JRF or equivalent",
+			"Research proposal approval"
+		],
+		"curriculum": [
+			"Advanced Research Methods",
+			"Specialized Area Studies",
+			"Dissertation Writing",
+			"Academic Publishing",
+			"Conference Presentations",
+			"Teaching Assistantship"
+		],
+		"careerProspects": [
+			"University Professor",
+			"Research Scientist",
+			"Policy Researcher",
+			"Think Tank Analyst",
+			"International Academic",
+			"Literary Consultant"
+		],
+		"highlights": [
+			"Full-time research focus",
+			"International collaborations",
+			"Publishing support",
+			"Conference funding"
+		],
+		"image": "/images/programs/phd-literature.jpg",
+		"slug": "phd-english-literature",
+		"fees": "₹1,50,000 per year"
+	},
+	{
+		"id": "creative-writing",
+		"title": "Certificate in Creative Writing",
+		"description": "Intensive program focusing on developing creative writing skills in various forms including poetry, fiction, and non-fiction.",
+		"shortDescription": "Develop your creative voice with our comprehensive writing program.",
+		"duration": "6 Months",
+		"level": "certificate",
+		"eligibility": [
+			"Graduation in any discipline",
+			"Passion for creative writing",
+			"Portfolio submission"
+		],
+		"curriculum": [
+			"Fiction Writing Techniques",
+			"Poetry Composition",
+			"Screenplay Writing",
+			"Publishing Industry",
+			"Writing Workshops",
+			"Literary Magazines"
+		],
+		"careerProspects": [
+			"Creative Writer",
+			"Freelance Author",
+			"Content Creator",
+			"Script Writer",
+			"Blogger",
+			"Literary Magazine Editor"
+		],
+		"highlights": [
+			"Hands-on workshops",
+			"Published author mentors",
+			"Portfolio development",
+			"Industry connections"
+		],
+		"image": "/images/programs/creative-writing.jpg",
+		"slug": "creative-writing-certificate",
+		"fees": "₹75,000 total"
+	}
+]
