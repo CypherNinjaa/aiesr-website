@@ -16,20 +16,21 @@ const nextConfig: NextConfig = {
   // Power optimizations
   poweredByHeader: false,
 
-  // Bundle analyzer
-  ...(process.env.ANALYZE === "true"
-    ? {
-        webpack: (config: any) => {
-          config.plugins.push(
-            new (require("@next/bundle-analyzer"))({
-              enabled: true,
-              openAnalyzer: false,
-            })
-          );
-          return config;
-        },
-      }
-    : {}),
+  // Bundle analyzer - disabled for static export compatibility
+  // ...(process.env.ANALYZE === "true"
+  //   ? {
+  //       webpack: (config) => {
+  //         const BundleAnalyzerPlugin = require("@next/bundle-analyzer");
+  //         config.plugins.push(
+  //           new BundleAnalyzerPlugin({
+  //             enabled: true,
+  //             openAnalyzer: false,
+  //           })
+  //         );
+  //         return config;
+  //       },
+  //     }
+  //   : {}),
 
   // Experimental features
   experimental: {
@@ -41,41 +42,8 @@ const nextConfig: NextConfig = {
     ],
   },
 
-  // Headers for security and performance
-  async headers() {
-    return [
-      {
-        source: "/(.*)",
-        headers: [
-          {
-            key: "X-Frame-Options",
-            value: "DENY",
-          },
-          {
-            key: "X-Content-Type-Options",
-            value: "nosniff",
-          },
-          {
-            key: "Referrer-Policy",
-            value: "origin-when-cross-origin",
-          },
-          {
-            key: "Permissions-Policy",
-            value: "camera=(), microphone=(), geolocation=()",
-          },
-        ],
-      },
-      {
-        source: "/api/(.*)",
-        headers: [
-          {
-            key: "Cache-Control",
-            value: "public, max-age=3600, stale-while-revalidate=86400",
-          },
-        ],
-      },
-    ];
-  },
+  // Note: Headers are not supported with static export
+  // Security headers should be configured at the web server level
 };
 
 export default nextConfig;

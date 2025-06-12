@@ -47,6 +47,9 @@ export function generateMetadata({
   siteName = "AIESR - Amity Institute of English Studies and Research",
 }: SEOProps = {}): Metadata {
   return {
+    metadataBase: new URL(
+      process.env.NODE_ENV === "production" ? "https://aiesr.amity.edu" : "http://localhost:3000"
+    ),
     title,
     description,
     keywords,
