@@ -1,7 +1,8 @@
 "use client";
 
-import React from "react";
 import { motion } from "framer-motion";
+import React from "react";
+import { Button } from "@/components/ui/Button";
 import {
 	Card,
 	CardContent,
@@ -9,9 +10,8 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
-import { Program } from "@/types";
 import programsData from "@/data/programs.json";
+import { Program } from "@/types";
 
 const programs = programsData as Program[];
 

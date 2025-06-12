@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
 import Link from "next/link";
+import React from "react";
 import { Button } from "@/components/ui/Button";
 
 export const Footer: React.FC = () => {
@@ -190,13 +190,15 @@ export const Footer: React.FC = () => {
           <div className="container mx-auto px-4 py-8">
             <div className="flex flex-col items-center justify-between space-y-4 md:flex-row md:space-y-0">
               {" "}
-              {/* Social Media Links */}
+              {/* Social Media Links */}{" "}
               <div className="flex space-x-6" role="list" aria-label="Social media links">
                 <a
-                  href="#"
+                  href="https://twitter.com/aiesr_official"
                   className="hover:text-gold text-gray-400 transition-colors"
                   aria-label="Follow us on Twitter"
                   role="listitem"
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
                   <svg
                     className="h-6 w-6"
@@ -208,10 +210,12 @@ export const Footer: React.FC = () => {
                   </svg>
                 </a>
                 <a
-                  href="#"
+                  href="https://facebook.com/aiesr.official"
                   className="hover:text-gold text-gray-400 transition-colors"
                   aria-label="Follow us on Facebook"
                   role="listitem"
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
                   <svg
                     className="h-6 w-6"
@@ -223,10 +227,12 @@ export const Footer: React.FC = () => {
                   </svg>
                 </a>
                 <a
-                  href="#"
+                  href="https://linkedin.com/school/aiesr"
                   className="hover:text-gold text-gray-400 transition-colors"
                   aria-label="Connect with us on LinkedIn"
                   role="listitem"
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
                   <svg
                     className="h-6 w-6"
@@ -238,10 +244,12 @@ export const Footer: React.FC = () => {
                   </svg>
                 </a>
                 <a
-                  href="#"
+                  href="https://instagram.com/aiesr_official"
                   className="hover:text-gold text-gray-400 transition-colors"
                   aria-label="Follow us on Instagram"
                   role="listitem"
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
                   <svg
                     className="h-6 w-6"

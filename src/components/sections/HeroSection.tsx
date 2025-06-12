@@ -1,8 +1,8 @@
 "use client";
 
+import { motion } from "framer-motion";
 import React, { useEffect, useState, useMemo } from "react";
 import { Button } from "@/components/ui/Button";
-import { motion } from "framer-motion";
 
 export const HeroSection: React.FC = () => {
 	const [currentText, setCurrentText] = useState("");
