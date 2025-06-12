@@ -1,19 +1,53 @@
-import { HeroSection } from "@/components/sections/HeroSection";
-import { WhyChooseSection } from "@/components/sections/WhyChooseSection";
-import { ProgramsSection } from "@/components/sections/ProgramsSection";
-import { FacultySection } from "@/components/sections/FacultySection";
-import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
-import { ContactSection } from "@/components/sections/ContactSection";
+"use client";
+
+import {
+  HeroSection,
+  WhyChooseSection,
+  ProgramsSection,
+  FacultySection,
+  TestimonialsSection,
+  ContactSection,
+} from "@/components/sections";
+import { SectionSuspense, LazyLoadSection } from "@/components/ui/SectionSuspense";
 
 export default function Home() {
-	return (
-		<div className="min-h-screen">
-			<HeroSection />
-			<WhyChooseSection />
-			<ProgramsSection />
-			<FacultySection />
-			<TestimonialsSection />
-			<ContactSection />
-		</div>
-	);
+  return (
+    <div className="min-h-screen">
+      {/* Hero section loads immediately */}
+      <SectionSuspense>
+        <HeroSection />
+      </SectionSuspense>
+
+      {/* Other sections load when they come into view */}
+      <LazyLoadSection>
+        <SectionSuspense>
+          <WhyChooseSection />
+        </SectionSuspense>
+      </LazyLoadSection>
+
+      <LazyLoadSection>
+        <SectionSuspense>
+          <ProgramsSection />
+        </SectionSuspense>
+      </LazyLoadSection>
+
+      <LazyLoadSection>
+        <SectionSuspense>
+          <FacultySection />
+        </SectionSuspense>
+      </LazyLoadSection>
+
+      <LazyLoadSection>
+        <SectionSuspense>
+          <TestimonialsSection />
+        </SectionSuspense>
+      </LazyLoadSection>
+
+      <LazyLoadSection>
+        <SectionSuspense>
+          <ContactSection />
+        </SectionSuspense>
+      </LazyLoadSection>
+    </div>
+  );
 }
