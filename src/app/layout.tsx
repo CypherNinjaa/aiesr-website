@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
-import { QueryProvider } from "@/providers/QueryProvider";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { SkipLinks } from "@/components/accessibility";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { Footer } from "@/components/layout/Footer";
+import { Header } from "@/components/layout/Header";
 import { generateMetadata } from "@/lib/seo";
+import { QueryProvider } from "@/providers/QueryProvider";
 
 export const metadata: Metadata = generateMetadata({
   title: "AIESR - Amity Institute of English Studies and Research",

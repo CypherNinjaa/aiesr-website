@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
-import { Testimonial } from "@/types";
 import testimonialsData from "@/data/testimonials.json";
+import { Testimonial } from "@/types";
 
 const testimonials = testimonialsData as Testimonial[];
 

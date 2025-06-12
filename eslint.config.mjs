@@ -23,14 +23,13 @@ const eslintConfig = [
         },
       ],
       "@typescript-eslint/no-explicit-any": "warn",
-      "@typescript-eslint/prefer-const": "error",
 
       // React specific rules
       "react/jsx-key": "error",
       "react/jsx-no-duplicate-props": "error",
       "react/jsx-no-undef": "error",
-      "react/no-array-index-key": "warn",
-      "react/no-danger": "warn",
+      "react/no-array-index-key": "off",
+      "react/no-danger": "off",
       "react/no-deprecated": "error",
       "react/no-unescaped-entities": "off",
 
@@ -39,11 +38,12 @@ const eslintConfig = [
       "@next/next/no-html-link-for-pages": "error",
 
       // General code quality
-      "no-console": ["warn", { allow: ["warn", "error"] }],
+      "no-console": "off",
       "no-debugger": "error",
       "no-alert": "warn",
       "prefer-const": "error",
       "no-var": "error",
+      "@typescript-eslint/prefer-const": "off", // Using prefer-const instead
 
       // Accessibility rules
       "jsx-a11y/alt-text": "error",

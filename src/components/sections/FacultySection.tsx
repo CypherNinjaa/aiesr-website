@@ -1,11 +1,11 @@
 "use client";
 
-import React from "react";
 import { motion } from "framer-motion";
-import { Card, CardContent } from "@/components/ui/Card";
+import React from "react";
 import { Button } from "@/components/ui/Button";
-import { Faculty } from "@/types";
+import { Card, CardContent } from "@/components/ui/Card";
 import facultyData from "@/data/faculty.json";
+import { Faculty } from "@/types";
 
 const faculty = facultyData as Faculty[];
 
