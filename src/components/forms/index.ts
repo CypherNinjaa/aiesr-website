@@ -1,0 +1,1 @@
+export { EventRegistrationForm } from "./EventRegistrationForm";
