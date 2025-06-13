@@ -21,6 +21,12 @@ export default function Home() {
       {/* Other sections load when they come into view */}
       <LazyLoadSection>
         <SectionSuspense>
+          <EventsSection />
+        </SectionSuspense>
+      </LazyLoadSection>
+      
+      <LazyLoadSection>
+        <SectionSuspense>
           <WhyChooseSection />
         </SectionSuspense>
       </LazyLoadSection>
@@ -38,11 +44,6 @@ export default function Home() {
       <LazyLoadSection>
         <SectionSuspense>
           <FacultySection />
-        </SectionSuspense>
-      </LazyLoadSection>
-      <LazyLoadSection>
-        <SectionSuspense>
-          <EventsSection />
         </SectionSuspense>
       </LazyLoadSection>
       <LazyLoadSection>
