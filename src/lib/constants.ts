@@ -71,6 +71,7 @@ export const NAVIGATION = {
     },
     { label: "Faculty", href: "/faculty" },
     { label: "Research", href: "/research" },
+    { label: "Events", href: "/events" },
     { label: "Admissions", href: "/admissions" },
     { label: "Student Life", href: "/student-life" },
     { label: "Contact", href: "/contact" },

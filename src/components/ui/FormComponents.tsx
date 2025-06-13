@@ -84,7 +84,7 @@ Textarea.displayName = "Textarea";
 interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   error?: boolean;
   registration?: UseFormRegisterReturn;
-  options: { value: string; label: string }[];
+  options: readonly { readonly value: string; readonly label: string }[];
   placeholder?: string;
 }
 

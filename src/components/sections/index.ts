@@ -36,3 +36,9 @@ export const ContactSection = lazy(() =>
     default: module.ContactSection,
   }))
 );
+
+export const EventsSection = lazy(() =>
+  import("@/components/sections/EventsSection").then(module => ({
+    default: module.EventsSection,
+  }))
+);

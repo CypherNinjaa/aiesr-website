@@ -181,8 +181,49 @@ body {
   .bg-gold {
     background-color: var(--primary-gold);
   }
-
   .bg-cream {
     background-color: var(--primary-cream);
+  }
+
+  /* Progress Bar Classes */
+  .progress-bar-sm {
+    background-color: var(--primary-burgundy);
+    height: 0.5rem;
+    border-radius: 9999px;
+    transition: all 0.3s ease;
+  }
+
+  .progress-bar-sm[data-progress="0"] {
+    width: 0%;
+  }
+  .progress-bar-sm[data-progress="10"] {
+    width: 10%;
+  }
+  .progress-bar-sm[data-progress="20"] {
+    width: 20%;
+  }
+  .progress-bar-sm[data-progress="30"] {
+    width: 30%;
+  }
+  .progress-bar-sm[data-progress="40"] {
+    width: 40%;
+  }
+  .progress-bar-sm[data-progress="50"] {
+    width: 50%;
+  }
+  .progress-bar-sm[data-progress="60"] {
+    width: 60%;
+  }
+  .progress-bar-sm[data-progress="70"] {
+    width: 70%;
+  }
+  .progress-bar-sm[data-progress="80"] {
+    width: 80%;
+  }
+  .progress-bar-sm[data-progress="90"] {
+    width: 90%;
+  }
+  .progress-bar-sm[data-progress="100"] {
+    width: 100%;
   }
 }
