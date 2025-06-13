@@ -53,7 +53,8 @@ export interface EventRaw {
   type: "academic" | "cultural" | "research" | "workshop";
   image?: string;
   registrationRequired: boolean;
-  registrationLink?: string;
+  registrationLink?: string; // For backward compatibility with existing data
+  customRegistrationLink?: string; // New field for admin-defined registration links
   featured?: boolean;
   capacity?: number;
   registeredCount?: number;
@@ -78,7 +79,8 @@ export interface Event {
   type: "academic" | "cultural" | "research" | "workshop";
   image?: string;
   registrationRequired: boolean;
-  registrationLink?: string;
+  registrationLink?: string; // For backward compatibility with existing data
+  customRegistrationLink?: string; // New field for admin-defined registration links
   featured?: boolean;
   capacity?: number;
   registeredCount?: number;

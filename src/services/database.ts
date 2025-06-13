@@ -17,7 +17,8 @@ const transformEventFromDB = (row: EventRow): Event => ({
   type: row.type,
   image: row.image_url || undefined,
   registrationRequired: row.registration_required,
-  registrationLink: process.env.NEXT_PUBLIC_REGISTRATION_URL || "",
+  registrationLink: row.registration_link || undefined, // Legacy field for backward compatibility
+  customRegistrationLink: row.custom_registration_link || undefined, // New field for admin-defined links
   featured: row.featured,
   capacity: row.capacity || undefined,
   registeredCount: 0, // This would come from your external registration system
@@ -41,6 +42,8 @@ const transformEventToDB = (event: Partial<Event> & { createdBy: string }): Even
   type: event.type!,
   image_url: event.image || null,
   registration_required: event.registrationRequired ?? true,
+  registration_link: event.registrationLink || null, // Legacy field
+  custom_registration_link: event.customRegistrationLink || null, // New field for admin-defined links
   registration_deadline: event.registrationDeadline?.toISOString() || null,
   featured: event.featured ?? false,
   capacity: event.capacity || null,
