@@ -6,20 +6,9 @@ import { notFound } from "next/navigation";
 import React from "react";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
-import eventsData from "@/data/events.json";
+import { useEvent, useEventsByType } from "@/hooks/useEvents";
 import { formatDate, getEventRegistrationLink, canUserRegisterForEvent } from "@/lib/utils";
-import { Event, EventRaw } from "@/types";
-
-// Transform raw event data to Event objects
-const transformEvents = (rawEvents: EventRaw[]): Event[] => {
-  return rawEvents.map(event => ({
-    ...event,
-    date: new Date(event.date),
-    endDate: event.endDate ? new Date(event.endDate) : undefined,
-  }));
-};
-
-const events = transformEvents(eventsData as EventRaw[]);
+import { Event } from "@/types";
 
 interface EventPageProps {
   params: Promise<{
@@ -60,16 +49,42 @@ const getEventTypeIcon = (type: Event["type"]) => {
 export default function EventPage({ params }: EventPageProps) {
   // Use React.use() for client components with promises in Next.js 15
   const { id } = React.use(params);
-  const event = events.find(e => e.id === id);
 
-  if (!event) {
+  // Fetch event from database
+  const { data: event, isLoading, error } = useEvent(id);
+  const { data: relatedEvents = [] } = useEventsByType(event?.type, 3);
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center pt-20">
+        <div className="text-center">
+          <div className="border-burgundy h-32 w-32 animate-spin rounded-full border-b-2"></div>
+          <p className="mt-4 text-gray-600">Loading event...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !event) {
     notFound();
   }
-  const relatedEvents = events.filter(e => e.id !== event.id && e.type === event.type).slice(0, 3);
 
+  // Filter out the current event from related events
+  const filteredRelatedEvents = relatedEvents.filter(e => e.id !== event.id).slice(0, 3);
   const isEventPast = new Date(event.date) < new Date();
   const registrationLink = getEventRegistrationLink(event);
   const canRegister = canUserRegisterForEvent(event);
+
+  // Debug logging
+  console.log("Event Registration Debug:", {
+    eventId: event.id,
+    registrationRequired: event.registrationRequired,
+    registrationLink: event.registrationLink,
+    customRegistrationLink: event.customRegistrationLink,
+    finalRegistrationLink: registrationLink,
+    canRegister,
+    isEventPast,
+  });
 
   return (
     <div className="min-h-screen pt-20">
@@ -89,7 +104,6 @@ export default function EventPage({ params }: EventPageProps) {
           </nav>
         </div>
       </section>
-
       {/* Event Hero */}
       <section className="from-burgundy bg-gradient-to-br to-red-900 py-16 text-white">
         <div className="container mx-auto px-4">
@@ -165,15 +179,19 @@ export default function EventPage({ params }: EventPageProps) {
             </div>{" "}
             {canRegister && registrationLink && (
               <div className="flex flex-col gap-4 sm:flex-row">
+                {" "}
                 <Link href={registrationLink}>
-                  <Button size="lg" className="bg-gold text-burgundy hover:bg-yellow-600">
+                  <Button
+                    size="lg"
+                    className="border-2 border-yellow-600 bg-yellow-500 font-bold text-white hover:bg-yellow-600"
+                  >
                     Register Now
                   </Button>
                 </Link>
                 <Button
                   variant="outline"
                   size="lg"
-                  className="hover:text-burgundy border-white text-white hover:bg-white"
+                  className="border-white font-semibold text-white hover:bg-white hover:text-red-900"
                 >
                   Share Event
                 </Button>
@@ -182,7 +200,6 @@ export default function EventPage({ params }: EventPageProps) {
           </motion.div>
         </div>
       </section>
-
       {/* Event Content */}
       <section className="bg-white py-16">
         <div className="container mx-auto px-4">
@@ -212,27 +229,37 @@ export default function EventPage({ params }: EventPageProps) {
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-6">
-                        {event.schedule.map((item, index) => (
-                          <div
-                            key={index}
-                            className="flex gap-4 border-b border-gray-100 pb-6 last:border-0"
-                          >
-                            <div className="w-20 flex-shrink-0 text-right">
-                              <div className="bg-burgundy rounded px-3 py-1 text-sm font-semibold text-white">
-                                {item.time}
+                        {event.schedule.map(
+                          (
+                            item: {
+                              time: string;
+                              title: string;
+                              speaker?: string;
+                              description: string;
+                            },
+                            index: number
+                          ) => (
+                            <div
+                              key={index}
+                              className="flex gap-4 border-b border-gray-100 pb-6 last:border-0"
+                            >
+                              <div className="w-20 flex-shrink-0 text-right">
+                                <div className="bg-burgundy rounded px-3 py-1 text-sm font-semibold text-white">
+                                  {item.time}
+                                </div>
+                              </div>
+                              <div className="flex-1">
+                                <h4 className="mb-1 font-semibold text-gray-800">{item.title}</h4>
+                                {item.speaker && (
+                                  <p className="text-burgundy mb-2 text-sm">
+                                    Speaker: {item.speaker}
+                                  </p>
+                                )}
+                                <p className="text-sm text-gray-600">{item.description}</p>
                               </div>
                             </div>
-                            <div className="flex-1">
-                              <h4 className="mb-1 font-semibold text-gray-800">{item.title}</h4>
-                              {item.speaker && (
-                                <p className="text-burgundy mb-2 text-sm">
-                                  Speaker: {item.speaker}
-                                </p>
-                              )}
-                              <p className="text-sm text-gray-600">{item.description}</p>
-                            </div>
-                          </div>
-                        ))}
+                          )
+                        )}
                       </div>
                     </CardContent>
                   </Card>
@@ -246,7 +273,7 @@ export default function EventPage({ params }: EventPageProps) {
                     </CardHeader>
                     <CardContent>
                       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                        {event.speakers.map((speaker, index) => (
+                        {event.speakers.map((speaker: string, index: number) => (
                           <div
                             key={index}
                             className="flex items-center gap-4 rounded-lg bg-gray-50 p-4"
@@ -254,7 +281,7 @@ export default function EventPage({ params }: EventPageProps) {
                             <div className="bg-burgundy flex h-16 w-16 items-center justify-center rounded-full text-xl font-bold text-white">
                               {speaker
                                 .split(" ")
-                                .map(n => n[0])
+                                .map((n: string) => n[0])
                                 .join("")}
                             </div>
                             <div>
@@ -342,7 +369,7 @@ export default function EventPage({ params }: EventPageProps) {
                     </CardHeader>
                     <CardContent>
                       <div className="flex flex-wrap gap-2">
-                        {event.tags.map((tag, index) => (
+                        {event.tags.map((tag: string, index: number) => (
                           <span
                             key={index}
                             className="bg-burgundy/10 text-burgundy rounded-full px-3 py-1 text-sm"
@@ -359,15 +386,24 @@ export default function EventPage({ params }: EventPageProps) {
                 <Card className="border-0 shadow-lg">
                   <CardHeader>
                     <CardTitle className="text-burgundy">Quick Actions</CardTitle>
-                  </CardHeader>
+                  </CardHeader>{" "}
                   <CardContent className="space-y-3">
-                    <Button variant="outline" className="w-full">
+                    <Button
+                      variant="outline"
+                      className="w-full border-red-800 bg-white text-red-800 transition-colors hover:bg-red-800 hover:text-white"
+                    >
                       Add to Calendar
                     </Button>
-                    <Button variant="outline" className="w-full">
+                    <Button
+                      variant="outline"
+                      className="w-full border-red-800 bg-white text-red-800 transition-colors hover:bg-red-800 hover:text-white"
+                    >
                       Share Event
                     </Button>
-                    <Button variant="outline" className="w-full">
+                    <Button
+                      variant="outline"
+                      className="w-full border-red-800 bg-white text-red-800 transition-colors hover:bg-red-800 hover:text-white"
+                    >
                       Get Directions
                     </Button>
                   </CardContent>
@@ -376,10 +412,9 @@ export default function EventPage({ params }: EventPageProps) {
             </div>
           </div>
         </div>
-      </section>
-
+      </section>{" "}
       {/* Related Events */}
-      {relatedEvents.length > 0 && (
+      {filteredRelatedEvents.length > 0 && (
         <section className="bg-gray-50 py-16">
           <div className="container mx-auto px-4">
             <motion.div
@@ -391,7 +426,7 @@ export default function EventPage({ params }: EventPageProps) {
                 Related Events
               </h2>
               <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-                {relatedEvents.map(relatedEvent => (
+                {filteredRelatedEvents.map((relatedEvent: Event) => (
                   <Card
                     key={relatedEvent.id}
                     className="group border-0 shadow-lg transition-shadow hover:shadow-xl"
