@@ -140,10 +140,13 @@ const MiniCalendar: React.FC<MiniCalendarProps> = ({ events, selectedDate, onDat
         <button onClick={nextMonth} className="rounded p-1 hover:bg-gray-100">
           →
         </button>
-      </div>
+      </div>{" "}
       <div className="mb-2 grid grid-cols-7 gap-1">
-        {["S", "M", "T", "W", "T", "F", "S"].map(day => (
-          <div key={day} className="p-2 text-center text-xs font-medium text-gray-500">
+        {["S", "M", "T", "W", "T", "F", "S"].map((day, index) => (
+          <div
+            key={`day-header-${index}`}
+            className="p-2 text-center text-xs font-medium text-gray-500"
+          >
             {day}
           </div>
         ))}
@@ -242,7 +245,7 @@ export default function EventsSection() {
   };
 
   return (
-    <section className="bg-gray-50 py-24" id="events">
+    <section className="bg-gray-50 py-12 sm:py-16 lg:py-24" id="events">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
@@ -252,23 +255,24 @@ export default function EventsSection() {
           transition={{ duration: 0.6 }}
           className="mb-16 text-center"
         >
-          <h2 className="mb-6 text-4xl font-bold text-gray-900 md:text-5xl">Upcoming Events</h2>
-          <p className="mx-auto max-w-3xl text-xl text-gray-600">
+          {" "}
+          <h2 className="mb-4 text-3xl font-bold text-gray-900 sm:mb-6 sm:text-4xl md:text-5xl">
+            Upcoming Events
+          </h2>
+          <p className="mx-auto max-w-3xl text-lg text-gray-600 sm:text-xl">
             Join us for exciting academic conferences, cultural festivals, research symposiums, and
             interactive workshops throughout the year.
           </p>
-        </motion.div>
-
+        </motion.div>{" "}
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
-          {/* Sidebar */}
-          <div className="space-y-6 lg:col-span-1">
+          {/* Sidebar - Hidden on mobile, shown on desktop */}
+          <div className="hidden space-y-6 lg:col-span-1 lg:flex lg:flex-col">
             {/* Mini Calendar */}
             <MiniCalendar
               events={events}
               selectedDate={selectedDate}
               onDateSelect={setSelectedDate}
             />
-
             {/* Filters */}
             <Card>
               <CardHeader>
@@ -276,15 +280,14 @@ export default function EventsSection() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  {" "}
                   <label
-                    htmlFor="event-type-filter"
+                    htmlFor="event-type-filter-desktop"
                     className="mb-2 block text-sm font-medium text-gray-700"
                   >
                     Event Type
                   </label>
                   <select
-                    id="event-type-filter"
+                    id="event-type-filter-desktop"
                     value={selectedType}
                     onChange={e => setSelectedType(e.target.value as Event["type"] | "all")}
                     className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
@@ -296,7 +299,6 @@ export default function EventsSection() {
                     <option value="workshop">🛠️ Workshop</option>
                   </select>
                 </div>
-
                 {selectedDate && (
                   <div>
                     <p className="mb-2 text-sm text-gray-600">
@@ -312,11 +314,9 @@ export default function EventsSection() {
                     </Button>
                   </div>
                 )}
-
                 <div>
-                  {" "}
                   <label
-                    htmlFor="view-mode-filter"
+                    htmlFor="view-mode-filter-desktop"
                     className="mb-2 block text-sm font-medium text-gray-700"
                   >
                     View Mode
@@ -346,7 +346,6 @@ export default function EventsSection() {
                 </div>
               </CardContent>
             </Card>
-
             {/* Quick Stats */}
             <Card>
               <CardHeader>
@@ -396,40 +395,51 @@ export default function EventsSection() {
                 transition={{ duration: 0.6 }}
                 className="mb-8"
               >
+                {" "}
                 <Card className="overflow-hidden bg-gradient-to-r from-blue-600 to-purple-600">
-                  <CardContent className="p-8 text-white">
+                  <CardContent className="p-4 text-white sm:p-6 lg:p-8">
                     <div className="mb-4 flex items-center gap-2">
-                      <span className="text-2xl">⭐</span>
-                      <span className="font-semibold text-blue-100">Featured Event</span>
+                      <span className="text-xl sm:text-2xl">⭐</span>
+                      <span className="text-sm font-semibold text-blue-100 sm:text-base">
+                        Featured Event
+                      </span>
                     </div>
-                    <h3 className="mb-4 text-2xl font-bold">{featuredEvent.title}</h3>
-                    <p className="mb-6 text-blue-100">{featuredEvent.shortDescription}</p>
-                    <div className="mb-6 flex flex-wrap items-center gap-4">
+                    <h3 className="mb-4 text-xl font-bold sm:text-2xl">{featuredEvent.title}</h3>
+                    <p className="mb-6 text-sm text-blue-100 sm:text-base">
+                      {featuredEvent.shortDescription}
+                    </p>
+                    <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
                       <div className="flex items-center gap-2">
                         <span>📅</span>
-                        <span>{formatDate(featuredEvent.date)}</span>
+                        <span className="text-sm sm:text-base">
+                          {formatDate(featuredEvent.date)}
+                        </span>
                       </div>
                       <div className="flex items-center gap-2">
                         <span>📍</span>
-                        <span>{featuredEvent.location}</span>
+                        <span className="text-sm sm:text-base">{featuredEvent.location}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <span>{getEventTypeIcon(featuredEvent.type)}</span>
-                        <span className="capitalize">{featuredEvent.type}</span>
+                        <span className="text-sm capitalize sm:text-base">
+                          {featuredEvent.type}
+                        </span>
                       </div>
                     </div>
-                    <div className="flex gap-4">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
                       {" "}
                       <Button
                         onClick={() => handleRegistration(featuredEvent)}
-                        className="bg-white text-blue-600 hover:bg-gray-100"
+                        className="w-full bg-white text-blue-600 hover:bg-gray-100 sm:w-auto"
+                        size="sm"
                       >
                         Register Now
                       </Button>
                       <Link href={`/events/${featuredEvent.id}`}>
                         <Button
                           variant="outline"
-                          className="border-white text-white hover:bg-white hover:text-blue-600"
+                          className="w-full border-white text-white hover:bg-white hover:text-blue-600 sm:w-auto"
+                          size="sm"
                         >
                           Learn More
                         </Button>
@@ -439,7 +449,67 @@ export default function EventsSection() {
                 </Card>
               </motion.div>
             )}
-
+            {/* Mobile Filters - Shown only on mobile, after featured event */}
+            <div className="mb-8 lg:hidden">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Filter Events</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {/* Mobile Calendar Toggle */}
+                  <div>
+                    <div className="mb-2 text-sm font-medium text-gray-700">Calendar</div>
+                    <details className="group">
+                      <summary className="cursor-pointer rounded-md border border-gray-300 p-2 text-sm hover:bg-gray-50">
+                        📅 {selectedDate ? selectedDate.toLocaleDateString() : "Select Date"}
+                      </summary>
+                      <div className="mt-2">
+                        <MiniCalendar
+                          events={events}
+                          selectedDate={selectedDate}
+                          onDateSelect={setSelectedDate}
+                        />
+                      </div>
+                    </details>
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="event-type-filter-mobile"
+                      className="mb-2 block text-sm font-medium text-gray-700"
+                    >
+                      Event Type
+                    </label>
+                    <select
+                      id="event-type-filter-mobile"
+                      value={selectedType}
+                      onChange={e => setSelectedType(e.target.value as Event["type"] | "all")}
+                      className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="all">All Events</option>
+                      <option value="academic">🎓 Academic</option>
+                      <option value="cultural">🎭 Cultural</option>
+                      <option value="research">🔬 Research</option>
+                      <option value="workshop">🛠️ Workshop</option>
+                    </select>
+                  </div>
+                  {selectedDate && (
+                    <div>
+                      <p className="mb-2 text-sm text-gray-600">
+                        Showing events for: {selectedDate.toLocaleDateString()}
+                      </p>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setSelectedDate(null)}
+                        className="w-full"
+                      >
+                        Clear Date Filter
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
             {/* Events Grid/List */}
             {filteredEvents.length === 0 ? (
               <Card>
@@ -471,7 +541,9 @@ export default function EventsSection() {
                 whileInView="visible"
                 viewport={{ once: true }}
                 className={
-                  viewMode === "grid" ? "grid grid-cols-1 gap-6 md:grid-cols-2" : "space-y-4"
+                  viewMode === "grid"
+                    ? "grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2"
+                    : "space-y-4"
                 }
               >
                 {filteredEvents.map((event: Event) => (
@@ -562,12 +634,11 @@ export default function EventsSection() {
                   </motion.div>
                 ))}
               </motion.div>
-            )}
-
+            )}{" "}
             {/* View All Events Link */}
-            <div className="mt-12 text-center">
+            <div className="mt-8 text-center sm:mt-12">
               <Link href="/events">
-                <Button variant="outline" size="lg">
+                <Button variant="outline" size="lg" className="w-full sm:w-auto">
                   View All Events
                 </Button>
               </Link>

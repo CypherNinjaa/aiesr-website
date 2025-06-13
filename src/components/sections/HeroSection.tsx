@@ -1,9 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import Link from "next/link";
 import React, { useEffect, useState, useMemo } from "react";
-import { Button } from "@/components/ui/Button";
 
 export const HeroSection: React.FC = () => {
   const [currentText, setCurrentText] = useState("");
@@ -149,11 +147,11 @@ export const HeroSection: React.FC = () => {
             variants={itemVariants}
             className="flex flex-col items-center justify-center gap-4 sm:flex-row"
           >
-            <Link href="/events">
+            {/* <Link href="/events">
               <Button size="lg" className="px-8 py-4 text-lg">
                 Upcoming Events
               </Button>
-            </Link>
+            </Link> */}
             {/* <Button variant="outline" size="lg" className="px-8 py-4 text-lg">
               Virtual Campus Tour
             </Button>{" "} */}
@@ -161,7 +159,7 @@ export const HeroSection: React.FC = () => {
         </div>
       </motion.div>{" "}
       {/* Quote Section */}
-      <div className="absolute right-8 -bottom-4 left-8 md:right-20 md:left-20">
+      <div className="absolute right-8 -bottom-0 left-8 md:right-20 md:left-20">
         <motion.blockquote
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
