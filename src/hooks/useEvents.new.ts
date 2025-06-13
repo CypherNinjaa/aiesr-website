@@ -19,11 +19,11 @@ export const useEvents = (filters?: {
 };
 
 // Hook for single event
-export const useEvent = (id: string, options?: { enabled?: boolean }) => {
+export const useEvent = (id: string) => {
   return useQuery({
     queryKey: ["event", id],
     queryFn: () => EventService.getEvent(id),
-    enabled: options?.enabled !== false && !!id,
+    enabled: !!id,
     staleTime: 5 * 60 * 1000,
   });
 };

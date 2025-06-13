@@ -90,6 +90,11 @@ export interface Event {
     description: string;
   }[];
   tags?: string[];
+  // New fields for admin management
+  status?: "draft" | "published" | "cancelled" | "completed";
+  createdAt?: Date;
+  updatedAt?: Date;
+  registrationDeadline?: Date;
 }
 
 export interface Testimonial {
@@ -115,4 +120,30 @@ export interface SEOProps {
   keywords?: string;
   image?: string;
   url?: string;
+}
+
+// Admin related types
+export interface AdminUser {
+  id: string;
+  email: string;
+  name: string;
+  role: "admin" | "super_admin";
+  createdAt: Date;
+  lastLogin?: Date;
+}
+
+export interface EventCategory {
+  id: string;
+  name: string;
+  description?: string;
+  color: string;
+  icon?: string;
+  createdAt: Date;
+}
+
+export interface EventAnalytics {
+  eventId: string;
+  views: number;
+  registrationClicks: number;
+  lastUpdated: Date;
 }

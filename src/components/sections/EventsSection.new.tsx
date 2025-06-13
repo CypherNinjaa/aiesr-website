@@ -275,8 +275,8 @@ export default function EventsSection() {
                 <CardTitle className="text-lg">Filter Events</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
+                {" "}
                 <div>
-                  {" "}
                   <label
                     htmlFor="event-type-filter"
                     className="mb-2 block text-sm font-medium text-gray-700"
@@ -296,7 +296,6 @@ export default function EventsSection() {
                     <option value="workshop">🛠️ Workshop</option>
                   </select>
                 </div>
-
                 {selectedDate && (
                   <div>
                     <p className="mb-2 text-sm text-gray-600">
@@ -311,17 +310,20 @@ export default function EventsSection() {
                       Clear Date Filter
                     </Button>
                   </div>
-                )}
-
+                )}{" "}
                 <div>
-                  {" "}
                   <label
-                    htmlFor="view-mode-filter"
+                    htmlFor="view-mode-buttons"
                     className="mb-2 block text-sm font-medium text-gray-700"
                   >
                     View Mode
                   </label>
-                  <div className="flex rounded-md shadow-sm">
+                  <div
+                    id="view-mode-buttons"
+                    className="flex rounded-md shadow-sm"
+                    role="group"
+                    aria-label="View mode selection"
+                  >
                     <button
                       onClick={() => setViewMode("grid")}
                       className={`flex-1 rounded-l-md border px-3 py-2 text-sm font-medium ${
@@ -417,10 +419,10 @@ export default function EventsSection() {
                         <span>{getEventTypeIcon(featuredEvent.type)}</span>
                         <span className="capitalize">{featuredEvent.type}</span>
                       </div>
-                    </div>
+                    </div>{" "}
                     <div className="flex gap-4">
-                      {" "}
                       <Button
+                        variant="outline"
                         onClick={() => handleRegistration(featuredEvent)}
                         className="bg-white text-blue-600 hover:bg-gray-100"
                       >
@@ -474,7 +476,8 @@ export default function EventsSection() {
                   viewMode === "grid" ? "grid grid-cols-1 gap-6 md:grid-cols-2" : "space-y-4"
                 }
               >
-                {filteredEvents.map((event: Event) => (
+                {" "}
+                {filteredEvents.map((event: Event, _index: number) => (
                   <motion.div
                     key={event.id}
                     variants={cardVariants}

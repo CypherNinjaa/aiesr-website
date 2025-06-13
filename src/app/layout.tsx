@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { SkipLinks } from "@/components/accessibility";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { Footer } from "@/components/layout/Footer";
-import { Header } from "@/components/layout/Header";
+import { LayoutSwitcher } from "@/components/layout/LayoutSwitcher";
 import { generateMetadata } from "@/lib/seo";
 import { QueryProvider } from "@/providers/QueryProvider";
 
@@ -26,11 +25,7 @@ export default function RootLayout({
         <SkipLinks />
         <ErrorBoundary>
           <QueryProvider>
-            <Header />
-            <main id="main-content" tabIndex={-1}>
-              {children}
-            </main>
-            <Footer />
+            <LayoutSwitcher>{children}</LayoutSwitcher>
           </QueryProvider>
         </ErrorBoundary>
       </body>
