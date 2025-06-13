@@ -122,9 +122,9 @@ export default function AdminEventsPage() {
           >
             <option value="all">All Status</option>
             <option value="draft">Draft</option> <option value="published">Published</option>
-            <option value="cancelled">Cancelled</option>
+            <option value="cancelled">Cancelled</option>{" "}
             <option value="completed">Completed</option>
-          </select>{" "}
+          </select>
         </div>
         <div>
           <label htmlFor="category-filter" className="mb-1 block text-sm font-medium text-gray-700">
@@ -147,9 +147,9 @@ export default function AdminEventsPage() {
       </div>
       {/* Events Table */}
       <div className="overflow-hidden rounded-lg bg-white shadow-sm">
+        {" "}
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
-            {" "}
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
@@ -225,13 +225,12 @@ export default function AdminEventsPage() {
                         Delete
                       </button>
                     </div>
-                  </td>
+                  </td>{" "}
                 </tr>
               ))}
-            </tbody>{" "}
+            </tbody>
           </table>
         </div>
-
         {(!events || events.length === 0) && (
           <div className="py-12 text-center">
             <div className="mb-4 text-lg text-gray-500">📅</div>
