@@ -2,14 +2,30 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useEvents, useDeleteEvent } from "@/hooks/useEvents";
 import { formatDate } from "@/lib/utils";
-import { Event } from "@/types";
+import { CategoryService } from "@/services/category";
+import { Event, Category } from "@/types";
 
 export default function AdminEventsPage() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [typeFilter, setTypeFilter] = useState<string>("all");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  // Load categories on component mount
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const activeCategories = await CategoryService.getActiveCategories();
+        setCategories(activeCategories);
+      } catch (error) {
+        console.error("Failed to load categories:", error);
+      }
+    };
+
+    loadCategories();
+  }, []);
 
   const {
     data: events,
@@ -17,7 +33,7 @@ export default function AdminEventsPage() {
     error,
   } = useEvents({
     ...(statusFilter !== "all" && { status: statusFilter }),
-    ...(typeFilter !== "all" && { type: typeFilter as Event["type"] }),
+    ...(categoryFilter !== "all" && { category_id: categoryFilter }),
   });
 
   const deleteEvent = useDeleteEvent();
@@ -44,20 +60,15 @@ export default function AdminEventsPage() {
       </span>
     );
   };
-
-  const getTypeBadge = (type: string) => {
-    const colors = {
-      academic: "bg-blue-50 text-blue-700",
-      cultural: "bg-purple-50 text-purple-700",
-      research: "bg-green-50 text-green-700",
-      workshop: "bg-orange-50 text-orange-700",
-    };
+  const getTypeBadge = (event: Event) => {
+    // Use category if available, fallback to deprecated type field
+    const displayText = event.category?.name || event.type || "Uncategorized";
+    const colorClass = event.category?.color_class || "bg-gray-50 text-gray-700";
 
     return (
-      <span
-        className={`rounded-full px-2 py-1 text-xs font-medium ${colors[type as keyof typeof colors] || colors.academic}`}
-      >
-        {type}
+      <span className={`rounded-full px-2 py-1 text-xs font-medium ${colorClass}`}>
+        {event.category?.icon_emoji && `${event.category.icon_emoji} `}
+        {displayText}
       </span>
     );
   };
@@ -96,7 +107,7 @@ export default function AdminEventsPage() {
         >
           Add New Event
         </Link>
-      </div>{" "}
+      </div>
       {/* Filters */}
       <div className="mb-6 flex flex-wrap gap-4">
         <div>
@@ -110,27 +121,27 @@ export default function AdminEventsPage() {
             className="rounded-md border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
           >
             <option value="all">All Status</option>
-            <option value="draft">Draft</option>
-            <option value="published">Published</option>
+            <option value="draft">Draft</option> <option value="published">Published</option>
             <option value="cancelled">Cancelled</option>
             <option value="completed">Completed</option>
-          </select>
+          </select>{" "}
         </div>
         <div>
-          <label htmlFor="type-filter" className="mb-1 block text-sm font-medium text-gray-700">
-            Type
+          <label htmlFor="category-filter" className="mb-1 block text-sm font-medium text-gray-700">
+            Category
           </label>
           <select
-            id="type-filter"
-            value={typeFilter}
-            onChange={e => setTypeFilter(e.target.value)}
+            id="category-filter"
+            value={categoryFilter}
+            onChange={e => setCategoryFilter(e.target.value)}
             className="rounded-md border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
           >
-            <option value="all">All Types</option>
-            <option value="academic">Academic</option>
-            <option value="cultural">Cultural</option>
-            <option value="research">Research</option>
-            <option value="workshop">Workshop</option>
+            <option value="all">All Categories</option>
+            {categories.map(category => (
+              <option key={category.id} value={category.id}>
+                {category.icon_emoji} {category.name}
+              </option>
+            ))}
           </select>
         </div>
       </div>
@@ -138,6 +149,7 @@ export default function AdminEventsPage() {
       <div className="overflow-hidden rounded-lg bg-white shadow-sm">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
+            {" "}
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
@@ -147,7 +159,7 @@ export default function AdminEventsPage() {
                   Date
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
-                  Type
+                  Category
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
                   Status
@@ -165,7 +177,6 @@ export default function AdminEventsPage() {
                 <tr key={event.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4">
                     <div className="flex items-center">
-                      {" "}
                       {event.image && (
                         <Image
                           className="mr-4 h-10 w-10 rounded-lg object-cover"
@@ -184,7 +195,7 @@ export default function AdminEventsPage() {
                   <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-900">
                     {formatDate(event.date)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">{getTypeBadge(event.type)}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">{getTypeBadge(event)}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {getStatusBadge(event.status || "draft")}
                   </td>
@@ -217,7 +228,7 @@ export default function AdminEventsPage() {
                   </td>
                 </tr>
               ))}
-            </tbody>
+            </tbody>{" "}
           </table>
         </div>
 
@@ -226,7 +237,7 @@ export default function AdminEventsPage() {
             <div className="mb-4 text-lg text-gray-500">📅</div>
             <h3 className="mb-2 text-lg font-medium text-gray-900">No events found</h3>
             <p className="mb-4 text-gray-500">
-              {statusFilter !== "all" || typeFilter !== "all"
+              {statusFilter !== "all" || categoryFilter !== "all"
                 ? "Try adjusting your filters or create a new event."
                 : "Get started by creating your first event."}
             </p>

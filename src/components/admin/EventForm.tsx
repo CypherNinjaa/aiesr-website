@@ -5,8 +5,9 @@ import { useRouter } from "next/navigation";
 import React, { useState, useEffect, useRef } from "react";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
 import { useEvent, useCreateEvent, useUpdateEvent } from "@/hooks/useEvents";
+import { CategoryService } from "@/services/category";
 import { StorageService } from "@/services/storage";
-import { Event } from "@/types";
+import { Event, Category } from "@/types";
 
 interface EventFormProps {
   eventId?: string;
@@ -23,7 +24,6 @@ export default function EventForm({ eventId }: EventFormProps) {
 
   const createEvent = useCreateEvent();
   const updateEvent = useUpdateEvent();
-
   const [formData, setFormData] = useState<Partial<Event>>({
     title: "",
     description: "",
@@ -32,6 +32,7 @@ export default function EventForm({ eventId }: EventFormProps) {
     endDate: undefined,
     location: "",
     type: "academic",
+    category_id: undefined, // New dynamic category field
     image: "",
     registrationRequired: true,
     registrationDeadline: undefined,
@@ -49,7 +50,27 @@ export default function EventForm({ eventId }: EventFormProps) {
   const [imagePreview, setImagePreview] = useState<string>("");
   const [uploadProgress, setUploadProgress] = useState<boolean>(false);
   const [uploadError, setUploadError] = useState<string>("");
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState<boolean>(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Load categories on mount
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        setCategoriesLoading(true);
+        const fetchedCategories = await CategoryService.getActiveCategories();
+        setCategories(fetchedCategories);
+      } catch (error) {
+        console.error("Failed to load categories:", error);
+        setUploadError("Failed to load categories. Please refresh the page.");
+      } finally {
+        setCategoriesLoading(false);
+      }
+    };
+
+    loadCategories();
+  }, []);
   useEffect(() => {
     if (existingEvent) {
       setFormData(existingEvent);
@@ -208,21 +229,38 @@ export default function EventForm({ eventId }: EventFormProps) {
               />
             </div>{" "}
             <div>
-              <label htmlFor="event-type" className="mb-2 block text-sm font-medium text-gray-700">
-                Event Type *
-              </label>
-              <select
-                id="event-type"
-                required
-                value={formData.type}
-                onChange={e => handleInputChange("type", e.target.value)}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              <label
+                htmlFor="event-category"
+                className="mb-2 block text-sm font-medium text-gray-700"
               >
-                <option value="academic">Academic</option>
-                <option value="cultural">Cultural</option>
-                <option value="research">Research</option>
-                <option value="workshop">Workshop</option>
-              </select>
+                Event Category *
+              </label>
+              {categoriesLoading ? (
+                <div className="flex items-center justify-center rounded-md border border-gray-300 px-3 py-2">
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent"></div>
+                  <span className="ml-2 text-sm text-gray-500">Loading categories...</span>
+                </div>
+              ) : (
+                <select
+                  id="event-category"
+                  required
+                  value={formData.category_id || ""}
+                  onChange={e => handleInputChange("category_id", e.target.value || undefined)}
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                >
+                  <option value="">Select a category</option>
+                  {categories.map(category => (
+                    <option key={category.id} value={category.id}>
+                      {category.icon_emoji} {category.name}
+                    </option>
+                  ))}
+                </select>
+              )}
+              {categories.length === 0 && !categoriesLoading && (
+                <p className="mt-1 text-sm text-gray-500">
+                  No categories available. Please create categories first.
+                </p>
+              )}
             </div>{" "}
             <div>
               <label

@@ -1,35 +1,49 @@
 import { supabase, Database } from "@/lib/supabase";
 import { Event } from "@/types";
+import { CategoryService } from "./category";
 
 type EventRow = Database["public"]["Tables"]["events"]["Row"];
 type EventInsert = Database["public"]["Tables"]["events"]["Insert"];
 type EventUpdate = Database["public"]["Tables"]["events"]["Update"];
 
 // Transform database row to Event type
-const transformEventFromDB = (row: EventRow): Event => ({
-  id: row.id,
-  title: row.title,
-  description: row.description,
-  shortDescription: row.short_description,
-  date: new Date(row.date),
-  endDate: row.end_date ? new Date(row.end_date) : undefined,
-  location: row.location,
-  type: row.type,
-  image: row.image_url || undefined,
-  registrationRequired: row.registration_required,
-  registrationLink: row.registration_link || undefined, // Legacy field for backward compatibility
-  customRegistrationLink: row.custom_registration_link || undefined, // New field for admin-defined links
-  featured: row.featured,
-  capacity: row.capacity || undefined,
-  registeredCount: 0, // This would come from your external registration system
-  speakers: row.speakers || undefined,
-  schedule: (row.schedule as Event["schedule"]) || undefined,
-  tags: row.tags || undefined,
-  status: row.status,
-  createdAt: new Date(row.created_at),
-  updatedAt: new Date(row.updated_at),
-  registrationDeadline: row.registration_deadline ? new Date(row.registration_deadline) : undefined,
-});
+const transformEventFromDB = async (row: EventRow): Promise<Event> => {
+  let category = undefined;
+
+  // Fetch category if category_id exists
+  if (row.category_id) {
+    category = await CategoryService.getCategoryById(row.category_id);
+  }
+
+  return {
+    id: row.id,
+    title: row.title,
+    description: row.description,
+    shortDescription: row.short_description,
+    date: new Date(row.date),
+    endDate: row.end_date ? new Date(row.end_date) : undefined,
+    location: row.location,
+    type: row.type || undefined, // Deprecated but kept for migration
+    category_id: row.category_id || undefined,
+    category: category || undefined,
+    image: row.image_url || undefined,
+    registrationRequired: row.registration_required,
+    registrationLink: row.registration_link || undefined, // Legacy field for backward compatibility
+    customRegistrationLink: row.custom_registration_link || undefined, // New field for admin-defined links
+    featured: row.featured,
+    capacity: row.capacity || undefined,
+    registeredCount: 0, // This would come from your external registration system
+    speakers: row.speakers || undefined,
+    schedule: (row.schedule as Event["schedule"]) || undefined,
+    tags: row.tags || undefined,
+    status: row.status,
+    createdAt: new Date(row.created_at),
+    updatedAt: new Date(row.updated_at),
+    registrationDeadline: row.registration_deadline
+      ? new Date(row.registration_deadline)
+      : undefined,
+  };
+};
 
 // Transform Event to database insert
 const transformEventToDB = (event: Partial<Event> & { createdBy: string }): EventInsert => ({
@@ -39,7 +53,8 @@ const transformEventToDB = (event: Partial<Event> & { createdBy: string }): Even
   date: event.date!.toISOString(),
   end_date: event.endDate?.toISOString() || null,
   location: event.location!,
-  type: event.type!,
+  type: event.type || null, // Deprecated but kept for migration
+  category_id: event.category_id || null, // New dynamic category reference
   image_url: event.image || null,
   registration_required: event.registrationRequired ?? true,
   registration_link: event.registrationLink || null, // Legacy field
@@ -63,6 +78,7 @@ export class EventService {
   static async getEvents(filters?: {
     status?: string;
     type?: string;
+    category_id?: string;
     featured?: boolean;
     upcoming?: boolean;
     limit?: number;
@@ -75,6 +91,10 @@ export class EventService {
 
     if (filters?.type) {
       query = query.eq("type", filters.type);
+    }
+
+    if (filters?.category_id) {
+      query = query.eq("category_id", filters.category_id);
     }
 
     if (filters?.featured !== undefined) {
@@ -97,7 +117,10 @@ export class EventService {
       throw new Error(`Failed to fetch events: ${error.message}`);
     }
 
-    return data.map(transformEventFromDB);
+    // Transform all events with categories
+    const transformedEvents = await Promise.all(data.map(row => transformEventFromDB(row)));
+
+    return transformedEvents;
   }
 
   // Get single event by ID
@@ -226,37 +249,6 @@ export class EventService {
 }
 
 // Category Management
-export class CategoryService {
-  static async getCategories() {
-    const { data, error } = await supabase.from("event_categories").select("*").order("name");
-
-    if (error) {
-      throw new Error(`Failed to fetch categories: ${error.message}`);
-    }
-
-    return data;
-  }
-  static async createCategory(category: {
-    name: string;
-    description?: string;
-    color: string;
-    icon?: string;
-  }) {
-    // Use regular supabase client - RLS policies will handle authorization
-    const { data, error } = await supabase
-      .from("event_categories")
-      .insert(category)
-      .select()
-      .single();
-
-    if (error) {
-      throw new Error(`Failed to create category: ${error.message}`);
-    }
-
-    return data;
-  }
-}
-
 // Admin Authentication
 export class AdminService {
   static async signIn(email: string, password: string) {

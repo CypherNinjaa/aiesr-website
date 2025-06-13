@@ -48,7 +48,8 @@ export interface Database {
           date: string;
           end_date: string | null;
           location: string;
-          type: "academic" | "cultural" | "research" | "workshop";
+          type: "academic" | "cultural" | "research" | "workshop" | null; // Deprecated but kept for migration
+          category_id: string | null; // New dynamic category reference
           image_url: string | null;
           registration_required: boolean;
           registration_link: string | null; // Legacy field for backward compatibility
@@ -72,7 +73,8 @@ export interface Database {
           date: string;
           end_date?: string | null;
           location: string;
-          type: "academic" | "cultural" | "research" | "workshop";
+          type?: "academic" | "cultural" | "research" | "workshop" | null; // Deprecated but kept for migration
+          category_id?: string | null; // New dynamic category reference
           image_url?: string | null;
           registration_required?: boolean;
           registration_link?: string | null; // Legacy field for backward compatibility
@@ -94,7 +96,8 @@ export interface Database {
           date?: string;
           end_date?: string | null;
           location?: string;
-          type?: "academic" | "cultural" | "research" | "workshop";
+          type?: "academic" | "cultural" | "research" | "workshop" | null; // Deprecated but kept for migration
+          category_id?: string | null; // New dynamic category reference
           image_url?: string | null;
           registration_required?: boolean;
           registration_link?: string | null; // Legacy field for backward compatibility
@@ -106,6 +109,43 @@ export interface Database {
           schedule?: Json | null;
           tags?: string[] | null;
           status?: "draft" | "published" | "cancelled" | "completed";
+          updated_at?: string;
+        };
+      };
+      categories: {
+        Row: {
+          id: string;
+          name: string;
+          slug: string;
+          description: string | null;
+          color_class: string;
+          icon_emoji: string;
+          is_active: boolean;
+          sort_order: number;
+          created_at: string;
+          updated_at: string;
+          created_by: string | null;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          slug: string;
+          description?: string | null;
+          color_class?: string;
+          icon_emoji?: string;
+          is_active?: boolean;
+          sort_order?: number;
+          created_by?: string | null;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          slug?: string;
+          description?: string | null;
+          color_class?: string;
+          icon_emoji?: string;
+          is_active?: boolean;
+          sort_order?: number;
           updated_at?: string;
         };
       };
