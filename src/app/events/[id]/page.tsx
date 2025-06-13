@@ -57,8 +57,9 @@ const getEventTypeIcon = (type: Event["type"]) => {
   }
 };
 
-export default async function EventPage({ params }: EventPageProps) {
-  const { id } = await params;
+export default function EventPage({ params }: EventPageProps) {
+  // Use React.use() for client components with promises in Next.js 15
+  const { id } = React.use(params);
   const event = events.find(e => e.id === id);
 
   if (!event) {
