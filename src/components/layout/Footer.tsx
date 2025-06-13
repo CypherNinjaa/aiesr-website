@@ -6,12 +6,10 @@ import { Button } from "@/components/ui/Button";
 
 export const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
-
   const quickLinks = [
     { label: "About Us", href: "/about" },
     { label: "Academic Programs", href: "/programs" },
     { label: "Faculty", href: "/faculty" },
-    { label: "Admissions", href: "/admissions" },
     { label: "Research", href: "/research" },
     { label: "Student Life", href: "/student-life" },
   ];
