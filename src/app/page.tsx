@@ -27,6 +27,13 @@ export default function Home() {
 
       <LazyLoadSection>
         <SectionSuspense>
+          {/* student success story */}
+          <TestimonialsSection />
+        </SectionSuspense>
+      </LazyLoadSection>
+
+      <LazyLoadSection>
+        <SectionSuspense>
           <ProgramsSection />
         </SectionSuspense>
       </LazyLoadSection>
@@ -34,12 +41,6 @@ export default function Home() {
       <LazyLoadSection>
         <SectionSuspense>
           <FacultySection />
-        </SectionSuspense>
-      </LazyLoadSection>
-
-      <LazyLoadSection>
-        <SectionSuspense>
-          <TestimonialsSection />
         </SectionSuspense>
       </LazyLoadSection>
 

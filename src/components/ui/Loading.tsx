@@ -12,7 +12,6 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ size = "md", cla
     md: "w-8 h-8",
     lg: "w-12 h-12",
   };
-
   return (
     <div
       className={cn(
@@ -20,7 +19,6 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ size = "md", cla
         sizeClasses[size],
         className
       )}
-      style={{ borderTopColor: "var(--primary-burgundy)" }}
     />
   );
 };

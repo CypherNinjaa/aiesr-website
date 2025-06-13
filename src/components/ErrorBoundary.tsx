@@ -64,18 +64,17 @@ const DefaultErrorFallback: React.FC<{
               <pre className="mt-2 text-xs whitespace-pre-wrap text-red-500">{error.stack}</pre>
             </details>
           )}
-        </div>
+        </div>{" "}
         <div className="flex flex-col justify-center gap-4 sm:flex-row">
           <button
             onClick={resetError}
-            className="bg-burgundy hover:bg-opacity-90 focus:ring-burgundy inline-flex items-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white focus:ring-2 focus:ring-offset-2 focus:outline-none"
-            style={{ backgroundColor: "var(--primary-burgundy)" }}
+            className="bg-burgundy hover:bg-burgundy/90 focus:ring-burgundy inline-flex items-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none"
           >
             Try Again
           </button>
           <button
             onClick={() => (window.location.href = "/")}
-            className="focus:ring-burgundy inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:ring-2 focus:ring-offset-2 focus:outline-none"
+            className="focus:ring-burgundy inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:ring-2 focus:ring-offset-2 focus:outline-none"
           >
             Go Home
           </button>
