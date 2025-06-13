@@ -1,24 +1,14 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
-import eventsData from "@/data/events.json";
+import { useEvents } from "@/hooks/useEvents";
 import { formatDate } from "@/lib/utils";
-import { Event, EventRaw } from "@/types";
-
-// Transform raw event data to Event objects
-const transformEvents = (rawEvents: EventRaw[]): Event[] => {
-  return rawEvents.map(event => ({
-    ...event,
-    date: new Date(event.date),
-    endDate: event.endDate ? new Date(event.endDate) : undefined,
-  }));
-};
-
-const events = transformEvents(eventsData as EventRaw[]);
+import { Event } from "@/types";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -81,6 +71,48 @@ export default function EventsPage() {
   const [selectedType, setSelectedType] = useState<Event["type"] | "all">("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [dateFilter, setDateFilter] = useState<"upcoming" | "past" | "all">("upcoming");
+
+  // Fetch events from database
+  const {
+    data: events = [],
+    isLoading,
+    error,
+  } = useEvents({
+    status: "published", // Only show published events
+  });
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-16">
+        <div className="container mx-auto px-4">
+          <div className="text-center">
+            <div className="mx-auto h-12 w-12 animate-spin rounded-full border-b-2 border-blue-600"></div>
+            <p className="mt-4 text-gray-600">Loading events...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-16">
+        <div className="container mx-auto px-4">
+          <div className="text-center">
+            <p className="text-red-600">Error loading events: {error.message}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="mt-4 rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Filter events based on selected criteria
   const filteredEvents = events
@@ -254,8 +286,20 @@ export default function EventsPage() {
                   <Card className="group overflow-hidden border-0 shadow-lg transition-all duration-300 hover:shadow-xl">
                     <CardContent className="p-0">
                       <div className="grid grid-cols-1 gap-0 lg:grid-cols-5">
-                        {/* Event Image Placeholder */}
-                        <div className="from-burgundy to-gold relative h-64 bg-gradient-to-br lg:col-span-2 lg:h-auto">
+                        {" "}
+                        {/* Event Image */}
+                        <div className="relative h-64 lg:col-span-2 lg:h-auto">
+                          {event.image ? (
+                            <Image
+                              src={event.image}
+                              alt={event.title}
+                              fill
+                              className="object-cover"
+                              sizes="(max-width: 768px) 100vw, 40vw"
+                            />
+                          ) : (
+                            <div className="from-burgundy to-gold h-full bg-gradient-to-br"></div>
+                          )}
                           <div className="absolute inset-0 bg-black/20"></div>
                           <div className="absolute top-4 left-4">
                             <span
@@ -283,7 +327,6 @@ export default function EventsPage() {
                             </div>
                           )}
                         </div>
-
                         {/* Event Details */}
                         <div className="p-6 lg:col-span-3 lg:p-8">
                           <div className="flex h-full flex-col">
