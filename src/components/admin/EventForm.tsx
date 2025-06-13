@@ -125,6 +125,12 @@ export default function EventForm({ eventId }: EventFormProps) {
       return;
     }
 
+    // Validate registration link requirement
+    if (formData.registrationRequired && !formData.customRegistrationLink?.trim()) {
+      setUploadError("Registration link is required when registration is enabled.");
+      return;
+    }
+
     try {
       const eventData = {
         ...formData,
@@ -156,7 +162,7 @@ export default function EventForm({ eventId }: EventFormProps) {
       console.error("Error saving event:", error);
       const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
       // Handle error appropriately - could show toast notification or set error state
-      setFormData(prev => ({ ...prev, error: errorMessage }));
+      setUploadError(errorMessage);
     }
   };
   const handleInputChange = (field: keyof Event, value: unknown) => {
@@ -509,7 +515,7 @@ export default function EventForm({ eventId }: EventFormProps) {
               className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
               placeholder="literature, festival, academic"
             />
-          </div>
+          </div>{" "}
           {/* Checkboxes */}
           <div className="flex flex-wrap gap-6">
             <label className="flex items-center">
@@ -531,7 +537,31 @@ export default function EventForm({ eventId }: EventFormProps) {
               />
               <span className="text-sm text-gray-700">Featured Event</span>
             </label>
-          </div>{" "}
+          </div>
+          {/* Registration Link - Required when registration is enabled */}
+          {formData.registrationRequired && (
+            <div>
+              <label
+                htmlFor="registration-link"
+                className="mb-2 block text-sm font-medium text-gray-700"
+              >
+                Registration Link <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="url"
+                id="registration-link"
+                value={formData.customRegistrationLink || ""}
+                onChange={e => handleInputChange("customRegistrationLink", e.target.value)}
+                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                placeholder="https://example.com/register"
+                required={formData.registrationRequired}
+              />
+              <p className="mt-1 text-xs text-gray-500">
+                Enter the URL where users can register for this event. This is required when
+                registration is enabled.
+              </p>
+            </div>
+          )}{" "}
           {/* Schedule (JSON) */}
           <div>
             <label

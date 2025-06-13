@@ -7,7 +7,7 @@ import React from "react";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import eventsData from "@/data/events.json";
-import { formatDate } from "@/lib/utils";
+import { formatDate, getEventRegistrationLink, canUserRegisterForEvent } from "@/lib/utils";
 import { Event, EventRaw } from "@/types";
 
 // Transform raw event data to Event objects
@@ -65,15 +65,11 @@ export default function EventPage({ params }: EventPageProps) {
   if (!event) {
     notFound();
   }
-
   const relatedEvents = events.filter(e => e.id !== event.id && e.type === event.type).slice(0, 3);
 
   const isEventPast = new Date(event.date) < new Date();
-  const canRegister =
-    event.registrationRequired &&
-    event.registrationLink &&
-    !isEventPast &&
-    (!event.capacity || !event.registeredCount || event.registeredCount < event.capacity);
+  const registrationLink = getEventRegistrationLink(event);
+  const canRegister = canUserRegisterForEvent(event);
 
   return (
     <div className="min-h-screen pt-20">
@@ -120,11 +116,8 @@ export default function EventPage({ params }: EventPageProps) {
                 </span>
               )}
             </div>
-
             <h1 className="font-primary mb-6 text-4xl font-bold md:text-5xl">{event.title}</h1>
-
             <p className="mb-8 text-xl leading-relaxed text-gray-200">{event.shortDescription}</p>
-
             <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
               <div className="rounded-lg bg-white/10 p-4">
                 <div className="text-gold mb-2 text-2xl">📅</div>
@@ -169,11 +162,10 @@ export default function EventPage({ params }: EventPageProps) {
                   )}
                 </div>
               </div>
-            </div>
-
-            {canRegister && (
+            </div>{" "}
+            {canRegister && registrationLink && (
               <div className="flex flex-col gap-4 sm:flex-row">
-                <Link href={event.registrationLink!}>
+                <Link href={registrationLink}>
                   <Button size="lg" className="bg-gold text-burgundy hover:bg-yellow-600">
                     Register Now
                   </Button>
@@ -329,9 +321,9 @@ export default function EventPage({ params }: EventPageProps) {
                               ></div>
                             </div>
                           </>
-                        )}
-                        {canRegister && (
-                          <Link href={event.registrationLink!}>
+                        )}{" "}
+                        {canRegister && registrationLink && (
+                          <Link href={registrationLink}>
                             <Button className="w-full">Register Now</Button>
                           </Link>
                         )}

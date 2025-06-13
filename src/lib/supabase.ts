@@ -51,6 +51,8 @@ export interface Database {
           type: "academic" | "cultural" | "research" | "workshop";
           image_url: string | null;
           registration_required: boolean;
+          registration_link: string | null; // Legacy field for backward compatibility
+          custom_registration_link: string | null; // New field for admin-defined registration links
           registration_deadline: string | null;
           featured: boolean;
           capacity: number | null;
@@ -73,6 +75,8 @@ export interface Database {
           type: "academic" | "cultural" | "research" | "workshop";
           image_url?: string | null;
           registration_required?: boolean;
+          registration_link?: string | null; // Legacy field for backward compatibility
+          custom_registration_link?: string | null; // New field for admin-defined registration links
           registration_deadline?: string | null;
           featured?: boolean;
           capacity?: number | null;
@@ -93,6 +97,8 @@ export interface Database {
           type?: "academic" | "cultural" | "research" | "workshop";
           image_url?: string | null;
           registration_required?: boolean;
+          registration_link?: string | null; // Legacy field for backward compatibility
+          custom_registration_link?: string | null; // New field for admin-defined registration links
           registration_deadline?: string | null;
           featured?: boolean;
           capacity?: number | null;
