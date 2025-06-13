@@ -89,8 +89,8 @@ export const ContactSection: React.FC = () => {
           </h2>
           <div className="bg-gold mx-auto mb-6 h-1 w-24 rounded-full"></div>{" "}
           <p className="mx-auto max-w-3xl text-xl leading-relaxed text-gray-700">
-            Have questions about our programs or admissions? We&apos;re here to help you start your
-            journey in English Studies and Research. Reach out to us today!
+            Have questions about our programs? We&apos;re here to help you start your journey in
+            English Studies and Research. Reach out to us today!
           </p>
         </motion.div>
 
@@ -249,7 +249,7 @@ export const ContactSection: React.FC = () => {
             {/* Additional Info */}
             <Card className="bg-burgundy border-0 text-white">
               <CardContent className="p-6">
-                <h3 className="font-primary mb-4 text-xl font-semibold">Admissions Office Hours</h3>
+                <h3 className="font-primary mb-4 text-xl font-semibold">Office Hours</h3>
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <span>Monday - Friday</span>

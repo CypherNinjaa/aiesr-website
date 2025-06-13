@@ -72,7 +72,6 @@ export const NAVIGATION = {
     { label: "Faculty", href: "/faculty" },
     { label: "Research", href: "/research" },
     { label: "Events", href: "/events" },
-    { label: "Admissions", href: "/admissions" },
     { label: "Student Life", href: "/student-life" },
     { label: "Contact", href: "/contact" },
   ] as const,
@@ -88,12 +87,6 @@ export const NAVIGATION = {
       { label: "Faculty", href: "/faculty" },
       { label: "Campus Life", href: "/student-life" },
       { label: "Research", href: "/research" },
-    ],
-    admissions: [
-      { label: "How to Apply", href: "/admissions/apply" },
-      { label: "Eligibility", href: "/admissions/eligibility" },
-      { label: "Fees Structure", href: "/admissions/fees" },
-      { label: "Scholarships", href: "/admissions/scholarships" },
     ],
     resources: [
       { label: "Library", href: "/library" },

@@ -30,7 +30,6 @@ const navigationItems: NavigationItem[] = [
   },
   { label: "Faculty", href: "/faculty" },
   { label: "Research", href: "/research" },
-  { label: "Admissions", href: "/admissions" },
   { label: "Student Life", href: "/student-life" },
   { label: "Contact", href: "/contact" },
 ];
@@ -127,12 +126,9 @@ export const Header: React.FC = () => {
                 )}
               </div>
             ))}
-          </nav>
+          </nav>{" "}
           {/* CTA Buttons - Desktop */}
           <div className="hidden items-center space-x-4 lg:flex">
-            <Button variant="outline" size="sm">
-              Download Brochure
-            </Button>
             <Button size="sm">Apply Now</Button>{" "}
           </div>{" "}
           {/* Mobile Menu Toggle */}
@@ -203,13 +199,9 @@ export const Header: React.FC = () => {
                   </div>
                 )}
               </div>
-            ))}
-
+            ))}{" "}
             {/* Mobile CTA Buttons */}
             <div className="space-y-3 pt-4">
-              <Button variant="outline" className="w-full">
-                Download Brochure
-              </Button>
               <Button className="w-full">Apply Now</Button>
             </div>
           </div>
