@@ -71,30 +71,42 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 );
               })}
             </nav>
-          </div>
+          </div>{" "}
           <div className="flex flex-shrink-0 border-t border-gray-200 p-4">
-            <div className="flex w-full items-center">
-              <div className="flex-shrink-0">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100">
-                  <span className="font-semibold text-blue-600">
-                    {adminUser?.admin?.name?.charAt(0) || "A"}
-                  </span>
+            <div className="flex w-full flex-col space-y-3">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100">
+                    <span className="font-semibold text-blue-600">
+                      {adminUser?.admin?.name?.charAt(0) || "A"}
+                    </span>
+                  </div>
+                </div>{" "}
+                <div className="ml-3 flex-1">
+                  <p className="text-sm font-medium text-gray-700">
+                    {adminUser?.admin?.name || "Admin User"}
+                  </p>
+                  <p className="text-xs text-gray-500 capitalize">
+                    {adminUser?.admin?.role || "admin"}
+                  </p>
                 </div>
-              </div>
-              <div className="ml-3 flex-1">
-                <p className="text-sm font-medium text-gray-700">
-                  {adminUser?.admin?.name || "Admin User"}
-                </p>
-                <p className="text-xs text-gray-500 capitalize">
-                  {adminUser?.admin?.role || "admin"}
-                </p>
               </div>
               <button
                 onClick={handleSignOut}
-                className="ml-3 text-sm text-gray-400 hover:text-gray-600"
-                title="Sign out"
+                className="flex w-full items-center justify-center rounded-md bg-red-50 px-3 py-2 text-sm font-medium text-red-700 transition-colors hover:bg-red-100 hover:text-red-800 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:outline-none"
+                disabled={signOut.isPending}
               >
-                🚪
+                {signOut.isPending ? (
+                  <>
+                    <span className="mr-2">⏳</span>
+                    Signing out...
+                  </>
+                ) : (
+                  <>
+                    <span className="mr-2">🚪</span>
+                    Logout
+                  </>
+                )}
               </button>
             </div>
           </div>

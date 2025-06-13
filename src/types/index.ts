@@ -42,6 +42,21 @@ export interface NewsArticle {
   tags?: string[];
 }
 
+// Dynamic Category Interface
+export interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  color_class: string;
+  icon_emoji: string;
+  is_active: boolean;
+  sort_order: number;
+  created_at: Date;
+  updated_at: Date;
+  created_by?: string;
+}
+
 export interface EventRaw {
   id: string;
   title: string;
@@ -50,7 +65,8 @@ export interface EventRaw {
   date: string;
   endDate?: string;
   location: string;
-  type: "academic" | "cultural" | "research" | "workshop";
+  type?: "academic" | "cultural" | "research" | "workshop"; // Deprecated - kept for migration
+  category_id?: string; // New dynamic category reference
   image?: string;
   registrationRequired: boolean;
   registrationLink?: string; // For backward compatibility with existing data
@@ -76,7 +92,9 @@ export interface Event {
   date: Date;
   endDate?: Date;
   location: string;
-  type: "academic" | "cultural" | "research" | "workshop";
+  type?: "academic" | "cultural" | "research" | "workshop"; // Deprecated - kept for migration
+  category_id?: string; // New dynamic category reference
+  category?: Category; // Populated category object
   image?: string;
   registrationRequired: boolean;
   registrationLink?: string; // For backward compatibility with existing data
@@ -134,6 +152,7 @@ export interface AdminUser {
   lastLogin?: Date;
 }
 
+// Legacy EventCategory - use Category interface instead
 export interface EventCategory {
   id: string;
   name: string;
