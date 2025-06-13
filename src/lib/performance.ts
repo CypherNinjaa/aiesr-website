@@ -58,14 +58,15 @@ class PerformanceMonitor {
       const lastEntry = entries[entries.length - 1];
       this.metrics.lcp = lastEntry.startTime;
       this.logMetric("LCP", lastEntry.startTime);
-    }).observe({ entryTypes: ["largest-contentful-paint"] });
-
-    // First Input Delay
+    }).observe({ entryTypes: ["largest-contentful-paint"] }); // First Input Delay
     new PerformanceObserver(list => {
       const entries = list.getEntries();
-      entries.forEach((entry: any) => {
-        this.metrics.fid = entry.processingStart - entry.startTime;
-        this.logMetric("FID", this.metrics.fid);
+      entries.forEach(entry => {
+        if ("processingStart" in entry && "startTime" in entry) {
+          const eventEntry = entry as PerformanceEventTiming;
+          this.metrics.fid = eventEntry.processingStart - eventEntry.startTime;
+          this.logMetric("FID", this.metrics.fid);
+        }
       });
     }).observe({ entryTypes: ["first-input"] });
 
@@ -73,8 +74,8 @@ class PerformanceMonitor {
     let clsValue = 0;
     new PerformanceObserver(list => {
       const entries = list.getEntries();
-      entries.forEach((entry: any) => {
-        if (!entry.hadRecentInput) {
+      entries.forEach((entry: PerformanceEntry & { value?: number; hadRecentInput?: boolean }) => {
+        if (!entry.hadRecentInput && entry.value) {
           clsValue += entry.value;
         }
       });
@@ -82,15 +83,15 @@ class PerformanceMonitor {
       this.logMetric("CLS", clsValue);
     }).observe({ entryTypes: ["layout-shift"] });
   }
-
   private measureResourceTiming() {
     if ("performance" in window && "getEntriesByType" in performance) {
-      const resources = performance.getEntriesByType("resource");
-
-      // Analyze slow resources
-      const slowResources = resources.filter(
-        (resource: any) => resource.duration > 1000 // Resources taking more than 1 second
-      );
+      const resources = performance.getEntriesByType("resource"); // Analyze slow resources
+      const slowResources = resources.filter(resource => {
+        if ("duration" in resource) {
+          return (resource as PerformanceResourceTiming).duration > 1000; // Resources taking more than 1 second
+        }
+        return false;
+      });
 
       if (slowResources.length > 0 && this.config.debug) {
         console.warn("Slow resources detected:", slowResources);
@@ -100,7 +101,9 @@ class PerformanceMonitor {
 
   private measureNavigationTiming() {
     if ("performance" in window && "getEntriesByType" in performance) {
-      const navigation = performance.getEntriesByType("navigation")[0] as any;
+      const navigation = performance.getEntriesByType(
+        "navigation"
+      )[0] as PerformanceNavigationTiming;
 
       if (navigation) {
         this.metrics.ttfb = navigation.responseStart - navigation.requestStart;

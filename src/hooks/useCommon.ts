@@ -1,15 +1,18 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 
 // Hook for intersection observer (lazy loading, animations)
 export const useIntersectionObserver = (options: IntersectionObserverInit = {}) => {
   const [isIntersecting, setIsIntersecting] = useState(false);
   const [element, setElement] = useState<Element | null>(null);
 
-  const defaultOptions: IntersectionObserverInit = {
-    threshold: 0.1,
-    rootMargin: "50px",
-    ...options,
-  };
+  const defaultOptions: IntersectionObserverInit = useMemo(
+    () => ({
+      threshold: 0.1,
+      rootMargin: "50px",
+      ...options,
+    }),
+    [options]
+  );
 
   useEffect(() => {
     if (!element) return;
