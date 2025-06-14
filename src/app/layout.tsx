@@ -3,6 +3,7 @@ import "./globals.css";
 import { SkipLinks } from "@/components/accessibility";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { LayoutSwitcher } from "@/components/layout/LayoutSwitcher";
+import { PublicSettingsProvider } from "@/contexts/PublicSettingsContext";
 import { generateMetadata } from "@/lib/seo";
 import { QueryProvider } from "@/providers/QueryProvider";
 
@@ -25,7 +26,9 @@ export default function RootLayout({
         <SkipLinks />
         <ErrorBoundary>
           <QueryProvider>
-            <LayoutSwitcher>{children}</LayoutSwitcher>
+            <PublicSettingsProvider>
+              <LayoutSwitcher>{children}</LayoutSwitcher>
+            </PublicSettingsProvider>
           </QueryProvider>
         </ErrorBoundary>
       </body>

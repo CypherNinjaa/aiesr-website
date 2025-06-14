@@ -24,13 +24,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (!adminUser) {
     return <AdminLoginForm />;
   }
-
   const navigation = [
     { name: "Dashboard", href: "/admin", icon: "🏠" },
     { name: "Events", href: "/admin/events", icon: "📅" },
     { name: "Categories", href: "/admin/categories", icon: "🏷️" },
     { name: "Analytics", href: "/admin/analytics", icon: "📊" },
+    { name: "Activity", href: "/admin/activity", icon: "📋" },
     { name: "Settings", href: "/admin/settings", icon: "⚙️" },
+    { name: "System Status", href: "/admin/system-status", icon: "🔧" },
   ];
 
   const handleSignOut = () => {

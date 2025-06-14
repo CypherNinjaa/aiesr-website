@@ -3,6 +3,7 @@
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
+import { useSiteName } from "@/contexts/PublicSettingsContext";
 import { cn } from "@/lib/utils";
 import { NavigationItem } from "@/types";
 
@@ -37,6 +38,8 @@ const navigationItems: NavigationItem[] = [
 export const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const siteName = useSiteName();
+
   // Create explicit ARIA attribute values to satisfy accessibility checkers
   const mobileMenuAriaExpanded = isMobileMenuOpen;
   const mobileMenuAriaHidden = !isMobileMenuOpen;
@@ -72,20 +75,14 @@ export const Header: React.FC = () => {
       <div className="container mx-auto px-4">
         <div className="flex h-20 items-center justify-between">
           {" "}
-          {/* Logo Section */}
-          <Link
-            href="/"
-            className="flex items-center space-x-3"
-            aria-label="AIESR - Amity Institute of English Studies and Research - Home"
-          >
+          {/* Logo Section */}{" "}
+          <Link href="/" className="flex items-center space-x-3" aria-label={`${siteName} - Home`}>
             <div className="bg-burgundy flex h-12 w-12 items-center justify-center rounded-full">
               <span className="font-primary text-lg font-bold text-white">A</span>
             </div>
             <div className="hidden md:block">
               <h1 className="font-primary text-burgundy text-xl font-bold">AIESR</h1>
-              <p className="max-w-[200px] text-xs leading-tight text-gray-600">
-                Amity Institute of English Studies and Research
-              </p>
+              <p className="max-w-[200px] text-xs leading-tight text-gray-600">{siteName}</p>
             </div>
           </Link>{" "}
           {/* Desktop Navigation */}

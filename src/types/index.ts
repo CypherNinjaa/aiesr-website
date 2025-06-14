@@ -68,6 +68,9 @@ export interface EventRaw {
   type?: "academic" | "cultural" | "research" | "workshop"; // Deprecated - kept for migration
   category_id?: string; // New dynamic category reference
   image?: string;
+  // New fields for enhanced visual content
+  posterImage?: string; // Main event poster for hero section
+  pdfBrochure?: string; // URL to downloadable PDF brochure
   registrationRequired: boolean;
   registrationLink?: string; // For backward compatibility with existing data
   customRegistrationLink?: string; // New field for admin-defined registration links
@@ -96,6 +99,9 @@ export interface Event {
   category_id?: string; // New dynamic category reference
   category?: Category; // Populated category object
   image?: string;
+  // New fields for enhanced visual content
+  posterImage?: string; // Main event poster for hero section
+  pdfBrochure?: string; // URL to downloadable PDF brochure
   registrationRequired: boolean;
   registrationLink?: string; // For backward compatibility with existing data
   customRegistrationLink?: string; // New field for admin-defined registration links

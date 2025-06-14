@@ -34,6 +34,8 @@ export default function EventForm({ eventId }: EventFormProps) {
     type: "academic",
     category_id: undefined, // New dynamic category field
     image: "",
+    posterImage: "", // New poster image field
+    pdfBrochure: "", // New PDF brochure field
     registrationRequired: true,
     registrationDeadline: undefined,
     featured: false,
@@ -48,11 +50,14 @@ export default function EventForm({ eventId }: EventFormProps) {
   const [schedule, setSchedule] = useState<string>("");
   const [imageUploadMode, setImageUploadMode] = useState<"url" | "upload">("url");
   const [imagePreview, setImagePreview] = useState<string>("");
+  const [posterImagePreview, setPosterImagePreview] = useState<string>("");
   const [uploadProgress, setUploadProgress] = useState<boolean>(false);
+  const [posterUploadProgress, setPosterUploadProgress] = useState<boolean>(false);
   const [uploadError, setUploadError] = useState<string>("");
   const [categories, setCategories] = useState<Category[]>([]);
   const [categoriesLoading, setCategoriesLoading] = useState<boolean>(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const posterFileInputRef = useRef<HTMLInputElement>(null);
 
   // Load categories on mount
   useEffect(() => {
@@ -78,6 +83,7 @@ export default function EventForm({ eventId }: EventFormProps) {
       setTags(existingEvent.tags?.join(", ") || "");
       setSchedule(JSON.stringify(existingEvent.schedule || [], null, 2));
       setImagePreview(existingEvent.image || "");
+      setPosterImagePreview(existingEvent.posterImage || "");
     }
   }, [existingEvent]);
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -136,6 +142,60 @@ export default function EventForm({ eventId }: EventFormProps) {
     handleInputChange("image", "");
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
+    }
+  };
+  const handlePosterImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setPosterUploadProgress(true);
+      setUploadError("");
+
+      // Upload to Supabase Storage
+      const result = await StorageService.uploadImage(file, "event-posters", "events");
+
+      if (result.success && result.url) {
+        setPosterImagePreview(result.url);
+        handleInputChange("posterImage", result.url);
+      } else {
+        setUploadError(result.error || "Poster upload failed");
+      }
+    } catch (error) {
+      console.error("Poster upload error:", error);
+      setUploadError("Poster upload failed. Please try again.");
+    } finally {
+      setPosterUploadProgress(false);
+    }
+  };
+
+  const handlePosterImageUrlChange = async (url: string) => {
+    if (!url) {
+      handleInputChange("posterImage", "");
+      setPosterImagePreview("");
+      return;
+    }
+
+    try {
+      // Validate the URL
+      const validation = await StorageService.validateImageUrl(url);
+      if (!validation.valid) {
+        setUploadError(validation.error || "Invalid poster image URL");
+        return;
+      }
+
+      handleInputChange("posterImage", url);
+      setPosterImagePreview(url);
+    } catch (_error) {
+      setUploadError("Failed to validate poster image URL");
+    }
+  };
+
+  const clearPosterImage = () => {
+    setPosterImagePreview("");
+    handleInputChange("posterImage", "");
+    if (posterFileInputRef.current) {
+      posterFileInputRef.current.value = "";
     }
   };
   const handleSubmit = async (e: React.FormEvent) => {
@@ -494,6 +554,150 @@ export default function EventForm({ eventId }: EventFormProps) {
                         className="object-cover"
                         sizes="(max-width: 768px) 100vw, 50vw"
                       />
+                    </div>
+                  </div>
+                )}
+              </fieldset>
+            </div>
+            {/* Poster Image Upload Section */}
+            <div className="md:col-span-2">
+              <fieldset className="rounded-lg border border-gray-200 p-4">
+                <legend className="px-2 text-sm font-medium text-gray-700">
+                  Event Poster Image
+                </legend>
+                {/* Toggle between URL and Upload */}
+                <div className="mb-4 flex gap-4">
+                  <button
+                    type="button"
+                    onClick={() => setImageUploadMode("url")}
+                    className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+                      imageUploadMode === "url"
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                    }`}
+                  >
+                    Image URL
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setImageUploadMode("upload")}
+                    className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+                      imageUploadMode === "upload"
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                    }`}
+                  >
+                    Upload Image
+                  </button>
+                </div>
+                {/* URL Input */}
+                {imageUploadMode === "url" && (
+                  <div>
+                    <label htmlFor="event-poster-image-url" className="sr-only">
+                      Poster Image URL
+                    </label>
+                    <input
+                      id="event-poster-image-url"
+                      type="url"
+                      value={formData.posterImage || ""}
+                      onChange={e => handlePosterImageUrlChange(e.target.value)}
+                      className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      placeholder="https://example.com/poster-image.jpg"
+                    />
+                  </div>
+                )}{" "}
+                {/* File Upload */}
+                {imageUploadMode === "upload" && (
+                  <div>
+                    <label htmlFor="event-poster-image-file" className="sr-only">
+                      Upload Poster Image File
+                    </label>
+                    <input
+                      id="event-poster-image-file"
+                      ref={posterFileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handlePosterImageUpload}
+                      disabled={posterUploadProgress}
+                      className="w-full rounded-md border border-gray-300 px-3 py-2 file:mr-4 file:rounded-md file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-blue-700 hover:file:bg-blue-100 focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:opacity-50"
+                    />
+                    <p className="mt-1 text-sm text-gray-500">
+                      Supported formats: JPG, PNG, GIF, WebP (max 10MB)
+                    </p>
+                  </div>
+                )}
+                {/* Upload Progress */}
+                {posterUploadProgress && (
+                  <div className="mt-3 flex items-center gap-2">
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent"></div>
+                    <span className="text-sm text-gray-600">Uploading poster image...</span>
+                  </div>
+                )}
+                {/* Upload Error */}
+                {uploadError && (
+                  <div className="mt-3 rounded-md bg-red-50 p-3">
+                    <p className="text-sm text-red-600">{uploadError}</p>
+                  </div>
+                )}
+                {/* Image Preview */}
+                {posterImagePreview && (
+                  <div className="mt-4">
+                    <div className="mb-2 flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-700">Preview:</span>
+                      <button
+                        type="button"
+                        onClick={clearPosterImage}
+                        className="text-sm font-medium text-red-600 hover:text-red-800"
+                      >
+                        Remove Image
+                      </button>
+                    </div>
+                    <div className="relative h-48 w-full overflow-hidden rounded-lg bg-gray-100">
+                      <Image
+                        src={posterImagePreview}
+                        alt="Event poster image preview"
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                      />
+                    </div>
+                  </div>
+                )}
+              </fieldset>
+            </div>
+            {/* PDF Brochure Section */}
+            <div className="md:col-span-2">
+              <fieldset className="rounded-lg border border-gray-200 p-4">
+                <legend className="px-2 text-sm font-medium text-gray-700">PDF Brochure</legend>
+                <div>
+                  <label htmlFor="event-pdf-brochure" className="sr-only">
+                    PDF Brochure URL
+                  </label>
+                  <input
+                    id="event-pdf-brochure"
+                    type="url"
+                    value={formData.pdfBrochure || ""}
+                    onChange={e => handleInputChange("pdfBrochure", e.target.value)}
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    placeholder="https://example.com/event-brochure.pdf"
+                  />
+                  <p className="mt-1 text-sm text-gray-500">
+                    URL to downloadable PDF brochure for the event
+                  </p>
+                </div>
+                {/* PDF Preview Link */}
+                {formData.pdfBrochure && (
+                  <div className="mt-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-700">Preview:</span>
+                      <a
+                        href={formData.pdfBrochure}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm font-medium text-blue-600 hover:text-blue-800"
+                      >
+                        📄 View PDF
+                      </a>
                     </div>
                   </div>
                 )}

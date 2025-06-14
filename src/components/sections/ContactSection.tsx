@@ -9,6 +9,13 @@ import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { FormField, Input, Textarea, Select } from "@/components/ui/FormComponents";
 import { LoadingSpinner } from "@/components/ui/Loading";
+import {
+  useContactEmail,
+  useAdmissionsEmail,
+  useContactPhones,
+  useContactAddress,
+  useSupportHours,
+} from "@/contexts/PublicSettingsContext";
 import { useContactFormMutation } from "@/hooks/useFormMutations";
 import { PROGRAM_OPTIONS, SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/lib/constants";
 import { contactFormSchema, ContactFormData } from "@/lib/validations";
@@ -16,6 +23,12 @@ import { contactFormSchema, ContactFormData } from "@/lib/validations";
 export const ContactSection: React.FC = () => {
   const contactMutation = useContactFormMutation();
   const { message: announcementMessage, announce } = useAnnouncement();
+  // Get dynamic contact information from settings
+  const contactEmailFromSettings = useContactEmail();
+  const admissionsEmail = useAdmissionsEmail();
+  const contactPhones = useContactPhones();
+  const contactAddress = useContactAddress();
+  const supportHours = useSupportHours();
   const {
     register,
     handleSubmit,
@@ -43,32 +56,31 @@ export const ContactSection: React.FC = () => {
       announce(ERROR_MESSAGES.generic);
     }
   };
-
   const programOptions = [{ value: "", label: "Select a program" }, ...PROGRAM_OPTIONS];
 
   const contactInfo = [
     {
       icon: "📧",
       title: "Email Us",
-      details: ["admissions@aiesr.amity.edu", "info@aiesr.amity.edu"],
+      details: [admissionsEmail, contactEmailFromSettings],
       action: "Send Email",
     },
     {
       icon: "📞",
       title: "Call Us",
-      details: ["+91 612 2346789", "+91 612 2346790"],
+      details: contactPhones,
       action: "Call Now",
     },
     {
       icon: "📍",
       title: "Visit Us",
-      details: ["Amity University Campus", "Patna, Bihar 800014"],
+      details: [contactAddress.line1, `${contactAddress.line2}, ${contactAddress.zipCode}`],
       action: "Get Directions",
     },
     {
       icon: "💬",
       title: "Live Chat",
-      details: ["Available 9 AM - 6 PM", "Monday to Saturday"],
+      details: ["Available " + supportHours],
       action: "Start Chat",
     },
   ];
@@ -223,54 +235,21 @@ export const ContactSection: React.FC = () => {
                   </Card>
                 </motion.div>
               ))}
-            </div>
-
-            {/* Map Placeholder */}
+            </div>{" "}
+            {/* Interactive Map */}
             <Card className="overflow-hidden border-0 shadow-lg">
-              <div className="from-burgundy to-gold relative h-64 bg-gradient-to-br">
-                <div className="absolute inset-0 bg-black/20"></div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center text-white">
-                    <div className="mb-4 text-4xl">🗺️</div>
-                    <h3 className="mb-2 text-xl font-semibold">Campus Location</h3>
-                    <p className="text-sm opacity-90">Interactive map coming soon</p>
-                    <Button
-                      variant="outline"
-                      className="hover:text-burgundy mt-4 border-white text-white hover:bg-white"
-                      size="sm"
-                    >
-                      View on Google Maps
-                    </Button>
-                  </div>
-                </div>
+              <div className="h-96">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1646.2208816060772!2d85.05315423195918!3d25.612297587570414!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39ed56457e773c5d%3A0x26f4637f762e3747!2sAmity%20University%2C%20Patna!5e1!3m2!1sen!2sin!4v1749872426543!5m2!1sen!2sin"
+                  width="100%"
+                  height="100%"
+                  className="border-0"
+                  allowFullScreen={true}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Amity University Patna Campus Location"
+                />
               </div>
-            </Card>
-
-            {/* Additional Info */}
-            <Card className="bg-burgundy border-0 text-white">
-              <CardContent className="p-6">
-                <h3 className="font-primary mb-4 text-xl font-semibold">Office Hours</h3>
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span>Monday - Friday</span>
-                    <span>9:00 AM - 6:00 PM</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Saturday</span>
-                    <span>9:00 AM - 2:00 PM</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Sunday</span>
-                    <span>Closed</span>
-                  </div>
-                </div>
-                <div className="mt-6 border-t border-white/20 pt-4">
-                  <p className="text-sm text-gray-200">
-                    For urgent inquiries outside office hours, please email us at
-                    <span className="text-gold"> urgent@aiesr.amity.edu</span>
-                  </p>
-                </div>
-              </CardContent>
             </Card>
           </motion.div>
         </div>

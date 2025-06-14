@@ -222,10 +222,10 @@ export default function AdminEventsPage() {
                         className="text-red-600 hover:text-red-900"
                         disabled={deleteEvent.isPending}
                       >
-                        Delete
+                        Delete{" "}
                       </button>
                     </div>
-                  </td>{" "}
+                  </td>
                 </tr>
               ))}
             </tbody>

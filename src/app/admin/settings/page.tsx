@@ -1,31 +1,175 @@
 "use client";
 
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
+import { useSettingsForm } from "@/hooks/useSettings";
+import { SettingsData } from "@/services/settings";
 
 export default function SettingsPage() {
-  const [settings, setSettings] = useState({
-    siteName: "AIESR - Amity Institute of English Studies & Research",
-    siteUrl: "https://aiesr-website.vercel.app",
-    defaultRegistrationUrl: process.env.NEXT_PUBLIC_REGISTRATION_URL || "",
-    emailNotifications: true,
-    autoPublishEvents: false,
-    allowGuestRegistration: true,
-    maintenanceMode: false,
-  });
+  const { settings, isLoading, save, isSaving, error } = useSettingsForm();
+  const [formData, setFormData] = useState<SettingsData | null>(null);
+  const [hasChanges, setHasChanges] = useState(false);
 
-  const handleSettingChange = (key: string, value: boolean | string) => {
-    setSettings(prev => ({ ...prev, [key]: value }));
+  // Initialize form data when settings are loaded
+  useEffect(() => {
+    if (settings && !formData) {
+      setFormData(settings);
+    }
+  }, [settings, formData]);
+
+  // Track changes
+  useEffect(() => {
+    if (settings && formData) {
+      const hasChanges = JSON.stringify(settings) !== JSON.stringify(formData);
+      setHasChanges(hasChanges);
+    }
+  }, [settings, formData]);
+
+  const handleSettingChange = (
+    key: keyof SettingsData,
+    value: string | boolean | number | string[]
+  ) => {
+    if (!formData) return;
+
+    setFormData(prev => (prev ? { ...prev, [key]: value } : null));
   };
+
+  const handleSocialMediaChange = (platform: string, value: string) => {
+    if (!formData) return;
+
+    setFormData(prev =>
+      prev
+        ? {
+            ...prev,
+            socialMedia: {
+              ...prev.socialMedia,
+              [platform]: value,
+            },
+          }
+        : null
+    );
+  };
+
+  const handleHeroTextChange = (index: number, value: string) => {
+    if (!formData) return;
+
+    const newHeroTexts = [...formData.heroTexts];
+    newHeroTexts[index] = value;
+    setFormData(prev => (prev ? { ...prev, heroTexts: newHeroTexts } : null));
+  };
+
+  const addHeroText = () => {
+    if (!formData) return;
+
+    setFormData(prev =>
+      prev
+        ? {
+            ...prev,
+            heroTexts: [...prev.heroTexts, ""],
+          }
+        : null
+    );
+  };
+
+  const removeHeroText = (index: number) => {
+    if (!formData || formData.heroTexts.length <= 1) return;
+
+    const newHeroTexts = formData.heroTexts.filter((_, i) => i !== index);
+    setFormData(prev => (prev ? { ...prev, heroTexts: newHeroTexts } : null));
+  };
+
+  const handleContactPhoneChange = (index: number, value: string) => {
+    if (!formData) return;
+
+    const newPhones = [...formData.contactPhones];
+    newPhones[index] = value;
+    setFormData(prev => (prev ? { ...prev, contactPhones: newPhones } : null));
+  };
+
+  const addContactPhone = () => {
+    if (!formData) return;
+
+    setFormData(prev =>
+      prev
+        ? {
+            ...prev,
+            contactPhones: [...prev.contactPhones, ""],
+          }
+        : null
+    );
+  };
+
+  const removeContactPhone = (index: number) => {
+    if (!formData || formData.contactPhones.length <= 1) return;
+
+    const newPhones = formData.contactPhones.filter((_, i) => i !== index);
+    setFormData(prev => (prev ? { ...prev, contactPhones: newPhones } : null));
+  };
+  const handleContactAddressChange = (
+    field: "line1" | "line2" | "city" | "state" | "zipCode",
+    value: string
+  ) => {
+    if (!formData) return;
+
+    setFormData(prev =>
+      prev
+        ? {
+            ...prev,
+            contactAddress: {
+              ...prev.contactAddress,
+              [field]: value,
+            },
+          }
+        : null
+    );
+  };
+
   const handleSave = () => {
-    // In a real implementation, this would save to the database
-    console.log("Settings saved:", settings);
-    // Using a more accessible notification method would be better in production
-    // For now, we'll use a simple log
+    if (formData) {
+      save(formData);
+    }
   };
 
+  const handleReset = () => {
+    if (settings) {
+      setFormData(settings);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
+          <p className="text-gray-600">Loading settings...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="mb-4 text-red-600">⚠️</div>
+          <p className="text-gray-600">Error loading settings: {error.message}</p>
+          <Button onClick={() => window.location.reload()} className="mt-4">
+            Retry
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!formData) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+        <p className="text-gray-600">No settings data available</p>
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
@@ -34,10 +178,20 @@ export default function SettingsPage() {
           <div>
             <h1 className="text-3xl font-bold text-gray-900">System Settings</h1>
             <p className="mt-2 text-gray-600">Configure system preferences and website settings</p>
+            {hasChanges && (
+              <p className="mt-1 text-sm text-amber-600">⚠️ You have unsaved changes</p>
+            )}
           </div>
-          <Link href="/admin">
-            <Button variant="outline">← Back to Dashboard</Button>
-          </Link>
+          <div className="flex gap-2">
+            {hasChanges && (
+              <Button variant="outline" onClick={handleReset}>
+                Reset
+              </Button>
+            )}
+            <Link href="/admin">
+              <Button variant="outline">← Back to Dashboard</Button>
+            </Link>
+          </div>
         </div>
 
         <div className="space-y-8">
@@ -47,7 +201,6 @@ export default function SettingsPage() {
               <CardTitle>General Settings</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              {" "}
               <div>
                 <label htmlFor="site-name" className="mb-2 block text-sm font-medium text-gray-700">
                   Site Name
@@ -55,7 +208,7 @@ export default function SettingsPage() {
                 <input
                   id="site-name"
                   type="text"
-                  value={settings.siteName}
+                  value={formData.siteName}
                   onChange={e => handleSettingChange("siteName", e.target.value)}
                   className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 />
@@ -67,11 +220,312 @@ export default function SettingsPage() {
                 <input
                   id="site-url"
                   type="url"
-                  value={settings.siteUrl}
+                  value={formData.siteUrl}
                   onChange={e => handleSettingChange("siteUrl", e.target.value)}
                   className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 />
               </div>
+              <div>
+                <label
+                  htmlFor="contact-email"
+                  className="mb-2 block text-sm font-medium text-gray-700"
+                >
+                  Contact Email
+                </label>
+                <input
+                  id="contact-email"
+                  type="email"
+                  value={formData.contactEmail}
+                  onChange={e => handleSettingChange("contactEmail", e.target.value)}
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="admissions-email"
+                  className="mb-2 block text-sm font-medium text-gray-700"
+                >
+                  Admissions Email
+                </label>
+                <input
+                  id="admissions-email"
+                  type="email"
+                  value={formData.admissionsEmail}
+                  onChange={e => handleSettingChange("admissionsEmail", e.target.value)}
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="contact-phone"
+                  className="mb-2 block text-sm font-medium text-gray-700"
+                >
+                  Contact Phone
+                </label>
+                <div className="space-y-2">
+                  {formData.contactPhones.map((phone, index) => (
+                    <div key={index} className="flex gap-2">
+                      <input
+                        type="text"
+                        value={phone}
+                        onChange={e => handleContactPhoneChange(index, e.target.value)}
+                        className="flex-1 rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        placeholder={`Contact phone ${index + 1}`}
+                        aria-label={`Contact phone ${index + 1}`}
+                      />
+                      {formData.contactPhones.length > 1 && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => removeContactPhone(index)}
+                          className="text-red-600 hover:text-red-700"
+                        >
+                          Remove
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                <Button variant="outline" size="sm" onClick={addContactPhone} className="mt-2">
+                  + Add Contact Phone
+                </Button>{" "}
+              </div>
+            </CardContent>
+          </Card>
+          {/* Contact Settings */}
+          <Card className="border-0 shadow-lg">
+            <CardHeader>
+              <CardTitle>Contact Information</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div>
+                <label
+                  htmlFor="contact-email"
+                  className="mb-2 block text-sm font-medium text-gray-700"
+                >
+                  Contact Email
+                </label>
+                <input
+                  id="contact-email"
+                  type="email"
+                  value={formData.contactEmail}
+                  onChange={e => handleSettingChange("contactEmail", e.target.value)}
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                />
+              </div>{" "}
+              <div>
+                <fieldset>
+                  <legend className="mb-2 block text-sm font-medium text-gray-700">
+                    Contact Phone Numbers
+                  </legend>
+                  <div className="space-y-2">
+                    {formData.contactPhones.map((phone, index) => (
+                      <div key={index} className="flex gap-2">
+                        <input
+                          type="tel"
+                          value={phone}
+                          onChange={e => handleContactPhoneChange(index, e.target.value)}
+                          className="flex-1 rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                          placeholder="Enter phone number"
+                          aria-label={`Contact phone ${index + 1}`}
+                        />
+                        {formData.contactPhones.length > 1 && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => removeContactPhone(index)}
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            Remove
+                          </Button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  <Button variant="outline" size="sm" onClick={addContactPhone} className="mt-2">
+                    + Add Phone Number
+                  </Button>
+                </fieldset>
+              </div>
+              <div>
+                <fieldset>
+                  <legend className="mb-2 block text-sm font-medium text-gray-700">
+                    Contact Address
+                  </legend>
+                  <div className="space-y-3">
+                    <input
+                      type="text"
+                      value={formData.contactAddress.line1}
+                      onChange={e => handleContactAddressChange("line1", e.target.value)}
+                      className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      placeholder="Address Line 1"
+                      aria-label="Address Line 1"
+                    />
+                    <input
+                      type="text"
+                      value={formData.contactAddress.line2}
+                      onChange={e => handleContactAddressChange("line2", e.target.value)}
+                      className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      placeholder="Address Line 2"
+                      aria-label="Address Line 2"
+                    />
+                    <div className="grid grid-cols-2 gap-3">
+                      <input
+                        type="text"
+                        value={formData.contactAddress.city}
+                        onChange={e => handleContactAddressChange("city", e.target.value)}
+                        className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        placeholder="City"
+                        aria-label="City"
+                      />
+                      <input
+                        type="text"
+                        value={formData.contactAddress.state}
+                        onChange={e => handleContactAddressChange("state", e.target.value)}
+                        className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        placeholder="State"
+                        aria-label="State"
+                      />
+                    </div>
+                    <input
+                      type="text"
+                      value={formData.contactAddress.zipCode}
+                      onChange={e => handleContactAddressChange("zipCode", e.target.value)}
+                      className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      placeholder="ZIP Code"
+                      aria-label="ZIP Code"
+                    />
+                  </div>
+                </fieldset>
+              </div>
+              <div>
+                <label
+                  htmlFor="support-hours"
+                  className="mb-2 block text-sm font-medium text-gray-700"
+                >
+                  Support Hours
+                </label>
+                <input
+                  id="support-hours"
+                  type="text"
+                  value={formData.supportHours}
+                  onChange={e => handleSettingChange("supportHours", e.target.value)}
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  placeholder="e.g., 9 AM - 6 PM, Monday to Saturday"
+                />
+              </div>
+            </CardContent>
+          </Card>
+          {/* Hero Section Settings */}
+          <Card className="border-0 shadow-lg">
+            <CardHeader>
+              <CardTitle>Hero Section</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {" "}
+              <div>
+                <div className="mb-2 text-sm font-medium text-gray-700">
+                  Hero Texts (Rotating Messages)
+                </div>
+                <div className="space-y-2" role="group" aria-labelledby="hero-texts-label">
+                  <div id="hero-texts-label" className="sr-only">
+                    Hero Texts Input Group
+                  </div>
+                  {formData.heroTexts.map((text, index) => (
+                    <div key={index} className="flex gap-2">
+                      <input
+                        type="text"
+                        value={text}
+                        onChange={e => handleHeroTextChange(index, e.target.value)}
+                        className="flex-1 rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        placeholder={`Hero text ${index + 1}`}
+                        aria-label={`Hero text ${index + 1}`}
+                      />
+                      {formData.heroTexts.length > 1 && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => removeHeroText(index)}
+                          className="text-red-600 hover:text-red-700"
+                        >
+                          Remove
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                <Button variant="outline" size="sm" onClick={addHeroText} className="mt-2">
+                  + Add Hero Text
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+          {/* Social Media Settings */}
+          <Card className="border-0 shadow-lg">
+            <CardHeader>
+              <CardTitle>Social Media Links</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <label htmlFor="facebook" className="mb-2 block text-sm font-medium text-gray-700">
+                  Facebook URL
+                </label>
+                <input
+                  id="facebook"
+                  type="url"
+                  value={formData.socialMedia.facebook}
+                  onChange={e => handleSocialMediaChange("facebook", e.target.value)}
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  placeholder="https://facebook.com/yourpage"
+                />
+              </div>
+              <div>
+                <label htmlFor="twitter" className="mb-2 block text-sm font-medium text-gray-700">
+                  Twitter URL
+                </label>
+                <input
+                  id="twitter"
+                  type="url"
+                  value={formData.socialMedia.twitter}
+                  onChange={e => handleSocialMediaChange("twitter", e.target.value)}
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  placeholder="https://twitter.com/yourhandle"
+                />
+              </div>
+              <div>
+                <label htmlFor="instagram" className="mb-2 block text-sm font-medium text-gray-700">
+                  Instagram URL
+                </label>
+                <input
+                  id="instagram"
+                  type="url"
+                  value={formData.socialMedia.instagram}
+                  onChange={e => handleSocialMediaChange("instagram", e.target.value)}
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  placeholder="https://instagram.com/yourhandle"
+                />
+              </div>
+              <div>
+                <label htmlFor="linkedin" className="mb-2 block text-sm font-medium text-gray-700">
+                  LinkedIn URL
+                </label>
+                <input
+                  id="linkedin"
+                  type="url"
+                  value={formData.socialMedia.linkedin}
+                  onChange={e => handleSocialMediaChange("linkedin", e.target.value)}
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  placeholder="https://linkedin.com/company/yourcompany"
+                />
+              </div>
+            </CardContent>
+          </Card>{" "}
+          {/* Event Settings */}
+          <Card className="border-0 shadow-lg">
+            <CardHeader>
+              <CardTitle>Event Management</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
               <div>
                 <label
                   htmlFor="default-registration-url"
@@ -82,7 +536,7 @@ export default function SettingsPage() {
                 <input
                   id="default-registration-url"
                   type="url"
-                  value={settings.defaultRegistrationUrl}
+                  value={formData.defaultRegistrationUrl}
                   onChange={e => handleSettingChange("defaultRegistrationUrl", e.target.value)}
                   className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   placeholder="https://example.com/register"
@@ -92,16 +546,25 @@ export default function SettingsPage() {
                   link.
                 </p>
               </div>
-            </CardContent>
-          </Card>
-
-          {/* Event Settings */}
-          <Card className="border-0 shadow-lg">
-            <CardHeader>
-              <CardTitle>Event Management</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {" "}
+              <div>
+                <label
+                  htmlFor="max-events"
+                  className="mb-2 block text-sm font-medium text-gray-700"
+                >
+                  Events per Page
+                </label>
+                <input
+                  id="max-events"
+                  type="number"
+                  min="1"
+                  max="50"
+                  value={formData.maxEventsPerPage}
+                  onChange={e =>
+                    handleSettingChange("maxEventsPerPage", parseInt(e.target.value) || 10)
+                  }
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                />
+              </div>
               <div className="flex items-center justify-between">
                 <div>
                   <h4 className="font-medium text-gray-900">Auto-publish Events</h4>
@@ -114,7 +577,7 @@ export default function SettingsPage() {
                   <input
                     id="auto-publish"
                     type="checkbox"
-                    checked={settings.autoPublishEvents}
+                    checked={formData.autoPublishEvents}
                     onChange={e => handleSettingChange("autoPublishEvents", e.target.checked)}
                     className="peer sr-only"
                   />
@@ -134,7 +597,7 @@ export default function SettingsPage() {
                   <input
                     id="guest-registration"
                     type="checkbox"
-                    checked={settings.allowGuestRegistration}
+                    checked={formData.allowGuestRegistration}
                     onChange={e => handleSettingChange("allowGuestRegistration", e.target.checked)}
                     className="peer sr-only"
                   />
@@ -144,12 +607,11 @@ export default function SettingsPage() {
               </div>
             </CardContent>
           </Card>
-
           {/* Notification Settings */}
           <Card className="border-0 shadow-lg">
             <CardHeader>
               <CardTitle>Notifications</CardTitle>
-            </CardHeader>{" "}
+            </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
@@ -165,7 +627,7 @@ export default function SettingsPage() {
                   <input
                     id="email-notifications"
                     type="checkbox"
-                    checked={settings.emailNotifications}
+                    checked={formData.emailNotifications}
                     onChange={e => handleSettingChange("emailNotifications", e.target.checked)}
                     className="peer sr-only"
                   />
@@ -175,12 +637,11 @@ export default function SettingsPage() {
               </div>
             </CardContent>
           </Card>
-
           {/* System Settings */}
           <Card className="border-0 shadow-lg">
             <CardHeader>
               <CardTitle>System</CardTitle>
-            </CardHeader>{" "}
+            </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
@@ -196,7 +657,7 @@ export default function SettingsPage() {
                   <input
                     id="maintenance-mode"
                     type="checkbox"
-                    checked={settings.maintenanceMode}
+                    checked={formData.maintenanceMode}
                     onChange={e => handleSettingChange("maintenanceMode", e.target.checked)}
                     className="peer sr-only"
                   />
@@ -206,7 +667,6 @@ export default function SettingsPage() {
               </div>
             </CardContent>
           </Card>
-
           {/* Environment Information */}
           <Card className="border-0 shadow-lg">
             <CardHeader>
@@ -237,35 +697,35 @@ export default function SettingsPage() {
               </div>
             </CardContent>
           </Card>
-
           {/* Save Button */}
-          <div className="flex justify-end">
-            <Button onClick={handleSave} className="px-8">
-              Save Settings
+          <div className="flex justify-end gap-2">
+            <Button onClick={handleSave} disabled={!hasChanges || isSaving} className="px-8">
+              {isSaving ? (
+                <>
+                  <span className="mr-2 animate-spin">⏳</span>
+                  Saving...
+                </>
+              ) : (
+                "Save Settings"
+              )}
             </Button>
           </div>
-
-          {/* Implementation Note */}
-          <Card className="border-0 shadow-lg">
-            <CardContent className="p-6">
-              <div className="rounded-lg bg-amber-50 p-4">
-                <h4 className="mb-2 flex items-center gap-2 font-semibold text-amber-900">
-                  <span>⚙️</span>
-                  Implementation Note
-                </h4>
-                <p className="text-sm text-amber-700">
-                  This settings page is currently a UI demonstration. To make it functional, you
-                  would need to:
-                </p>
-                <ul className="mt-2 space-y-1 text-sm text-amber-700">
-                  <li>• Create a settings table in Supabase</li>
-                  <li>• Implement save/load functionality</li>
-                  <li>• Add validation and error handling</li>
-                  <li>• Apply settings throughout the application</li>
-                </ul>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Success Message */}
+          {!hasChanges && settings && (
+            <Card className="border-0 shadow-lg">
+              <CardContent className="p-6">
+                <div className="rounded-lg bg-green-50 p-4">
+                  <h4 className="mb-2 flex items-center gap-2 font-semibold text-green-900">
+                    <span>✅</span>
+                    Settings Saved Successfully
+                  </h4>
+                  <p className="text-sm text-green-700">
+                    All settings have been saved and are now active across the website.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </div>
