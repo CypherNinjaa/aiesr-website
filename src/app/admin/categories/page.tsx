@@ -1,83 +1,68 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
-import { CategoryService } from "@/services/category";
+import {
+  useCategories,
+  useCreateCategory,
+  useUpdateCategory,
+  useDeleteCategory,
+} from "@/hooks/useCategories";
 import { Category } from "@/types";
 
 export default function CategoriesPage() {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Load categories
-  useEffect(() => {
-    const loadCategories = async () => {
-      try {
-        setLoading(true);
-        const fetchedCategories = await CategoryService.getAllCategories();
-        setCategories(fetchedCategories);
-      } catch (error) {
-        console.error("Error loading categories:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Use React Query hooks for data fetching and mutations
+  const { data: categories = [], isLoading: loading, error } = useCategories();
+  const createCategory = useCreateCategory();
+  const updateCategory = useUpdateCategory();
+  const deleteCategory = useDeleteCategory();
 
-    loadCategories();
-  }, []);
-
-  // Reload categories helper
-  const reloadCategories = async () => {
-    try {
-      const fetchedCategories = await CategoryService.getAllCategories();
-      setCategories(fetchedCategories);
-    } catch (error) {
-      console.error("Error reloading categories:", error);
-    }
-  };
+  const isSubmitting =
+    createCategory.isPending || updateCategory.isPending || deleteCategory.isPending;
 
   // Handle create category
   const handleCreateCategory = async (categoryData: Record<string, unknown>) => {
     try {
-      setIsSubmitting(true);
       // Generate slug from name
       const slug = (categoryData.name as string).toLowerCase().replace(/\s+/g, "-");
       const finalData = { ...categoryData, slug } as Omit<
         Category,
         "id" | "created_at" | "updated_at"
       >;
-      await CategoryService.createCategory(finalData);
-      setIsCreateModalOpen(false);
-      await reloadCategories();
+
+      const result = await createCategory.mutateAsync(finalData);
+      if (result) {
+        setIsCreateModalOpen(false);
+      }
     } catch (error) {
       console.error("Error creating category:", error);
       // eslint-disable-next-line no-alert
       alert("Error creating category. Please try again.");
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
   // Handle update category
   const handleUpdateCategory = async (id: string, categoryData: Record<string, unknown>) => {
     try {
-      setIsSubmitting(true);
       // Generate slug from name if name is being updated
       if (categoryData.name) {
         categoryData.slug = (categoryData.name as string).toLowerCase().replace(/\s+/g, "-");
       }
-      await CategoryService.updateCategory(id, categoryData as Partial<Category>);
-      setEditingCategory(null);
-      await reloadCategories();
+
+      const result = await updateCategory.mutateAsync({
+        id,
+        updates: categoryData as Partial<Category>,
+      });
+      if (result) {
+        setEditingCategory(null);
+      }
     } catch (error) {
       console.error("Error updating category:", error);
       // eslint-disable-next-line no-alert
       alert("Error updating category. Please try again.");
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -91,17 +76,29 @@ export default function CategoriesPage() {
     }
 
     try {
-      setIsSubmitting(true);
-      await CategoryService.deleteCategory(category.id);
-      await reloadCategories();
+      await deleteCategory.mutateAsync(category.id);
     } catch (error) {
       console.error("Error deleting category:", error);
       // eslint-disable-next-line no-alert
       alert("Error deleting category. Please try again.");
-    } finally {
-      setIsSubmitting(false);
     }
   };
+
+  if (error) {
+    return (
+      <div className="flex min-h-64 items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600">Error loading categories: {error.message}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-2 text-blue-600 hover:text-blue-800"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (

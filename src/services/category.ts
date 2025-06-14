@@ -1,5 +1,6 @@
 import { supabase, Database } from "@/lib/supabase";
 import type { Category } from "@/types";
+import { activityService } from "./activity";
 
 type CategoryRow = Database["public"]["Tables"]["categories"]["Row"];
 
@@ -104,7 +105,23 @@ export class CategoryService {
 
       if (error) throw error;
 
-      return data ? this.mapToCategory(data) : null;
+      const createdCategory = data ? this.mapToCategory(data) : null;
+
+      // Log activity
+      if (createdCategory) {
+        try {
+          await activityService.logActivity(`create_category`, "category", createdCategory.id, {
+            category_name: createdCategory.name,
+            category_slug: createdCategory.slug,
+            is_active: createdCategory.is_active,
+          });
+        } catch (logError) {
+          console.error("Failed to log category creation activity:", logError);
+          // Don't fail the entire operation if logging fails
+        }
+      }
+
+      return createdCategory;
     } catch (error) {
       console.error("Error creating category:", error);
       return null;
@@ -116,6 +133,14 @@ export class CategoryService {
    */
   static async updateCategory(id: string, updates: Partial<Category>): Promise<Category | null> {
     try {
+      // Get existing category for comparison
+      let existingCategory: Category | null = null;
+      try {
+        existingCategory = await this.getCategoryById(id);
+      } catch (error) {
+        console.error("Failed to fetch existing category for activity logging:", error);
+      }
+
       const { data, error } = await supabase
         .from("categories")
         .update({
@@ -133,7 +158,43 @@ export class CategoryService {
 
       if (error) throw error;
 
-      return data ? this.mapToCategory(data) : null;
+      const updatedCategory = data ? this.mapToCategory(data) : null;
+
+      // Log activity
+      if (updatedCategory) {
+        try {
+          // Determine what changed
+          const changes: string[] = [];
+          if (existingCategory) {
+            if (updates.name && updates.name !== existingCategory.name) changes.push("name");
+            if (updates.is_active !== undefined && updates.is_active !== existingCategory.is_active)
+              changes.push("status");
+            if (updates.color_class && updates.color_class !== existingCategory.color_class)
+              changes.push("color");
+            if (updates.icon_emoji && updates.icon_emoji !== existingCategory.icon_emoji)
+              changes.push("icon");
+          }
+
+          await activityService.logActivity(`update_category`, "category", updatedCategory.id, {
+            category_name: updatedCategory.name,
+            category_slug: updatedCategory.slug,
+            is_active: updatedCategory.is_active,
+            changes: changes,
+            previous_values: existingCategory
+              ? {
+                  name: existingCategory.name,
+                  is_active: existingCategory.is_active,
+                  color_class: existingCategory.color_class,
+                }
+              : null,
+          });
+        } catch (logError) {
+          console.error("Failed to log category update activity:", logError);
+          // Don't fail the entire operation if logging fails
+        }
+      }
+
+      return updatedCategory;
     } catch (error) {
       console.error("Error updating category:", error);
       return null;
@@ -145,9 +206,29 @@ export class CategoryService {
    */
   static async deleteCategory(id: string): Promise<boolean> {
     try {
+      // Get existing category for logging
+      let existingCategory: Category | null = null;
+      try {
+        existingCategory = await this.getCategoryById(id);
+      } catch (error) {
+        console.error("Failed to fetch existing category for activity logging:", error);
+      }
+
       const { error } = await supabase.from("categories").delete().eq("id", id);
 
       if (error) throw error;
+
+      // Log activity
+      try {
+        await activityService.logActivity(`delete_category`, "category", id, {
+          category_name: existingCategory?.name,
+          category_slug: existingCategory?.slug,
+          is_active: existingCategory?.is_active,
+        });
+      } catch (logError) {
+        console.error("Failed to log category deletion activity:", logError);
+        // Don't fail the entire operation if logging fails
+      }
 
       return true;
     } catch (error) {

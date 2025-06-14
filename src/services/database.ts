@@ -1,5 +1,6 @@
 import { supabase, supabaseAdmin, Database } from "@/lib/supabase";
 import { Event } from "@/types";
+import { activityService } from "./activity";
 import { CategoryService } from "./category";
 
 type EventRow = Database["public"]["Tables"]["events"]["Row"];
@@ -184,9 +185,32 @@ export class EventService {
       throw new Error(`Failed to create event: ${error.message}`);
     }
 
-    return transformEventFromDB(data);
-  } // Update event (Admin only)
+    const createdEvent = await transformEventFromDB(data); // Log activity
+    try {
+      await activityService.logActivity(`create_event`, "event", createdEvent.id, {
+        event_title: createdEvent.title,
+        event_type: createdEvent.type,
+        event_status: createdEvent.status,
+        category_id: createdEvent.category_id,
+      });
+    } catch (logError) {
+      console.error("Failed to log event creation activity:", logError);
+      // Don't fail the entire operation if logging fails
+    }
+
+    return createdEvent;
+  }
+
+  // Update event (Admin only)
   static async updateEvent(id: string, updates: Partial<Event>) {
+    // Get existing event for comparison
+    let existingEvent: Event | null = null;
+    try {
+      existingEvent = await this.getEvent(id);
+    } catch (error) {
+      console.error("Failed to fetch existing event for activity logging:", error);
+    }
+
     const updateData: ExtendedEventUpdate = {};
 
     if (updates.title) updateData.title = updates.title;
@@ -235,15 +259,73 @@ export class EventService {
       throw new Error(`Failed to update event: ${error.message}`);
     }
 
-    return transformEventFromDB(data);
-  } // Delete event (Admin only)
+    const updatedEvent = await transformEventFromDB(data);
+
+    // Log activity
+    try {
+      // Determine what changed
+      const changes: string[] = [];
+      if (existingEvent) {
+        if (updates.title && updates.title !== existingEvent.title) changes.push("title");
+        if (updates.status && updates.status !== existingEvent.status) changes.push("status");
+        if (updates.featured !== undefined && updates.featured !== existingEvent.featured)
+          changes.push("featured");
+        if (updates.date && updates.date.getTime() !== existingEvent.date.getTime())
+          changes.push("date");
+        if (updates.location && updates.location !== existingEvent.location)
+          changes.push("location");
+      }
+      await activityService.logActivity(`update_event`, "event", updatedEvent.id, {
+        event_title: updatedEvent.title,
+        event_type: updatedEvent.type,
+        event_status: updatedEvent.status,
+        category_id: updatedEvent.category_id,
+        changes: changes,
+        previous_values: existingEvent
+          ? {
+              title: existingEvent.title,
+              status: existingEvent.status,
+              featured: existingEvent.featured,
+            }
+          : null,
+      });
+    } catch (logError) {
+      console.error("Failed to log event update activity:", logError);
+      // Don't fail the entire operation if logging fails
+    }
+
+    return updatedEvent;
+  }
+
+  // Delete event (Admin only)
   static async deleteEvent(id: string) {
+    // Get existing event for logging
+    let existingEvent: Event | null = null;
+    try {
+      existingEvent = await this.getEvent(id);
+    } catch (error) {
+      console.error("Failed to fetch existing event for activity logging:", error);
+    }
+
     // Use admin client to bypass RLS for admin operations
     const client = supabaseAdmin || supabase;
     const { error } = await client.from("events").delete().eq("id", id);
 
     if (error) {
       throw new Error(`Failed to delete event: ${error.message}`);
+    }
+
+    // Log activity
+    try {
+      await activityService.logActivity(`delete_event`, "event", id, {
+        event_title: existingEvent?.title,
+        event_type: existingEvent?.type,
+        event_status: existingEvent?.status,
+        category_id: existingEvent?.category_id,
+      });
+    } catch (logError) {
+      console.error("Failed to log event deletion activity:", logError);
+      // Don't fail the entire operation if logging fails
     }
 
     return true;
@@ -322,13 +404,49 @@ export class AdminService {
       throw new Error("Access denied: Not an admin user");
     }
 
+    // Log successful login activity
+    try {
+      await activityService.logActivity(`admin_login`, "user", data.user.id, {
+        email: adminData.email,
+        name: adminData.name,
+        role: adminData.role,
+        login_time: new Date().toISOString(),
+      });
+    } catch (logError) {
+      console.error("Failed to log login activity:", logError);
+      // Don't fail the entire operation if logging fails
+    }
+
     return { user: data.user, admin: adminData };
   }
 
   static async signOut() {
+    // Get current user before signing out for logging
+    let currentUser = null;
+    try {
+      currentUser = await this.getCurrentUser();
+    } catch (error) {
+      console.error("Failed to get current user for logout logging:", error);
+    }
+
     const { error } = await supabase.auth.signOut();
     if (error) {
       throw new Error(`Failed to sign out: ${error.message}`);
+    }
+
+    // Log logout activity
+    if (currentUser) {
+      try {
+        await activityService.logActivity(`admin_logout`, "user", currentUser.user.id, {
+          email: currentUser.admin.email,
+          name: currentUser.admin.name,
+          role: currentUser.admin.role,
+          logout_time: new Date().toISOString(),
+        });
+      } catch (logError) {
+        console.error("Failed to log logout activity:", logError);
+        // Don't fail the entire operation if logging fails
+      }
     }
   }
 
