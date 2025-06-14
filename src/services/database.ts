@@ -206,7 +206,7 @@ export class EventService {
     // Get existing event for comparison
     let existingEvent: Event | null = null;
     try {
-      existingEvent = await this.getEvent(id);
+      existingEvent = await EventService.getEvent(id);
     } catch (error) {
       console.error("Failed to fetch existing event for activity logging:", error);
     }
@@ -302,7 +302,7 @@ export class EventService {
     // Get existing event for logging
     let existingEvent: Event | null = null;
     try {
-      existingEvent = await this.getEvent(id);
+      existingEvent = await EventService.getEvent(id);
     } catch (error) {
       console.error("Failed to fetch existing event for activity logging:", error);
     }
@@ -330,10 +330,9 @@ export class EventService {
 
     return true;
   }
-
   // Get upcoming events
   static async getUpcomingEvents(limit = 10) {
-    return this.getEvents({
+    return EventService.getEvents({
       status: "published",
       upcoming: true,
       limit,
@@ -342,16 +341,15 @@ export class EventService {
 
   // Get featured events
   static async getFeaturedEvents(limit = 3) {
-    return this.getEvents({
+    return EventService.getEvents({
       status: "published",
       featured: true,
       limit,
     });
   }
-
   // Get events by type
   static async getEventsByType(type: Event["type"], limit?: number) {
-    return this.getEvents({
+    return EventService.getEvents({
       status: "published",
       type,
       limit,
@@ -371,7 +369,7 @@ export class EventService {
         },
         async () => {
           // Fetch updated events
-          const events = await this.getEvents({ status: "published" });
+          const events = await EventService.getEvents({ status: "published" });
           callback(events);
         }
       )
@@ -419,12 +417,11 @@ export class AdminService {
 
     return { user: data.user, admin: adminData };
   }
-
   static async signOut() {
     // Get current user before signing out for logging
     let currentUser = null;
     try {
-      currentUser = await this.getCurrentUser();
+      currentUser = await AdminService.getCurrentUser();
     } catch (error) {
       console.error("Failed to get current user for logout logging:", error);
     }
