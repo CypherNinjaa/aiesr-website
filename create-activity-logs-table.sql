@@ -20,6 +20,10 @@ CREATE INDEX IF NOT EXISTS idx_admin_activity_logs_created_at ON admin_activity_
 -- Enable RLS
 ALTER TABLE admin_activity_logs ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Admin can view all activity logs" ON admin_activity_logs;
+DROP POLICY IF EXISTS "Admin can insert activity logs" ON admin_activity_logs;
+
 -- Create policies
 CREATE POLICY "Admin can view all activity logs" ON admin_activity_logs FOR SELECT
   USING (EXISTS (

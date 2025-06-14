@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { activityService } from "./activity";
 
 // Define the possible setting value types
 export type SettingValue = string | number | boolean | string[] | Record<string, string>;
@@ -90,8 +91,7 @@ class SettingsService {
 
     if (error) throw error;
     return data;
-  }
-  // Update multiple settings with upsert
+  } // Update multiple settings with upsert
   async updateSettings(settings: Record<string, SettingValue>): Promise<void> {
     const updates = Object.entries(settings).map(([key, value]) => ({
       key,
@@ -104,6 +104,20 @@ class SettingsService {
     const { error } = await supabase.from("admin_settings").upsert(updates, { onConflict: "key" });
 
     if (error) throw error;
+
+    // Log activity for each setting update
+    try {
+      for (const [key, value] of Object.entries(settings)) {
+        await activityService.logActivity("updated", "setting", undefined, {
+          key,
+          new_value: value,
+          timestamp: new Date().toISOString(),
+        });
+      }
+    } catch (logError) {
+      // Don't fail the main operation if logging fails
+      console.warn("Failed to log settings activity:", logError);
+    }
   }
 
   // Create a new setting
