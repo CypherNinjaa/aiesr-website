@@ -37,11 +37,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const handleSignOut = () => {
     signOut.mutate();
   };
-
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <div className="hidden md:flex md:w-64 md:flex-col">
+      <div className="hidden md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col">
         <div className="flex flex-grow flex-col overflow-y-auto border-r border-gray-200 bg-white pt-5">
           <div className="flex flex-shrink-0 items-center px-4">
             <Link href="/admin" className="flex items-center">
@@ -112,16 +111,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </div>
           </div>
         </div>
-      </div>
-
+      </div>{" "}
       {/* Mobile menu button - you can expand this later */}
       <div className="fixed top-4 left-4 z-50 md:hidden">
         <button className="rounded-md bg-white p-2 shadow-md">☰</button>
       </div>
-
       {/* Main content */}
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <main className="relative flex-1 overflow-y-auto focus:outline-none">{children}</main>
+      <div className="flex flex-1 flex-col overflow-hidden md:ml-64">
+        <main className="relative flex-1 overflow-x-auto overflow-y-auto p-4 focus:outline-none md:p-6">
+          <div className="w-full min-w-0">{children}</div>
+        </main>
       </div>
     </div>
   );
