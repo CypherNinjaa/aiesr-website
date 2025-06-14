@@ -6,16 +6,28 @@ type EventRow = Database["public"]["Tables"]["events"]["Row"];
 type EventInsert = Database["public"]["Tables"]["events"]["Insert"];
 type EventUpdate = Database["public"]["Tables"]["events"]["Update"];
 
+// Extended types for new fields not yet in database schema
+type ExtendedEventUpdate = EventUpdate & {
+  registration_link?: string | null;
+  custom_registration_link?: string | null;
+  poster_image?: string | null;
+  pdf_brochure?: string | null;
+};
+
 // Extended EventRow to include optional registration link fields for backward compatibility
 type ExtendedEventRow = EventRow & {
   registration_link?: string | null;
   custom_registration_link?: string | null;
+  poster_image?: string | null; // New poster image field
+  pdf_brochure?: string | null; // New PDF brochure field
 };
 
 // Extended EventInsert for registration link fields
 type ExtendedEventInsert = EventInsert & {
   registration_link?: string | null;
   custom_registration_link?: string | null;
+  poster_image?: string | null; // New poster image field
+  pdf_brochure?: string | null; // New PDF brochure field
 };
 
 // Transform database row to Event type
@@ -35,10 +47,11 @@ const transformEventFromDB = async (row: ExtendedEventRow): Promise<Event> => {
     date: new Date(row.date),
     endDate: row.end_date ? new Date(row.end_date) : undefined,
     location: row.location,
-    type: row.type || undefined, // Deprecated but kept for migration
-    category_id: row.category_id || undefined,
+    type: row.type || undefined, // Deprecated but kept for migration    category_id: row.category_id || undefined,
     category: category || undefined,
     image: row.image_url || undefined,
+    posterImage: row.poster_image || undefined, // New poster image field
+    pdfBrochure: row.pdf_brochure || undefined, // New PDF brochure field
     registrationRequired: row.registration_required,
     registrationLink: row.registration_link || undefined, // Legacy field for backward compatibility
     customRegistrationLink: row.custom_registration_link || undefined, // New field for admin-defined links
@@ -66,8 +79,7 @@ const transformEventToDB = (event: Partial<Event> & { createdBy: string }): Exte
     date: event.date!.toISOString(),
     end_date: event.endDate?.toISOString() || null,
     location: event.location!,
-    type: event.type || null, // Deprecated but kept for migration
-    category_id: event.category_id || null, // New dynamic category reference
+    type: event.type || null, // Deprecated but kept for migration    category_id: event.category_id || null, // New dynamic category reference
     image_url: event.image || null,
     registration_required: event.registrationRequired ?? true,
     registration_deadline: event.registrationDeadline?.toISOString() || null,
@@ -82,12 +94,13 @@ const transformEventToDB = (event: Partial<Event> & { createdBy: string }): Exte
         .status || "draft",
     created_by: event.createdBy,
   };
-
   // Add registration link fields if they're provided (for migration compatibility)
   const extendedData: ExtendedEventInsert = {
     ...baseData,
     registration_link: event.registrationLink || null,
     custom_registration_link: event.customRegistrationLink || null,
+    poster_image: event.posterImage || null, // New poster image field
+    pdf_brochure: event.pdfBrochure || null, // New PDF brochure field
   };
 
   return extendedData;
@@ -174,10 +187,7 @@ export class EventService {
     return transformEventFromDB(data);
   } // Update event (Admin only)
   static async updateEvent(id: string, updates: Partial<Event>) {
-    const updateData: EventUpdate & {
-      registration_link?: string | null;
-      custom_registration_link?: string | null;
-    } = {};
+    const updateData: ExtendedEventUpdate = {};
 
     if (updates.title) updateData.title = updates.title;
     if (updates.description) updateData.description = updates.description;
@@ -186,7 +196,10 @@ export class EventService {
     if (updates.endDate) updateData.end_date = updates.endDate.toISOString();
     if (updates.location) updateData.location = updates.location;
     if (updates.type) updateData.type = updates.type;
+    if (updates.category_id !== undefined) updateData.category_id = updates.category_id;
     if (updates.image !== undefined) updateData.image_url = updates.image;
+    if (updates.posterImage !== undefined) updateData.poster_image = updates.posterImage;
+    if (updates.pdfBrochure !== undefined) updateData.pdf_brochure = updates.pdfBrochure;
     if (updates.registrationRequired !== undefined)
       updateData.registration_required = updates.registrationRequired;
     if (updates.registrationLink !== undefined)

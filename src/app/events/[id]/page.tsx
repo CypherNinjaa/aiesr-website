@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import React from "react";
@@ -103,91 +104,106 @@ export default function EventPage({ params }: EventPageProps) {
             <span className="text-burgundy">{event.title}</span>
           </nav>
         </div>
-      </section>
+      </section>{" "}
       {/* Event Hero */}
       <section className="from-burgundy bg-gradient-to-br to-red-900 py-16 text-white">
         <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="max-w-4xl"
-          >
-            <div className="mb-6 flex flex-wrap items-center gap-4">
-              <span
-                className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium ${getEventTypeColor(event.type)} border-2 border-white/20`}
-              >
-                {getEventTypeIcon(event.type)} {event.type}
-              </span>
-              {event.featured && (
-                <span className="bg-gold text-burgundy rounded-full px-3 py-1 text-sm font-semibold">
-                  Featured Event
+          <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
+            {/* Event Details */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="flex flex-col justify-center"
+            >
+              <div className="mb-6 flex flex-wrap items-center gap-4">
+                <span
+                  className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium ${getEventTypeColor(event.type)} border-2 border-white/20`}
+                >
+                  {getEventTypeIcon(event.type)} {event.type}
                 </span>
-              )}
-              {isEventPast && (
-                <span className="rounded-full bg-gray-600 px-3 py-1 text-sm text-white">
-                  Past Event
-                </span>
-              )}
-            </div>
-            <h1 className="font-primary mb-6 text-4xl font-bold md:text-5xl">{event.title}</h1>
-            <p className="mb-8 text-xl leading-relaxed text-gray-200">{event.shortDescription}</p>
-            <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-              <div className="rounded-lg bg-white/10 p-4">
-                <div className="text-gold mb-2 text-2xl">📅</div>
-                <div className="text-sm text-gray-300">Date</div>
-                <div className="font-semibold">{formatDate(event.date)}</div>
+                {event.featured && (
+                  <span className="bg-gold text-burgundy rounded-full px-3 py-1 text-sm font-semibold">
+                    Featured Event
+                  </span>
+                )}
+                {isEventPast && (
+                  <span className="rounded-full bg-gray-600 px-3 py-1 text-sm text-white">
+                    Past Event
+                  </span>
+                )}
               </div>
-              <div className="rounded-lg bg-white/10 p-4">
-                <div className="text-gold mb-2 text-2xl">⏰</div>
-                <div className="text-sm text-gray-300">Time</div>
-                <div className="font-semibold">
-                  {new Date(event.date).toLocaleTimeString("en-US", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                  {event.endDate && (
-                    <div className="text-sm text-gray-300">
-                      to{" "}
-                      {new Date(event.endDate).toLocaleTimeString("en-US", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </div>
-                  )}
+              <h1 className="font-primary mb-6 text-4xl font-bold md:text-5xl">{event.title}</h1>
+              <p className="mb-8 text-xl leading-relaxed text-gray-200">{event.shortDescription}</p>
+              <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2">
+                <div className="rounded-lg bg-white/10 p-4">
+                  <div className="text-gold mb-2 text-2xl">📅</div>
+                  <div className="text-sm text-gray-300">Date</div>
+                  <div className="font-semibold">{formatDate(event.date)}</div>
+                </div>
+                <div className="rounded-lg bg-white/10 p-4">
+                  <div className="text-gold mb-2 text-2xl">⏰</div>
+                  <div className="text-sm text-gray-300">Time</div>
+                  <div className="font-semibold">
+                    {new Date(event.date).toLocaleTimeString("en-US", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                    {event.endDate && (
+                      <div className="text-sm text-gray-300">
+                        to{" "}
+                        {new Date(event.endDate).toLocaleTimeString("en-US", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="rounded-lg bg-white/10 p-4">
+                  <div className="text-gold mb-2 text-2xl">📍</div>
+                  <div className="text-sm text-gray-300">Location</div>
+                  <div className="font-semibold">{event.location}</div>
+                </div>
+                <div className="rounded-lg bg-white/10 p-4">
+                  <div className="text-gold mb-2 text-2xl">👥</div>
+                  <div className="text-sm text-gray-300">Capacity</div>
+                  <div className="font-semibold">
+                    {event.capacity ? (
+                      <>
+                        {event.registeredCount || 0}/{event.capacity}
+                        <div className="text-sm text-gray-300">registered</div>
+                      </>
+                    ) : (
+                      "Open"
+                    )}
+                  </div>
                 </div>
               </div>
-              <div className="rounded-lg bg-white/10 p-4">
-                <div className="text-gold mb-2 text-2xl">📍</div>
-                <div className="text-sm text-gray-300">Location</div>
-                <div className="font-semibold">{event.location}</div>
-              </div>
-              <div className="rounded-lg bg-white/10 p-4">
-                <div className="text-gold mb-2 text-2xl">👥</div>
-                <div className="text-sm text-gray-300">Capacity</div>
-                <div className="font-semibold">
-                  {event.capacity ? (
-                    <>
-                      {event.registeredCount || 0}/{event.capacity}
-                      <div className="text-sm text-gray-300">registered</div>
-                    </>
-                  ) : (
-                    "Open"
-                  )}
-                </div>
-              </div>
-            </div>{" "}
-            {canRegister && registrationLink && (
+
+              {/* Action Buttons */}
               <div className="flex flex-col gap-4 sm:flex-row">
-                {" "}
-                <Link href={registrationLink}>
-                  <Button
-                    size="lg"
-                    className="border-2 border-yellow-600 bg-yellow-500 font-bold text-white hover:bg-yellow-600"
-                  >
-                    Register Now
-                  </Button>
-                </Link>
+                {canRegister && registrationLink && (
+                  <Link href={registrationLink}>
+                    <Button
+                      size="lg"
+                      className="border-2 border-yellow-600 bg-yellow-500 font-bold text-white hover:bg-yellow-600"
+                    >
+                      Register Now
+                    </Button>
+                  </Link>
+                )}
+                {event.pdfBrochure && (
+                  <a href={event.pdfBrochure} download target="_blank" rel="noopener noreferrer">
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      className="border-white font-semibold text-white hover:bg-white hover:text-red-900"
+                    >
+                      📄 Download Brochure
+                    </Button>
+                  </a>
+                )}
                 <Button
                   variant="outline"
                   size="lg"
@@ -196,8 +212,30 @@ export default function EventPage({ params }: EventPageProps) {
                   Share Event
                 </Button>
               </div>
+            </motion.div>
+
+            {/* Event Poster */}
+            {event.posterImage && (
+              <motion.div
+                initial={{ opacity: 0, x: 30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="flex items-center justify-center"
+              >
+                <div className="relative overflow-hidden rounded-2xl shadow-2xl">
+                  {" "}
+                  <Image
+                    src={event.posterImage}
+                    alt={`${event.title} Poster`}
+                    width={400}
+                    height={600}
+                    className="h-auto max-h-[600px] w-full max-w-md object-cover transition-transform duration-300 hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                </div>
+              </motion.div>
             )}
-          </motion.div>
+          </div>
         </div>
       </section>
       {/* Event Content */}
@@ -360,7 +398,6 @@ export default function EventPage({ params }: EventPageProps) {
                     )}
                   </CardContent>
                 </Card>
-
                 {/* Event Tags */}
                 {event.tags && event.tags.length > 0 && (
                   <Card className="border-0 shadow-lg">
@@ -380,14 +417,29 @@ export default function EventPage({ params }: EventPageProps) {
                       </div>
                     </CardContent>
                   </Card>
-                )}
-
+                )}{" "}
                 {/* Quick Actions */}
                 <Card className="border-0 shadow-lg">
                   <CardHeader>
                     <CardTitle className="text-burgundy">Quick Actions</CardTitle>
                   </CardHeader>{" "}
                   <CardContent className="space-y-3">
+                    {event.pdfBrochure && (
+                      <a
+                        href={event.pdfBrochure}
+                        download
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block w-full"
+                      >
+                        <Button
+                          variant="outline"
+                          className="w-full border-red-800 bg-white text-red-800 transition-colors hover:bg-red-800 hover:text-white"
+                        >
+                          📄 Download PDF Brochure
+                        </Button>
+                      </a>
+                    )}
                     <Button
                       variant="outline"
                       className="w-full border-red-800 bg-white text-red-800 transition-colors hover:bg-red-800 hover:text-white"

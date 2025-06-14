@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import React, { useEffect, useState, useMemo } from "react";
+import { useHeroTexts } from "@/contexts/PublicSettingsContext";
 
 export const HeroSection: React.FC = () => {
   const [currentText, setCurrentText] = useState("");
@@ -9,15 +10,10 @@ export const HeroSection: React.FC = () => {
   const [charIndex, setCharIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const texts = useMemo(
-    () => [
-      "Where Words Come Alive",
-      "Craft Your Literary Legacy",
-      "Discover the Power of Language",
-      "Shape Your Future in Literature",
-    ],
-    []
-  );
+  // Get hero texts from settings
+  const heroTextsFromSettings = useHeroTexts();
+
+  const texts = useMemo(() => heroTextsFromSettings, [heroTextsFromSettings]);
 
   useEffect(() => {
     const currentFullText = texts[textIndex];
@@ -68,9 +64,8 @@ export const HeroSection: React.FC = () => {
       },
     },
   };
-
   return (
-    <section className="from-cream relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br via-white to-gray-50">
+    <section className="from-cream relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br via-white to-gray-50 pt-20">
       {/* Background Elements */}
       <div className="absolute inset-0 z-0">
         {/* Floating Books */}
@@ -92,10 +87,10 @@ export const HeroSection: React.FC = () => {
         {/* Ink Blot Effect */}
         <div className="bg-burgundy absolute top-0 right-0 h-96 w-96 rounded-full opacity-5 blur-3xl"></div>
         <div className="bg-gold absolute bottom-0 left-0 h-80 w-80 rounded-full opacity-5 blur-3xl"></div>
-      </div>
+      </div>{" "}
       {/* Main Content */}
       <motion.div
-        className="relative z-10 container mx-auto px-4 text-center"
+        className="relative z-10 container mx-auto mt-8 px-4 text-center"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -110,38 +105,16 @@ export const HeroSection: React.FC = () => {
               </span>
             </h1>
             <div className="bg-gold mx-auto h-1 w-24 rounded-full"></div>
-          </motion.div>
+          </motion.div>{" "}
           {/* Subtitle */}{" "}
           <motion.p
             variants={itemVariants}
-            className="mx-auto mb-8 max-w-3xl text-xl leading-relaxed text-gray-700 md:text-2xl"
+            className="mx-auto mb-12 max-w-3xl text-xl leading-relaxed text-gray-700 md:text-2xl"
           >
             Shape your future in English Studies and Research at one of India&apos;s premier
             institutes. Join a community of scholars, writers, and researchers passionate about
             literature.
           </motion.p>
-          {/* Statistics */}
-          <motion.div
-            variants={itemVariants}
-            className="mx-auto mb-12 grid max-w-2xl grid-cols-2 gap-8 md:grid-cols-4"
-          >
-            <div className="text-center">
-              <div className="text-burgundy font-primary text-3xl font-bold md:text-4xl">500+</div>
-              <div className="text-sm tracking-wide text-gray-600 uppercase">Students</div>
-            </div>
-            <div className="text-center">
-              <div className="text-burgundy font-primary text-3xl font-bold md:text-4xl">50+</div>
-              <div className="text-sm tracking-wide text-gray-600 uppercase">Faculty</div>
-            </div>
-            <div className="text-center">
-              <div className="text-burgundy font-primary text-3xl font-bold md:text-4xl">25+</div>
-              <div className="text-sm tracking-wide text-gray-600 uppercase">Programs</div>
-            </div>
-            <div className="text-center">
-              <div className="text-burgundy font-primary text-3xl font-bold md:text-4xl">95%</div>
-              <div className="text-sm tracking-wide text-gray-600 uppercase">Placement</div>
-            </div>
-          </motion.div>{" "}
           {/* Call-to-Action Buttons */}
           <motion.div
             variants={itemVariants}
