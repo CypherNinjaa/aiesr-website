@@ -17,7 +17,14 @@ interface EventPageProps {
   }>;
 }
 
-const getEventTypeColor = (type: Event["type"]) => {
+const getEventCategoryColor = (event: Event) => {
+  // Use category if available, fallback to deprecated type field
+  if (event.category?.color_class) {
+    return event.category.color_class;
+  }
+
+  // Fallback to old type-based colors for backward compatibility
+  const type = event.type;
   switch (type) {
     case "academic":
       return "bg-blue-100 text-blue-800";
@@ -32,19 +39,28 @@ const getEventTypeColor = (type: Event["type"]) => {
   }
 };
 
-const getEventTypeIcon = (type: Event["type"]) => {
-  switch (type) {
-    case "academic":
-      return "🎓";
-    case "cultural":
-      return "🎭";
-    case "research":
-      return "🔬";
-    case "workshop":
-      return "🛠️";
-    default:
-      return "📅";
+const getEventCategoryDisplay = (event: Event) => {
+  // Use category if available, fallback to deprecated type field
+  if (event.category) {
+    return {
+      icon: event.category.icon_emoji,
+      name: event.category.name,
+    };
   }
+
+  // Fallback to old type-based display for backward compatibility
+  const type = event.type;
+  const typeIcons = {
+    academic: "🎓",
+    cultural: "🎭",
+    research: "🔬",
+    workshop: "🛠️",
+  };
+
+  return {
+    icon: typeIcons[type as keyof typeof typeIcons] || "📅",
+    name: type || "Event",
+  };
 };
 
 export default function EventPage({ params }: EventPageProps) {
@@ -116,12 +132,18 @@ export default function EventPage({ params }: EventPageProps) {
               transition={{ duration: 0.8 }}
               className="flex flex-col justify-center"
             >
+              {" "}
               <div className="mb-6 flex flex-wrap items-center gap-4">
-                <span
-                  className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium ${getEventTypeColor(event.type)} border-2 border-white/20`}
-                >
-                  {getEventTypeIcon(event.type)} {event.type}
-                </span>
+                {(() => {
+                  const categoryDisplay = getEventCategoryDisplay(event);
+                  return (
+                    <span
+                      className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium ${getEventCategoryColor(event)} border-2 border-white/20`}
+                    >
+                      {categoryDisplay.icon} {categoryDisplay.name}
+                    </span>
+                  );
+                })()}
                 {event.featured && (
                   <span className="bg-gold text-burgundy rounded-full px-3 py-1 text-sm font-semibold">
                     Featured Event
@@ -180,7 +202,6 @@ export default function EventPage({ params }: EventPageProps) {
                   </div>
                 </div>
               </div>
-
               {/* Action Buttons */}
               <div className="flex flex-col gap-4 sm:flex-row">
                 {canRegister && registrationLink && (
@@ -484,12 +505,18 @@ export default function EventPage({ params }: EventPageProps) {
                     className="group border-0 shadow-lg transition-shadow hover:shadow-xl"
                   >
                     <CardContent className="p-6">
+                      {" "}
                       <div className="mb-4">
-                        <span
-                          className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium ${getEventTypeColor(relatedEvent.type)} `}
-                        >
-                          {getEventTypeIcon(relatedEvent.type)} {relatedEvent.type}
-                        </span>
+                        {(() => {
+                          const categoryDisplay = getEventCategoryDisplay(relatedEvent);
+                          return (
+                            <span
+                              className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium ${getEventCategoryColor(relatedEvent)} `}
+                            >
+                              {categoryDisplay.icon} {categoryDisplay.name}
+                            </span>
+                          );
+                        })()}
                       </div>
                       <h3 className="text-burgundy group-hover:text-gold mb-2 font-bold transition-colors">
                         {relatedEvent.title}

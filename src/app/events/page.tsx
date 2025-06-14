@@ -3,12 +3,13 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { useEvents } from "@/hooks/useEvents";
+import { CategoryService } from "@/services/category";
 import { formatDate } from "@/lib/utils";
-import { Event } from "@/types";
+import { Event, Category } from "@/types";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -37,7 +38,14 @@ const cardVariants = {
   },
 };
 
-const getEventTypeColor = (type: Event["type"]) => {
+const getEventCategoryColor = (event: Event) => {
+  // Use category if available, fallback to deprecated type field
+  if (event.category?.color_class) {
+    return event.category.color_class;
+  }
+
+  // Fallback to old type-based colors for backward compatibility
+  const type = event.type;
   switch (type) {
     case "academic":
       return "bg-blue-100 text-blue-800 border-blue-200";
@@ -52,25 +60,49 @@ const getEventTypeColor = (type: Event["type"]) => {
   }
 };
 
-const getEventTypeIcon = (type: Event["type"]) => {
-  switch (type) {
-    case "academic":
-      return "🎓";
-    case "cultural":
-      return "🎭";
-    case "research":
-      return "🔬";
-    case "workshop":
-      return "🛠️";
-    default:
-      return "📅";
+const getEventCategoryDisplay = (event: Event) => {
+  // Use category if available, fallback to deprecated type field
+  if (event.category) {
+    return {
+      icon: event.category.icon_emoji,
+      name: event.category.name,
+    };
   }
+
+  // Fallback to old type-based display for backward compatibility
+  const type = event.type;
+  const typeIcons = {
+    academic: "📚",
+    cultural: "🎭",
+    research: "🔬",
+    workshop: "🛠️",
+  };
+
+  return {
+    icon: typeIcons[type as keyof typeof typeIcons] || "📅",
+    name: type || "Event",
+  };
 };
 
 export default function EventsPage() {
-  const [selectedType, setSelectedType] = useState<Event["type"] | "all">("all");
+  const [selectedType, setSelectedType] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [dateFilter, setDateFilter] = useState<"upcoming" | "past" | "all">("upcoming");
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  // Load categories
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const activeCategories = await CategoryService.getActiveCategories();
+        setCategories(activeCategories);
+      } catch (error) {
+        console.error("Failed to load categories:", error);
+      }
+    };
+
+    loadCategories();
+  }, []);
 
   // Fetch events from database
   const {
@@ -113,12 +145,17 @@ export default function EventsPage() {
       </div>
     );
   }
-
   // Filter events based on selected criteria
   const filteredEvents = events
     .filter(event => {
-      // Type filter
-      if (selectedType !== "all" && event.type !== selectedType) return false;
+      // Type/Category filter - check both new category system and old type system
+      if (selectedType !== "all") {
+        const matchesCategory =
+          event.category?.slug === selectedType ||
+          event.category?.name.toLowerCase() === selectedType;
+        const matchesOldType = event.type === selectedType;
+        if (!matchesCategory && !matchesOldType) return false;
+      }
 
       // Search filter
       if (
@@ -145,30 +182,37 @@ export default function EventsPage() {
       const dateB = new Date(b.date).getTime();
       return dateFilter === "past" ? dateB - dateA : dateA - dateB;
     });
-
+  // Create dynamic filter options from categories and old types
   const eventTypes = [
-    { key: "all" as const, label: "All Events", count: events.length },
+    { key: "all", label: "All Events", count: events.length },
+    // Add categories
+    ...categories.map(category => ({
+      key: category.slug,
+      label: `${category.icon_emoji} ${category.name}`,
+      count: events.filter(e => e.category?.id === category.id).length,
+    })),
+    // Add old types for backward compatibility
     {
-      key: "academic" as const,
-      label: "Academic",
-      count: events.filter(e => e.type === "academic").length,
+      key: "academic",
+      label: "📚 Academic (Legacy)",
+      count: events.filter(e => e.type === "academic" && !e.category).length,
     },
     {
-      key: "cultural" as const,
-      label: "Cultural",
-      count: events.filter(e => e.type === "cultural").length,
+      key: "cultural",
+      label: "🎭 Cultural (Legacy)",
+      count: events.filter(e => e.type === "cultural" && !e.category).length,
     },
     {
-      key: "research" as const,
-      label: "Research",
-      count: events.filter(e => e.type === "research").length,
+      key: "research",
+      label: "🔬 Research (Legacy)",
+      count: events.filter(e => e.type === "research" && !e.category).length,
     },
     {
-      key: "workshop" as const,
-      label: "Workshop",
-      count: events.filter(e => e.type === "workshop").length,
+      key: "workshop",
+      label: "🛠️ Workshop (Legacy)",
+      count: events.filter(e => e.type === "workshop" && !e.category).length,
     },
-  ];
+  ].filter(type => type.count > 0 || type.key === "all"); // Only show types with events
 
   return (
     <div className="min-h-screen pt-20">
@@ -300,13 +344,18 @@ export default function EventsPage() {
                           ) : (
                             <div className="from-burgundy to-gold h-full bg-gradient-to-br"></div>
                           )}
-                          <div className="absolute inset-0 bg-black/20"></div>
+                          <div className="absolute inset-0 bg-black/20"></div>{" "}
                           <div className="absolute top-4 left-4">
-                            <span
-                              className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-sm font-medium ${getEventTypeColor(event.type)} `}
-                            >
-                              {getEventTypeIcon(event.type)} {event.type}
-                            </span>
+                            {(() => {
+                              const categoryDisplay = getEventCategoryDisplay(event);
+                              return (
+                                <span
+                                  className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-sm font-medium ${getEventCategoryColor(event)} `}
+                                >
+                                  {categoryDisplay.icon} {categoryDisplay.name}
+                                </span>
+                              );
+                            })()}
                           </div>
                           <div className="absolute bottom-4 left-4 text-white">
                             <div className="text-3xl font-bold">
