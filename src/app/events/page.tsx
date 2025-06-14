@@ -7,8 +7,8 @@ import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { useEvents } from "@/hooks/useEvents";
-import { CategoryService } from "@/services/category";
 import { formatDate } from "@/lib/utils";
+import { CategoryService } from "@/services/category";
 import { Event, Category } from "@/types";
 
 const containerVariants = {
