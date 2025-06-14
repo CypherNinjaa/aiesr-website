@@ -171,18 +171,18 @@ export default function SettingsPage() {
     );
   }
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="min-h-full bg-gray-50">
+      <div className="mx-auto max-w-full min-w-0 xl:max-w-7xl">
         {/* Header */}
-        <div className="mb-8 flex items-center justify-between">
+        <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">System Settings</h1>
             <p className="mt-2 text-gray-600">Configure system preferences and website settings</p>
             {hasChanges && (
               <p className="mt-1 text-sm text-amber-600">⚠️ You have unsaved changes</p>
             )}
-          </div>
-          <div className="flex gap-2">
+          </div>{" "}
+          <div className="flex flex-wrap gap-2">
             {hasChanges && (
               <Button variant="outline" onClick={handleReset}>
                 Reset
@@ -199,61 +199,69 @@ export default function SettingsPage() {
           <Card className="border-0 shadow-lg">
             <CardHeader>
               <CardTitle>General Settings</CardTitle>
-            </CardHeader>
+            </CardHeader>{" "}
             <CardContent className="space-y-6">
-              <div>
-                <label htmlFor="site-name" className="mb-2 block text-sm font-medium text-gray-700">
-                  Site Name
-                </label>
-                <input
-                  id="site-name"
-                  type="text"
-                  value={formData.siteName}
-                  onChange={e => handleSettingChange("siteName", e.target.value)}
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                />
-              </div>
-              <div>
-                <label htmlFor="site-url" className="mb-2 block text-sm font-medium text-gray-700">
-                  Site URL
-                </label>
-                <input
-                  id="site-url"
-                  type="url"
-                  value={formData.siteUrl}
-                  onChange={e => handleSettingChange("siteUrl", e.target.value)}
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="contact-email"
-                  className="mb-2 block text-sm font-medium text-gray-700"
-                >
-                  Contact Email
-                </label>
-                <input
-                  id="contact-email"
-                  type="email"
-                  value={formData.contactEmail}
-                  onChange={e => handleSettingChange("contactEmail", e.target.value)}
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="admissions-email"
-                  className="mb-2 block text-sm font-medium text-gray-700"
-                >
-                  Admissions Email
-                </label>
-                <input
-                  id="admissions-email"
-                  type="email"
-                  value={formData.admissionsEmail}
-                  onChange={e => handleSettingChange("admissionsEmail", e.target.value)}
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                />
+              <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                <div>
+                  <label
+                    htmlFor="site-name"
+                    className="mb-2 block text-sm font-medium text-gray-700"
+                  >
+                    Site Name
+                  </label>
+                  <input
+                    id="site-name"
+                    type="text"
+                    value={formData.siteName}
+                    onChange={e => handleSettingChange("siteName", e.target.value)}
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="site-url"
+                    className="mb-2 block text-sm font-medium text-gray-700"
+                  >
+                    Site URL
+                  </label>
+                  <input
+                    id="site-url"
+                    type="url"
+                    value={formData.siteUrl}
+                    onChange={e => handleSettingChange("siteUrl", e.target.value)}
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="contact-email"
+                    className="mb-2 block text-sm font-medium text-gray-700"
+                  >
+                    Contact Email
+                  </label>
+                  <input
+                    id="contact-email"
+                    type="email"
+                    value={formData.contactEmail}
+                    onChange={e => handleSettingChange("contactEmail", e.target.value)}
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="admissions-email"
+                    className="mb-2 block text-sm font-medium text-gray-700"
+                  >
+                    Admissions Email
+                  </label>
+                  <input
+                    id="admissions-email"
+                    type="email"
+                    value={formData.admissionsEmail}
+                    onChange={e => handleSettingChange("admissionsEmail", e.target.value)}
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  />
+                </div>
               </div>
               <div>
                 <label
@@ -464,59 +472,70 @@ export default function SettingsPage() {
           <Card className="border-0 shadow-lg">
             <CardHeader>
               <CardTitle>Social Media Links</CardTitle>
-            </CardHeader>
+            </CardHeader>{" "}
             <CardContent className="space-y-4">
-              <div>
-                <label htmlFor="facebook" className="mb-2 block text-sm font-medium text-gray-700">
-                  Facebook URL
-                </label>
-                <input
-                  id="facebook"
-                  type="url"
-                  value={formData.socialMedia.facebook}
-                  onChange={e => handleSocialMediaChange("facebook", e.target.value)}
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                  placeholder="https://facebook.com/yourpage"
-                />
-              </div>
-              <div>
-                <label htmlFor="twitter" className="mb-2 block text-sm font-medium text-gray-700">
-                  Twitter URL
-                </label>
-                <input
-                  id="twitter"
-                  type="url"
-                  value={formData.socialMedia.twitter}
-                  onChange={e => handleSocialMediaChange("twitter", e.target.value)}
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                  placeholder="https://twitter.com/yourhandle"
-                />
-              </div>
-              <div>
-                <label htmlFor="instagram" className="mb-2 block text-sm font-medium text-gray-700">
-                  Instagram URL
-                </label>
-                <input
-                  id="instagram"
-                  type="url"
-                  value={formData.socialMedia.instagram}
-                  onChange={e => handleSocialMediaChange("instagram", e.target.value)}
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                  placeholder="https://instagram.com/yourhandle"
-                />
-              </div>
-              <div>
-                <label htmlFor="linkedin" className="mb-2 block text-sm font-medium text-gray-700">
-                  LinkedIn URL
-                </label>
-                <input
-                  id="linkedin"
-                  type="url"
-                  value={formData.socialMedia.linkedin}
-                  onChange={e => handleSocialMediaChange("linkedin", e.target.value)}
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                  placeholder="https://linkedin.com/company/yourcompany"
-                />
+              <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                <div>
+                  <label
+                    htmlFor="facebook"
+                    className="mb-2 block text-sm font-medium text-gray-700"
+                  >
+                    Facebook URL
+                  </label>
+                  <input
+                    id="facebook"
+                    type="url"
+                    value={formData.socialMedia.facebook}
+                    onChange={e => handleSocialMediaChange("facebook", e.target.value)}
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    placeholder="https://facebook.com/yourpage"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="twitter" className="mb-2 block text-sm font-medium text-gray-700">
+                    Twitter URL
+                  </label>
+                  <input
+                    id="twitter"
+                    type="url"
+                    value={formData.socialMedia.twitter}
+                    onChange={e => handleSocialMediaChange("twitter", e.target.value)}
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    placeholder="https://twitter.com/yourhandle"
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="instagram"
+                    className="mb-2 block text-sm font-medium text-gray-700"
+                  >
+                    Instagram URL
+                  </label>
+                  <input
+                    id="instagram"
+                    type="url"
+                    value={formData.socialMedia.instagram}
+                    onChange={e => handleSocialMediaChange("instagram", e.target.value)}
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    placeholder="https://instagram.com/yourhandle"
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="linkedin"
+                    className="mb-2 block text-sm font-medium text-gray-700"
+                  >
+                    LinkedIn URL
+                  </label>{" "}
+                  <input
+                    id="linkedin"
+                    type="url"
+                    value={formData.socialMedia.linkedin}
+                    onChange={e => handleSocialMediaChange("linkedin", e.target.value)}
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    placeholder="https://linkedin.com/company/yourcompany"
+                  />
+                </div>
               </div>
             </CardContent>
           </Card>{" "}
