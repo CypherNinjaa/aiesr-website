@@ -1,12 +1,23 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Link from "next/link";
 import React from "react";
 import { Card, CardContent } from "@/components/ui/Card";
+import { useAchievementStats } from "@/hooks/useAchievements";
 
 const features = [
   {
     icon: "🏆",
+    title: "Our Achievements",
+    description:
+      "Celebrating remarkable accomplishments of our students, faculty, and institution in academic excellence and research.",
+    stats: "View All",
+    link: "/achievements",
+    isExternal: false,
+  },
+  {
+    icon: "🎓",
     title: "Academic Excellence",
     description:
       "Top-ranked faculty with decades of experience and published research in prestigious journals.",
@@ -77,6 +88,8 @@ const cardVariants = {
 };
 
 export const WhyChooseSection: React.FC = () => {
+  const { data: achievementStats } = useAchievementStats();
+
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-gray-50 to-white py-20">
       {/* Background Elements */}
@@ -114,34 +127,70 @@ export const WhyChooseSection: React.FC = () => {
           viewport={{ once: true, margin: "-100px" }}
           className="mx-auto grid max-w-7xl grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3"
         >
-          {features.map((feature, index) => (
-            <motion.div key={index} variants={cardVariants} className="group">
-              <Card className="h-full overflow-hidden border-0 bg-white shadow-lg transition-all duration-300 hover:shadow-xl">
-                <CardContent className="p-8 text-center">
-                  {/* Icon */}
-                  <div className="mb-6 text-6xl transition-transform duration-300 group-hover:scale-110">
-                    {feature.icon}
-                  </div>
+          {" "}
+          {features.map((feature, index) => {
+            return (
+              <motion.div key={index} variants={cardVariants} className="group">
+                {feature.link ? (
+                  <Link href={feature.link} className="block">
+                    <Card className="h-full cursor-pointer overflow-hidden border-0 bg-white shadow-lg transition-all duration-300 hover:shadow-xl">
+                      <CardContent className="p-8 text-center">
+                        {/* Icon */}
+                        <div className="mb-6 text-6xl transition-transform duration-300 group-hover:scale-110">
+                          {feature.icon}
+                        </div>
 
-                  {/* Title */}
-                  <h3 className="font-primary text-burgundy group-hover:text-gold mb-4 text-2xl font-bold transition-colors duration-300">
-                    {feature.title}
-                  </h3>
+                        {/* Title */}
+                        <h3 className="font-primary text-burgundy group-hover:text-gold mb-4 text-2xl font-bold transition-colors duration-300">
+                          {feature.title}
+                        </h3>
 
-                  {/* Description */}
-                  <p className="mb-6 leading-relaxed text-gray-600">{feature.description}</p>
+                        {/* Description */}
+                        <p className="mb-6 leading-relaxed text-gray-600">{feature.description}</p>
 
-                  {/* Stats */}
-                  <div className="from-burgundy to-gold inline-block rounded-full bg-gradient-to-r px-4 py-2">
-                    <span className="text-sm font-semibold text-white">{feature.stats}</span>
-                  </div>
-                </CardContent>
+                        {/* Stats */}
+                        <div className="from-burgundy to-gold inline-block rounded-full bg-gradient-to-r px-4 py-2">
+                          <span className="text-sm font-semibold text-white">
+                            {feature.title === "Our Achievements" && achievementStats
+                              ? `${achievementStats.total}+ Achievements`
+                              : feature.stats}
+                          </span>
+                        </div>
+                      </CardContent>
 
-                {/* Hover Effect */}
-                <div className="from-burgundy/5 pointer-events-none absolute inset-0 bg-gradient-to-t to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
-              </Card>
-            </motion.div>
-          ))}{" "}
+                      {/* Hover Effect */}
+                      <div className="from-burgundy/5 pointer-events-none absolute inset-0 bg-gradient-to-t to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+                    </Card>
+                  </Link>
+                ) : (
+                  <Card className="h-full overflow-hidden border-0 bg-white shadow-lg transition-all duration-300 hover:shadow-xl">
+                    <CardContent className="p-8 text-center">
+                      {/* Icon */}
+                      <div className="mb-6 text-6xl transition-transform duration-300 group-hover:scale-110">
+                        {feature.icon}
+                      </div>
+
+                      {/* Title */}
+                      <h3 className="font-primary text-burgundy group-hover:text-gold mb-4 text-2xl font-bold transition-colors duration-300">
+                        {feature.title}
+                      </h3>
+
+                      {/* Description */}
+                      <p className="mb-6 leading-relaxed text-gray-600">{feature.description}</p>
+
+                      {/* Stats */}
+                      <div className="from-burgundy to-gold inline-block rounded-full bg-gradient-to-r px-4 py-2">
+                        <span className="text-sm font-semibold text-white">{feature.stats}</span>
+                      </div>
+                    </CardContent>
+
+                    {/* Hover Effect */}
+                    <div className="from-burgundy/5 pointer-events-none absolute inset-0 bg-gradient-to-t to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+                  </Card>
+                )}
+              </motion.div>
+            );
+          })}
         </motion.div>
       </div>
     </section>

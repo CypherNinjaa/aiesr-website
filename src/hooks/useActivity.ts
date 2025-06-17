@@ -164,16 +164,40 @@ export function getActivityDisplay(activity: ActivityLog): {
   // Event-related activities
   if (resource_type === "event") {
     switch (action) {
+      case "create":
       case "created":
         return { icon: "📅", color: "bg-blue-100 text-blue-800", category: "event" };
+      case "update":
       case "updated":
         return { icon: "✏️", color: "bg-green-100 text-green-800", category: "event" };
+      case "publish":
       case "published":
         return { icon: "🚀", color: "bg-purple-100 text-purple-800", category: "event" };
+      case "delete":
       case "deleted":
         return { icon: "🗑️", color: "bg-red-100 text-red-800", category: "event" };
       default:
         return { icon: "📅", color: "bg-blue-100 text-blue-800", category: "event" };
+    }
+  }
+
+  // Achievement-related activities
+  if (resource_type === "achievement") {
+    switch (action) {
+      case "create":
+      case "created":
+        return { icon: "🏆", color: "bg-emerald-100 text-emerald-800", category: "achievement" };
+      case "update":
+      case "updated":
+        return { icon: "✨", color: "bg-amber-100 text-amber-800", category: "achievement" };
+      case "publish":
+      case "published":
+        return { icon: "🌟", color: "bg-yellow-100 text-yellow-800", category: "achievement" };
+      case "delete":
+      case "deleted":
+        return { icon: "💔", color: "bg-red-100 text-red-800", category: "achievement" };
+      default:
+        return { icon: "🏆", color: "bg-emerald-100 text-emerald-800", category: "achievement" };
     }
   }
 
@@ -188,7 +212,7 @@ export function getActivityDisplay(activity: ActivityLog): {
   }
 
   // Authentication activities
-  if (["login", "logout"].includes(action)) {
+  if (["login", "logout", "admin_login"].includes(action)) {
     return { icon: "🔐", color: "bg-indigo-100 text-indigo-800", category: "user" };
   }
 
@@ -204,12 +228,24 @@ export function getActivityDisplay(activity: ActivityLog): {
 // Helper to filter activities by category
 export function getFilteredActivities(
   activities: ActivityLog[],
-  filter: "all" | "events" | "system" | "users"
+  filter: "all" | "events" | "achievements" | "system" | "users"
 ): ActivityLog[] {
   if (filter === "all") return activities;
 
   return activities.filter(activity => {
     const { category } = getActivityDisplay(activity);
-    return category === filter.slice(0, -1); // Remove 's' from filter
+
+    switch (filter) {
+      case "events":
+        return category === "event";
+      case "achievements":
+        return category === "achievement";
+      case "system":
+        return category === "system";
+      case "users":
+        return category === "user";
+      default:
+        return true;
+    }
   });
 }

@@ -109,7 +109,7 @@ export default function AnalyticsPage() {
               <Button variant="outline">← Back to Dashboard</Button>
             </Link>
           </div>
-        </div>
+        </div>{" "}
         {/* Key Metrics */}
         <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-5">
           <Card className="border-0 shadow-lg">
@@ -183,6 +183,75 @@ export default function AnalyticsPage() {
               </div>
             </CardContent>
           </Card>
+        </div>
+        {/* Achievement Metrics */}
+        <div className="mb-8">
+          <h2 className="mb-4 text-xl font-semibold text-gray-900">Achievement Statistics</h2>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+            <Card className="border-0 shadow-lg">
+              <CardContent className="p-6">
+                <div className="flex items-center">
+                  <div className="rounded-lg bg-emerald-100 p-3">
+                    <span className="text-2xl">🏆</span>
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm text-gray-600">Total Achievements</p>
+                    <p className="text-2xl font-bold text-gray-900">
+                      {analytics.totalAchievements}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-0 shadow-lg">
+              <CardContent className="p-6">
+                <div className="flex items-center">
+                  <div className="rounded-lg bg-blue-100 p-3">
+                    <span className="text-2xl">📚</span>
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm text-gray-600">Student Achievements</p>
+                    <p className="text-2xl font-bold text-gray-900">
+                      {analytics.studentAchievements}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-0 shadow-lg">
+              <CardContent className="p-6">
+                <div className="flex items-center">
+                  <div className="rounded-lg bg-indigo-100 p-3">
+                    <span className="text-2xl">👨‍🏫</span>
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm text-gray-600">Faculty Achievements</p>
+                    <p className="text-2xl font-bold text-gray-900">
+                      {analytics.facultyAchievements}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-0 shadow-lg">
+              <CardContent className="p-6">
+                <div className="flex items-center">
+                  <div className="rounded-lg bg-rose-100 p-3">
+                    <span className="text-2xl">🌟</span>
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm text-gray-600">Featured</p>
+                    <p className="text-2xl font-bold text-gray-900">
+                      {analytics.featuredAchievements}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>{" "}
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
           {/* Events by Category */}
@@ -260,6 +329,137 @@ export default function AnalyticsPage() {
                   <div className="py-8 text-center text-gray-500">No recent events found</div>
                 )}
               </div>
+            </CardContent>{" "}
+          </Card>
+        </div>
+        {/* Achievement Analytics */}
+        <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
+          {/* Achievements by Category */}
+          <Card className="border-0 shadow-lg">
+            <CardHeader>
+              <CardTitle>Achievements by Category</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {analytics.achievementsByCategory.length > 0 ? (
+                  analytics.achievementsByCategory.slice(0, 5).map((categoryData, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between rounded-lg bg-emerald-50 p-4"
+                    >
+                      <div className="flex items-center gap-3">
+                        {categoryData.categoryData?.icon_emoji && (
+                          <span className="text-lg">{categoryData.categoryData.icon_emoji}</span>
+                        )}
+                        <div>
+                          <h4 className="font-semibold text-gray-900">{categoryData.category}</h4>
+                          <p className="text-sm text-gray-600">
+                            {categoryData.count} achievement{categoryData.count !== 1 ? "s" : ""}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-lg font-bold text-emerald-600">
+                          {categoryData.count}
+                        </div>
+                        <div className="text-xs text-gray-500">achievements</div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="py-8 text-center text-gray-500">
+                    No categorized achievements found
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Recent Achievements */}
+          <Card className="border-0 shadow-lg">
+            <CardHeader>
+              <CardTitle>Recent Achievements</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {analytics.recentAchievements.length > 0 ? (
+                  analytics.recentAchievements.slice(0, 5).map((achievement, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between rounded-lg bg-gray-50 p-4"
+                    >
+                      <div>
+                        <h4 className="font-semibold text-gray-900">{achievement.title}</h4>
+                        <p className="text-sm text-gray-600">
+                          by {achievement.achiever_name} • {achievement.achiever_type}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          {new Date(achievement.date_achieved).toLocaleDateString()} •
+                          <span
+                            className={`ml-2 rounded-full px-2 py-1 text-xs font-medium ${
+                              achievement.status === "published"
+                                ? "bg-green-100 text-green-800"
+                                : achievement.status === "draft"
+                                  ? "bg-yellow-100 text-yellow-800"
+                                  : "bg-gray-100 text-gray-800"
+                            }`}
+                          >
+                            {achievement.status}
+                          </span>
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="py-8 text-center text-gray-500">No recent achievements found</div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+        {/* Achievements by Type */}
+        <div className="mt-8">
+          <Card className="border-0 shadow-lg">
+            <CardHeader>
+              <CardTitle>Achievements by Type</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                {analytics.achievementsByType.length > 0 ? (
+                  analytics.achievementsByType.map((typeData, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between rounded-lg bg-blue-50 p-4"
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">
+                          {typeData.type === "Student"
+                            ? "🎓"
+                            : typeData.type === "Faculty"
+                              ? "👨‍🏫"
+                              : typeData.type === "Institution" || typeData.type === "Department"
+                                ? "🏛️"
+                                : "🏆"}
+                        </span>
+                        <div>
+                          <h4 className="font-semibold text-gray-900">{typeData.type}</h4>
+                          <p className="text-sm text-gray-600">
+                            {typeData.count} achievement{typeData.count !== 1 ? "s" : ""}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-lg font-bold text-blue-600">{typeData.count}</div>
+                        <div className="text-xs text-gray-500">total</div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="py-8 text-center text-gray-500">
+                    No achievement type data found
+                  </div>
+                )}
+              </div>
             </CardContent>
           </Card>
         </div>{" "}
@@ -275,10 +475,15 @@ export default function AnalyticsPage() {
                 {analytics.monthlyStats.length > 0 ? (
                   analytics.monthlyStats.map((stat, index) => (
                     <div key={index} className="flex items-center justify-between">
+                      {" "}
                       <div className="font-medium text-gray-900">{stat.month}</div>
-                      <div className="flex gap-4 text-sm text-gray-600">
-                        <span>{stat.events} events</span>
-                        <span>{stat.publishedEvents} published</span>
+                      <div className="flex flex-col gap-1 text-sm text-gray-600">
+                        <span>
+                          {stat.events} events • {stat.publishedEvents} published
+                        </span>
+                        <span>
+                          {stat.achievements} achievements • {stat.publishedAchievements} featured
+                        </span>
                       </div>
                     </div>
                   ))
@@ -430,20 +635,23 @@ export default function AnalyticsPage() {
               </p>
             </div>
           </CardContent>
-        </Card>
+        </Card>{" "}
         {/* Quick Actions */}
-        <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Link href="/admin/events">
             <Button className="w-full">Manage Events</Button>
+          </Link>
+          <Link href="/admin/achievements">
+            <Button className="w-full">Manage Achievements</Button>
           </Link>
           <Link href="/admin/events?status=published">
             <Button variant="outline" className="w-full">
               View Published Events
             </Button>
           </Link>
-          <Link href="/admin/events?status=draft">
+          <Link href="/admin/achievements?status=published">
             <Button variant="outline" className="w-full">
-              View Draft Events
+              View Published Achievements
             </Button>
           </Link>
         </div>

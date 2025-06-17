@@ -174,3 +174,65 @@ export interface EventAnalytics {
   registrationClicks: number;
   lastUpdated: Date;
 }
+
+// Achievement interfaces
+export interface Achievement {
+  id: string;
+  title: string;
+  description: string;
+  category_id: string; // References categories table
+  category?: Category; // Populated category data
+  type: "award" | "publication" | "recognition" | "milestone" | "collaboration";
+  achiever_name: string;
+  achiever_type: "student" | "faculty" | "department" | "institution";
+  date_achieved: Date;
+  image_url?: string;
+  details?: {
+    institution?: string;
+    award_body?: string;
+    amount?: string;
+    rank?: string;
+    publication_details?: string;
+    collaboration_partners?: string[];
+    impact?: string;
+    media_links?: string[];
+  };
+  is_featured: boolean;
+  sort_order: number;
+  status: "draft" | "published" | "archived";
+  created_at: Date;
+  updated_at: Date;
+  created_by: string;
+}
+
+export interface AchievementFormData {
+  title: string;
+  description: string;
+  category_id: string; // References categories table
+  type: "award" | "publication" | "recognition" | "milestone" | "collaboration";
+  achiever_name: string;
+  achiever_type: "student" | "faculty" | "department" | "institution";
+  date_achieved: string;
+  image_url?: string;
+  details?: {
+    institution?: string;
+    award_body?: string;
+    amount?: string;
+    rank?: string;
+    publication_details?: string;
+    collaboration_partners?: string[];
+    impact?: string;
+    media_links?: string[];
+  };
+  is_featured?: boolean;
+  sort_order?: number;
+  status?: "draft" | "published" | "archived";
+}
+
+export interface AchievementStats {
+  total: number;
+  student_achievements: number;
+  faculty_achievements: number;
+  recent_achievements: number;
+  featured_achievements: number;
+}

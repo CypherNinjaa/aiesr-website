@@ -27,6 +27,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const navigation = [
     { name: "Dashboard", href: "/admin", icon: "🏠" },
     { name: "Events", href: "/admin/events", icon: "📅" },
+    { name: "Achievements", href: "/admin/achievements", icon: "🏆" },
     { name: "Categories", href: "/admin/categories", icon: "🏷️" },
     { name: "Analytics", href: "/admin/analytics", icon: "📊" },
     { name: "Activity", href: "/admin/activity", icon: "📋" },
