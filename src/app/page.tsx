@@ -24,7 +24,6 @@ export default function Home() {
           <EventsSection />
         </SectionSuspense>
       </LazyLoadSection>
-      
       <LazyLoadSection>
         <SectionSuspense>
           <WhyChooseSection />
@@ -35,7 +34,8 @@ export default function Home() {
           {/* student success story */}
           <TestimonialsSection />
         </SectionSuspense>
-      </LazyLoadSection>      <LazyLoadSection>
+      </LazyLoadSection>{" "}
+      <LazyLoadSection>
         <SectionSuspense>
           <ProgramsSection />
         </SectionSuspense>
