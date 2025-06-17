@@ -24,13 +24,6 @@ const features = [
     stats: "95% Success Rate",
   },
   {
-    icon: "🔬",
-    title: "Research Opportunities",
-    description:
-      "State-of-the-art research facilities and opportunities to publish in international journals.",
-    stats: "200+ Publications",
-  },
-  {
     icon: "🤝",
     title: "Industry Connections",
     description:
@@ -52,11 +45,11 @@ const features = [
     stats: "85% Placement Rate",
   },
   {
-    icon: "🏛️",
-    title: "Modern Infrastructure",
+    icon: "👥",
+    title: "Our Alumni",
     description:
-      "Digital libraries, smart classrooms, research centers, and collaborative learning spaces.",
-    stats: "50,000+ Books",
+      "Our distinguished alumni network spans across various industries, from academia to corporate leadership, making significant contributions worldwide.",
+    stats: "500+ Alumni Network",
   },
 ];
 
@@ -131,6 +124,7 @@ export const WhyChooseSection: React.FC = () => {
           {features.map((feature, index) => {
             return (
               <motion.div key={index} variants={cardVariants} className="group">
+                {" "}
                 {feature.link ? (
                   <Link href={feature.link} className="block">
                     <Card className="h-full cursor-pointer overflow-hidden border-0 bg-white shadow-lg transition-all duration-300 hover:shadow-xl">
@@ -141,7 +135,7 @@ export const WhyChooseSection: React.FC = () => {
                         </div>
 
                         {/* Title */}
-                        <h3 className="font-primary text-burgundy group-hover:text-gold mb-4 text-2xl font-bold transition-colors duration-300">
+                        <h3 className="font-primary mb-4 text-2xl font-bold text-red-800 transition-colors duration-300 group-hover:text-yellow-600">
                           {feature.title}
                         </h3>
 
@@ -149,7 +143,7 @@ export const WhyChooseSection: React.FC = () => {
                         <p className="mb-6 leading-relaxed text-gray-600">{feature.description}</p>
 
                         {/* Stats */}
-                        <div className="from-burgundy to-gold inline-block rounded-full bg-gradient-to-r px-4 py-2">
+                        <div className="inline-block rounded-full bg-gradient-to-r from-red-800 to-yellow-600 px-4 py-2">
                           <span className="text-sm font-semibold text-white">
                             {feature.title === "Our Achievements" && achievementStats
                               ? `${achievementStats.total}+ Achievements`
@@ -159,7 +153,7 @@ export const WhyChooseSection: React.FC = () => {
                       </CardContent>
 
                       {/* Hover Effect */}
-                      <div className="from-burgundy/5 pointer-events-none absolute inset-0 bg-gradient-to-t to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+                      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-red-800/5 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
                     </Card>
                   </Link>
                 ) : (
@@ -171,7 +165,7 @@ export const WhyChooseSection: React.FC = () => {
                       </div>
 
                       {/* Title */}
-                      <h3 className="font-primary text-burgundy group-hover:text-gold mb-4 text-2xl font-bold transition-colors duration-300">
+                      <h3 className="font-primary mb-4 text-2xl font-bold text-red-800 transition-colors duration-300 group-hover:text-yellow-600">
                         {feature.title}
                       </h3>
 
@@ -179,13 +173,13 @@ export const WhyChooseSection: React.FC = () => {
                       <p className="mb-6 leading-relaxed text-gray-600">{feature.description}</p>
 
                       {/* Stats */}
-                      <div className="from-burgundy to-gold inline-block rounded-full bg-gradient-to-r px-4 py-2">
+                      <div className="inline-block rounded-full bg-gradient-to-r from-red-800 to-yellow-600 px-4 py-2">
                         <span className="text-sm font-semibold text-white">{feature.stats}</span>
                       </div>
                     </CardContent>
 
                     {/* Hover Effect */}
-                    <div className="from-burgundy/5 pointer-events-none absolute inset-0 bg-gradient-to-t to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-red-800/5 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
                   </Card>
                 )}
               </motion.div>
