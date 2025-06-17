@@ -59,23 +59,22 @@ export const Footer: React.FC = () => {
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
             {/* Institute Information */}
             <div className="lg:col-span-1">
+              {" "}
               <div className="mb-6">
                 <div className="mb-4 flex items-center space-x-3">
                   <div className="bg-burgundy flex h-12 w-12 items-center justify-center rounded-full">
                     <span className="font-primary text-lg font-bold text-white">A</span>
-                  </div>{" "}
+                  </div>
                   <div>
                     <h3 className="font-primary text-xl font-bold text-white">AIESR</h3>
                     <p className="text-xs leading-tight text-gray-400">{siteName}</p>
                   </div>
                 </div>
               </div>
-
               <p className="mb-6 leading-relaxed text-gray-400">
                 Nurturing literary excellence and critical thinking through comprehensive programs
                 in English Studies, Literature, and Creative Writing since our establishment.
               </p>
-
               {/* Contact Info */}
               <div className="space-y-3">
                 <div className="flex items-start space-x-3">

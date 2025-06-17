@@ -3,7 +3,7 @@
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
-import { useSiteName } from "@/contexts/PublicSettingsContext";
+import { AupLogo, AiesrLogoSecondary } from "@/components/ui/DualLogo";
 import { cn } from "@/lib/utils";
 import { NavigationItem } from "@/types";
 
@@ -38,7 +38,6 @@ const navigationItems: NavigationItem[] = [
 export const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const siteName = useSiteName();
 
   // Create explicit ARIA attribute values to satisfy accessibility checkers
   const mobileMenuAriaExpanded = isMobileMenuOpen;
@@ -63,6 +62,7 @@ export const Header: React.FC = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
   return (
     <header
       id="navigation"
@@ -73,91 +73,92 @@ export const Header: React.FC = () => {
       role="banner"
     >
       <div className="container mx-auto px-4">
-        <div className="flex h-20 items-center justify-between">
+        <div className="flex h-20 items-center">
           {" "}
-          {/* Logo Section */}{" "}
-          <Link href="/" className="flex items-center space-x-3" aria-label={`${siteName} - Home`}>
-            <div className="bg-burgundy flex h-12 w-12 items-center justify-center rounded-full">
-              <span className="font-primary text-lg font-bold text-white">A</span>
-            </div>
-            <div className="hidden md:block">
-              <h1 className="font-primary text-burgundy text-xl font-bold">AIESR</h1>
-              <p className="max-w-[200px] text-xs leading-tight text-gray-600">{siteName}</p>
-            </div>
-          </Link>{" "}
-          {/* Desktop Navigation */}
-          <nav
-            className="hidden items-center space-x-8 lg:flex"
-            role="navigation"
-            aria-label="Main navigation"
-          >
-            {navigationItems.map(item => (
-              <div key={item.label} className="group relative">
-                {" "}
-                <Link
-                  href={item.href}
-                  className="hover:text-burgundy font-medium text-gray-700 transition-colors duration-200"
-                  aria-expanded={item.children ? "false" : undefined}
-                  aria-haspopup={item.children ? "true" : undefined}
-                >
-                  {item.label}
-                </Link>{" "}
-                {/* Dropdown Menu */}
-                {item.children && (
-                  <ul
-                    className="invisible absolute top-full left-0 z-50 mt-2 w-56 rounded-lg border bg-white opacity-0 shadow-lg transition-all duration-200 group-hover:visible group-hover:opacity-100"
-                    role="list"
-                    aria-label={`${item.label} submenu`}
+          {/* Left: AUP Logo (Primary) */}
+          <div className="flex-shrink-0">
+            <AupLogo size={200} />
+          </div>
+          {/* Center: Navigation */}
+          <div className="flex flex-1 justify-center px-8">
+            <nav
+              className="hidden items-center space-x-7 lg:flex"
+              role="navigation"
+              aria-label="Main navigation"
+            >
+              {navigationItems.map(item => (
+                <div key={item.label} className="group relative">
+                  <Link
+                    href={item.href}
+                    className="hover:text-burgundy font-medium text-gray-700 transition-colors duration-200"
+                    aria-expanded={item.children ? "false" : undefined}
+                    aria-haspopup={item.children ? "true" : undefined}
                   >
-                    {item.children.map(child => (
-                      <li key={child.label}>
-                        <Link
-                          href={child.href}
-                          className="hover:text-burgundy block px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50"
-                        >
-                          {child.label}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            ))}
-          </nav>{" "}
-          {/* CTA Buttons - Desktop */}
-          <div className="hidden items-center space-x-4 lg:flex">
-            <Button size="sm">Apply Now</Button>{" "}
-          </div>{" "}
-          {/* Mobile Menu Toggle */}
-          <button
-            className="p-2 lg:hidden"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-label={isMobileMenuOpen ? "Close mobile menu" : "Open mobile menu"}
-            {...mobileToggleAriaProps}
-          >
-            <div className="relative flex h-5 w-6 flex-col justify-between">
-              <span
-                className={cn(
-                  "bg-burgundy h-0.5 w-full transition-all duration-300",
-                  isMobileMenuOpen ? "translate-y-2 rotate-45" : ""
-                )}
-              />
-              <span
-                className={cn(
-                  "bg-burgundy h-0.5 w-full transition-all duration-300",
-                  isMobileMenuOpen ? "opacity-0" : ""
-                )}
-              />
-              <span
-                className={cn(
-                  "bg-burgundy h-0.5 w-full transition-all duration-300",
-                  isMobileMenuOpen ? "-translate-y-2 -rotate-45" : ""
-                )}
-              />
+                    {item.label}
+                  </Link>
+                  {/* Dropdown Menu */}
+                  {item.children && (
+                    <ul
+                      className="invisible absolute top-full left-0 z-50 mt-2 w-56 rounded-lg border bg-white opacity-0 shadow-lg transition-all duration-200 group-hover:visible group-hover:opacity-100"
+                      role="list"
+                      aria-label={`${item.label} submenu`}
+                    >
+                      {item.children.map(child => (
+                        <li key={child.label}>
+                          <Link
+                            href={child.href}
+                            className="hover:text-burgundy block px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50"
+                          >
+                            {child.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              ))}
+            </nav>
+          </div>
+          {/* Right: CTA Buttons + AIESR Logo */}
+          <div className="flex flex-shrink-0 items-center space-x-6">
+            {" "}
+            <div className="hidden items-center space-x-6 lg:flex">
+              <Button size="sm">Apply Now</Button>
+              {/* Right: AIESR Logo (Secondary) */}
+              <AiesrLogoSecondary size={200} />
             </div>
-          </button>
-        </div>{" "}
-      </div>{" "}
+            {/* Mobile Menu Toggle */}
+            <button
+              className="p-2 lg:hidden"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label={isMobileMenuOpen ? "Close mobile menu" : "Open mobile menu"}
+              {...mobileToggleAriaProps}
+            >
+              <div className="relative flex h-5 w-6 flex-col justify-between">
+                <span
+                  className={cn(
+                    "bg-burgundy h-0.5 w-full transition-all duration-300",
+                    isMobileMenuOpen ? "translate-y-2 rotate-45" : ""
+                  )}
+                />
+                <span
+                  className={cn(
+                    "bg-burgundy h-0.5 w-full transition-all duration-300",
+                    isMobileMenuOpen ? "opacity-0" : ""
+                  )}
+                />
+                <span
+                  className={cn(
+                    "bg-burgundy h-0.5 w-full transition-all duration-300",
+                    isMobileMenuOpen ? "-translate-y-2 -rotate-45" : ""
+                  )}
+                />
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+
       {/* Mobile Menu */}
       <div
         id="mobile-menu"
@@ -196,7 +197,8 @@ export const Header: React.FC = () => {
                   </div>
                 )}
               </div>
-            ))}{" "}
+            ))}
+
             {/* Mobile CTA Buttons */}
             <div className="space-y-3 pt-4">
               <Button className="w-full">Apply Now</Button>
