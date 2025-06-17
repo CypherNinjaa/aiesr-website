@@ -58,6 +58,39 @@ export const ContactSection: React.FC = () => {
   };
   const programOptions = [{ value: "", label: "Select a program" }, ...PROGRAM_OPTIONS];
 
+  // Handler functions for contact actions
+  const handleContactAction = (actionType: string, details: string[]) => {
+    switch (actionType) {
+      case "Send Email":
+        // Open email client with multiple recipients
+        const emailAddresses = details.filter(email => email.includes("@")).join(",");
+        window.open(`mailto:${emailAddresses}`, "_blank");
+        break;
+
+      case "Call Now":
+        // Open phone dialer with the first phone number
+        const phoneNumber = details[0]?.replace(/\s+/g, "");
+        window.open(`tel:${phoneNumber}`, "_blank");
+        break;
+
+      case "Get Directions":
+        // Open Google Maps with the address
+        const address = details.join(", ");
+        const encodedAddress = encodeURIComponent(address);
+        window.open(`https://www.google.com/maps/search/?api=1&query=${encodedAddress}`, "_blank");
+        break;
+
+      case "Start Chat":
+        // You can replace this with your actual chat system
+        // For now, it opens WhatsApp or a contact form
+        window.open(`https://wa.me/+91${contactPhones[0]?.replace(/\D/g, "")}`, "_blank");
+        break;
+
+      default:
+        console.log("Unknown action:", actionType);
+    }
+  };
+
   const contactInfo = [
     {
       icon: "📧",
@@ -227,8 +260,13 @@ export const ContactSection: React.FC = () => {
                             {detail}
                           </p>
                         ))}
-                      </div>
-                      <Button variant="outline" size="sm" className="w-full">
+                      </div>{" "}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full"
+                        onClick={() => handleContactAction(item.action, item.details)}
+                      >
                         {item.action}
                       </Button>
                     </CardContent>
