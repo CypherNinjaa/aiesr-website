@@ -40,9 +40,8 @@ export class StorageService {
       // Generate unique filename
       const fileExt = file.name.split(".").pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-      const filePath = folder ? `${folder}/${fileName}` : fileName;
-
-      // Upload file to Supabase Storage
+      const filePath = folder ? `${folder}/${fileName}` : fileName; // Upload file to Supabase Storage
+      console.log("Attempting to upload to bucket:", bucket, "path:", filePath);
       const { data, error } = await supabase.storage.from(bucket).upload(filePath, file, {
         cacheControl: "3600",
         upsert: false,
@@ -50,6 +49,17 @@ export class StorageService {
 
       if (error) {
         console.error("Storage upload error:", error);
+        console.error("Error details:", JSON.stringify(error, null, 2));
+        console.error(
+          "Bucket:",
+          bucket,
+          "Path:",
+          filePath,
+          "File size:",
+          file.size,
+          "File type:",
+          file.type
+        );
         return {
           success: false,
           error: `Upload failed: ${error.message}`,

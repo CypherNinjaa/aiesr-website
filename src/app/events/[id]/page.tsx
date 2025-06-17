@@ -103,6 +103,84 @@ export default function EventPage({ params }: EventPageProps) {
     isEventPast,
   });
 
+  // Quick Action Handlers
+  const handleAddToCalendar = () => {
+    const startDate = new Date(event.date);
+    const endDate = event.endDate
+      ? new Date(event.endDate)
+      : new Date(startDate.getTime() + 2 * 60 * 60 * 1000); // Default 2 hours if no end date
+
+    // Format dates for calendar (YYYYMMDDTHHMMSSZ)
+    const formatCalendarDate = (date: Date) => {
+      return date.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+    };
+
+    const calendarData = {
+      text: event.title,
+      dates: `${formatCalendarDate(startDate)}/${formatCalendarDate(endDate)}`,
+      details: event.description,
+      location: event.location,
+    };
+
+    // Create Google Calendar URL
+    const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(calendarData.text)}&dates=${calendarData.dates}&details=${encodeURIComponent(calendarData.details)}&location=${encodeURIComponent(calendarData.location)}`;
+
+    window.open(googleCalendarUrl, "_blank");
+  };
+
+  const handleShareEvent = () => {
+    const shareData = {
+      title: event.title,
+      text: `${event.title} - ${event.shortDescription}`,
+      url: window.location.href,
+    };
+
+    // Check if native sharing is supported
+    if (navigator.share) {
+      navigator.share(shareData).catch(error => {
+        console.log("Error sharing:", error);
+        // Fallback to copying link
+        fallbackShareEvent();
+      });
+    } else {
+      // Fallback for browsers that don't support Web Share API
+      fallbackShareEvent();
+    }
+  };
+
+  const fallbackShareEvent = () => {
+    // Copy link to clipboard
+    navigator.clipboard
+      .writeText(window.location.href)
+      .then(() => {
+        // Create a temporary notification
+        const notification = document.createElement("div");
+        notification.textContent = "Event link copied to clipboard!";
+        notification.style.cssText =
+          "position:fixed;top:20px;right:20px;background:#10b981;color:white;padding:12px 24px;border-radius:8px;z-index:1000;font-family:sans-serif;";
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+          document.body.removeChild(notification);
+        }, 3000);
+      })
+      .catch(() => {
+        // If clipboard API fails, show a modal with social share options
+        const shareUrl = encodeURIComponent(window.location.href);
+        const shareText = encodeURIComponent(`${event.title} - ${event.shortDescription}`);
+
+        // Open Twitter share in new window
+        const twitterUrl = `https://twitter.com/intent/tweet?url=${shareUrl}&text=${shareText}`;
+        window.open(twitterUrl, "_blank", "width=600,height=400");
+      });
+  };
+
+  const handleGetDirections = () => {
+    const address = encodeURIComponent(event.location);
+    const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${address}`;
+    window.open(googleMapsUrl, "_blank");
+  };
+
   return (
     <div className="min-h-screen pt-20">
       {/* Breadcrumb */}
@@ -460,24 +538,27 @@ export default function EventPage({ params }: EventPageProps) {
                           📄 Download PDF Brochure
                         </Button>
                       </a>
-                    )}
+                    )}{" "}
                     <Button
                       variant="outline"
                       className="w-full border-red-800 bg-white text-red-800 transition-colors hover:bg-red-800 hover:text-white"
+                      onClick={handleAddToCalendar}
                     >
-                      Add to Calendar
+                      📅 Add to Calendar
                     </Button>
                     <Button
                       variant="outline"
                       className="w-full border-red-800 bg-white text-red-800 transition-colors hover:bg-red-800 hover:text-white"
+                      onClick={handleShareEvent}
                     >
-                      Share Event
+                      📤 Share Event
                     </Button>
                     <Button
                       variant="outline"
                       className="w-full border-red-800 bg-white text-red-800 transition-colors hover:bg-red-800 hover:text-white"
+                      onClick={handleGetDirections}
                     >
-                      Get Directions
+                      🗺️ Get Directions
                     </Button>
                   </CardContent>
                 </Card>

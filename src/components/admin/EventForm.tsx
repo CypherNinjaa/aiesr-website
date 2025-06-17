@@ -150,10 +150,8 @@ export default function EventForm({ eventId }: EventFormProps) {
 
     try {
       setPosterUploadProgress(true);
-      setUploadError("");
-
-      // Upload to Supabase Storage
-      const result = await StorageService.uploadImage(file, "event-posters", "events");
+      setUploadError(""); // Upload to Supabase Storage
+      const result = await StorageService.uploadImage(file, "event-images", "posters");
 
       if (result.success && result.url) {
         setPosterImagePreview(result.url);

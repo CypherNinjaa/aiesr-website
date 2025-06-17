@@ -451,14 +451,20 @@ export default function EventsPage() {
                             <div className="flex flex-col gap-3 border-t pt-4 sm:flex-row">
                               <Link href={`/events/${event.id}`} className="flex-1">
                                 <Button className="w-full">View Full Details</Button>
-                              </Link>
-                              {event.registrationRequired && event.registrationLink && (
-                                <Link href={event.registrationLink} className="flex-1">
-                                  <Button variant="outline" className="w-full">
-                                    Register Now
-                                  </Button>
-                                </Link>
-                              )}
+                              </Link>{" "}
+                              {event.registrationRequired &&
+                                (event.customRegistrationLink || event.registrationLink) && (
+                                  <Link
+                                    href={
+                                      event.customRegistrationLink || event.registrationLink || "#"
+                                    }
+                                    className="flex-1"
+                                  >
+                                    <Button variant="outline" className="w-full">
+                                      Register Now
+                                    </Button>
+                                  </Link>
+                                )}
                             </div>
 
                             {event.capacity && event.registeredCount !== undefined && (

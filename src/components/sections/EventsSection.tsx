@@ -233,11 +233,13 @@ export default function EventsSection() {
   });
 
   const featuredEvent = events.find((event: Event) => event.featured);
-
   const handleRegistration = (event: Event) => {
     // Track analytics
-    if (event.registrationLink) {
-      window.open(event.registrationLink, "_blank");
+    // Check for custom registration link first (new field), then fall back to legacy field
+    const registrationUrl = event.customRegistrationLink || event.registrationLink;
+
+    if (registrationUrl) {
+      window.open(registrationUrl, "_blank");
     } else {
       // Use the default registration URL from environment
       window.open(process.env.NEXT_PUBLIC_REGISTRATION_URL, "_blank");
