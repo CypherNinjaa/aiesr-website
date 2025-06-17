@@ -3,16 +3,8 @@
 import Link from "next/link";
 import React, { useState } from "react";
 import { useAchievements, useDeleteAchievement } from "@/hooks/useAchievements";
+import { useCategories } from "@/hooks/useCategories";
 import { Achievement } from "@/types";
-
-// Achievement category icons mapping
-const categoryIcons = {
-  student: "🎓",
-  faculty: "👨‍🏫",
-  institutional: "🏛️",
-  research: "🔬",
-  award: "🏆",
-};
 
 // Achievement type badges
 const typeBadges = {
@@ -50,9 +42,10 @@ const AchievementRow: React.FC<AchievementRowProps> = ({ achievement, onDelete }
 
   return (
     <tr className="hover:bg-gray-50">
+      {" "}
       <td className="px-6 py-4 whitespace-nowrap">
         <div className="flex items-center">
-          <div className="mr-3 text-2xl">{categoryIcons[achievement.category]}</div>
+          <div className="mr-3 text-2xl">{achievement.category?.icon_emoji || "🏆"}</div>
           <div>
             <div className="text-sm font-medium text-gray-900">{achievement.title}</div>
             <div className="text-sm text-gray-500">{achievement.achiever_name}</div>
@@ -124,9 +117,11 @@ export const AchievementsList: React.FC = () => {
     error,
   } = useAchievements({
     ...(filters.status && { status: filters.status }),
-    ...(filters.category && { category: filters.category }),
+    ...(filters.category && { category_id: filters.category }),
     ...(filters.achiever_type && { achiever_type: filters.achiever_type }),
   });
+
+  const { data: categories } = useCategories();
   const deleteMutation = useDeleteAchievement();
 
   const achievements = achievementsData?.data || [];
@@ -201,7 +196,7 @@ export const AchievementsList: React.FC = () => {
               className="mb-1 block text-sm font-medium text-gray-700"
             >
               Category
-            </label>
+            </label>{" "}
             <select
               id="category-filter"
               value={filters.category}
@@ -209,11 +204,11 @@ export const AchievementsList: React.FC = () => {
               className="focus:border-burgundy focus:ring-burgundy w-full rounded-md border-gray-300 shadow-sm"
             >
               <option value="">All Categories</option>
-              <option value="student">Student</option>
-              <option value="faculty">Faculty</option>
-              <option value="institutional">Institutional</option>
-              <option value="research">Research</option>
-              <option value="award">Award</option>
+              {categories?.map(category => (
+                <option key={category.id} value={category.id}>
+                  {category.icon_emoji} {category.name}
+                </option>
+              ))}
             </select>
           </div>
           <div>

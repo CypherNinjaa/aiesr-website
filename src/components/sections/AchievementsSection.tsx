@@ -7,15 +7,6 @@ import { Card, CardContent } from "@/components/ui/Card";
 import { useFeaturedAchievements, useAchievementStats } from "@/hooks/useAchievements";
 import { Achievement } from "@/types";
 
-// Achievement category icons mapping
-const categoryIcons = {
-  student: "🎓",
-  faculty: "👨‍🏫",
-  institutional: "🏛️",
-  research: "🔬",
-  award: "🏆",
-};
-
 // Achievement type badges
 const typeBadges = {
   award: { label: "Award", class: "bg-yellow-100 text-yellow-800" },
@@ -78,33 +69,28 @@ const AchievementCard: React.FC<AchievementCardProps> = ({ achievement }) => {
               />
             </div>
           )}
-
-          {/* Category Icon and Type Badge */}
+          {/* Category Icon and Type Badge */}{" "}
           <div className="mb-4 flex items-center justify-between">
             <div className="text-4xl transition-transform duration-300 group-hover:scale-110">
-              {categoryIcons[achievement.category]}
+              {achievement.category?.icon_emoji || "🏆"}
             </div>
             <span className={`rounded-full px-2 py-1 text-xs font-semibold ${typeBadge.class}`}>
               {typeBadge.label}
             </span>
           </div>
-
           {/* Achievement Title */}
           <h3 className="font-primary text-burgundy group-hover:text-gold mb-3 line-clamp-2 text-xl font-bold transition-colors duration-300">
             {achievement.title}
           </h3>
-
           {/* Achiever Information */}
           <div className="mb-3">
             <p className="text-sm font-semibold text-gray-700">{achievement.achiever_name}</p>
             <p className="text-xs text-gray-500 capitalize">{achievement.achiever_type}</p>
           </div>
-
           {/* Description */}
           <p className="mb-4 line-clamp-3 text-sm leading-relaxed text-gray-600">
             {achievement.description}
           </p>
-
           {/* Achievement Date */}
           <div className="flex items-center justify-between">
             <span className="text-xs text-gray-500">
@@ -117,7 +103,6 @@ const AchievementCard: React.FC<AchievementCardProps> = ({ achievement }) => {
               <span className="text-gold text-xs font-semibold">#{achievement.details.rank}</span>
             )}
           </div>
-
           {/* Additional Details */}
           {achievement.details && (
             <div className="mt-3 border-t border-gray-100 pt-3">

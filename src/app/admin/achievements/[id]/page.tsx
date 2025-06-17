@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useParams } from "next/navigation";
 import React from "react";
 import { AchievementForm } from "@/components/admin/achievements/AchievementForm";
@@ -27,11 +28,12 @@ export default function EditAchievementPage() {
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+          {" "}
           <div className="py-12 text-center">
             <div className="mb-4 text-red-600">⚠️ Achievement not found</div>
-            <a href="/admin/achievements" className="text-burgundy hover:text-burgundy/80">
+            <Link href="/admin/achievements" className="text-burgundy hover:text-burgundy/80">
               ← Back to Achievements
-            </a>
+            </Link>
           </div>
         </div>
       </div>
@@ -44,12 +46,12 @@ export default function EditAchievementPage() {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Edit Achievement</h1>
           <p className="mt-2 text-gray-600">Update achievement details</p>
-        </div>
+        </div>{" "}
         <AchievementForm
           initialData={{
             title: achievement.title,
             description: achievement.description,
-            category: achievement.category,
+            category_id: achievement.category_id,
             type: achievement.type,
             achiever_name: achievement.achiever_name,
             achiever_type: achievement.achiever_type,
