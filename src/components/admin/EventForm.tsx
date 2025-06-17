@@ -340,40 +340,119 @@ export default function EventForm({ eventId }: EventFormProps) {
                 <option value="completed">Completed</option>
               </select>
             </div>{" "}
-            <div>
-              <label htmlFor="event-date" className="mb-2 block text-sm font-medium text-gray-700">
-                Start Date & Time *
-              </label>
-              <input
-                id="event-date"
-                type="datetime-local"
-                required
-                value={formData.date ? new Date(formData.date).toISOString().slice(0, 16) : ""}
-                onChange={e => handleInputChange("date", new Date(e.target.value))}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              />
-            </div>{" "}
-            <div>
-              <label
-                htmlFor="event-end-date"
-                className="mb-2 block text-sm font-medium text-gray-700"
-              >
-                End Date & Time
-              </label>
-              <input
-                id="event-end-date"
-                type="datetime-local"
-                value={
-                  formData.endDate ? new Date(formData.endDate).toISOString().slice(0, 16) : ""
-                }
-                onChange={e =>
-                  handleInputChange(
-                    "endDate",
-                    e.target.value ? new Date(e.target.value) : undefined
-                  )
-                }
-                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              />
+            {/* Start Date and Time */}
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div>
+                <label
+                  htmlFor="start-date"
+                  className="mb-2 block text-sm font-medium text-gray-700"
+                >
+                  Start Date *
+                </label>
+                <input
+                  id="start-date"
+                  type="date"
+                  required
+                  value={formData.date ? new Date(formData.date).toISOString().slice(0, 10) : ""}
+                  onChange={e => {
+                    const newDate = new Date(e.target.value);
+                    if (formData.date) {
+                      // Preserve existing time
+                      const existingTime = new Date(formData.date);
+                      newDate.setHours(existingTime.getHours());
+                      newDate.setMinutes(existingTime.getMinutes());
+                    }
+                    handleInputChange("date", newDate);
+                  }}
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="start-time"
+                  className="mb-2 block text-sm font-medium text-gray-700"
+                >
+                  Start Time *
+                </label>
+                <input
+                  id="start-time"
+                  type="time"
+                  required
+                  value={formData.date ? new Date(formData.date).toTimeString().slice(0, 5) : ""}
+                  onChange={e => {
+                    const [hours, minutes] = e.target.value.split(":");
+                    const newDate = formData.date ? new Date(formData.date) : new Date();
+                    newDate.setHours(parseInt(hours, 10));
+                    newDate.setMinutes(parseInt(minutes, 10));
+                    handleInputChange("date", newDate);
+                  }}
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                />
+              </div>
+            </div>
+            {/* End Date and Time */}
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div>
+                <label htmlFor="end-date" className="mb-2 block text-sm font-medium text-gray-700">
+                  End Date
+                </label>
+                <input
+                  id="end-date"
+                  type="date"
+                  value={
+                    formData.endDate ? new Date(formData.endDate).toISOString().slice(0, 10) : ""
+                  }
+                  onChange={e => {
+                    if (e.target.value) {
+                      const newDate = new Date(e.target.value);
+                      if (formData.endDate) {
+                        // Preserve existing time
+                        const existingTime = new Date(formData.endDate);
+                        newDate.setHours(existingTime.getHours());
+                        newDate.setMinutes(existingTime.getMinutes());
+                      } else {
+                        // Default to 2 hours after start time
+                        const startDate = formData.date ? new Date(formData.date) : new Date();
+                        newDate.setHours(startDate.getHours() + 2);
+                        newDate.setMinutes(startDate.getMinutes());
+                      }
+                      handleInputChange("endDate", newDate);
+                    } else {
+                      handleInputChange("endDate", undefined);
+                    }
+                  }}
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                />
+              </div>
+              <div>
+                <label htmlFor="end-time" className="mb-2 block text-sm font-medium text-gray-700">
+                  End Time
+                </label>
+                <input
+                  id="end-time"
+                  type="time"
+                  value={
+                    formData.endDate ? new Date(formData.endDate).toTimeString().slice(0, 5) : ""
+                  }
+                  onChange={e => {
+                    if (e.target.value) {
+                      const [hours, minutes] = e.target.value.split(":");
+                      const newDate = formData.endDate
+                        ? new Date(formData.endDate)
+                        : formData.date
+                          ? new Date(formData.date)
+                          : new Date();
+                      newDate.setHours(parseInt(hours, 10));
+                      newDate.setMinutes(parseInt(minutes, 10));
+                      handleInputChange("endDate", newDate);
+                    } else if (formData.endDate) {
+                      // If time is cleared but date exists, keep the date but clear time
+                      handleInputChange("endDate", undefined);
+                    }
+                  }}
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                />
+              </div>
             </div>{" "}
             <div>
               <label
