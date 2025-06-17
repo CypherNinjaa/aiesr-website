@@ -4,7 +4,7 @@ import {
   HeroSection,
   WhyChooseSection,
   ProgramsSection,
-  FacultySection,
+  // FacultySection, // Temporarily hidden
   TestimonialsSection,
   ContactSection,
   EventsSection,
@@ -35,17 +35,19 @@ export default function Home() {
           {/* student success story */}
           <TestimonialsSection />
         </SectionSuspense>
-      </LazyLoadSection>
-      <LazyLoadSection>
+      </LazyLoadSection>      <LazyLoadSection>
         <SectionSuspense>
           <ProgramsSection />
         </SectionSuspense>
       </LazyLoadSection>{" "}
+      {/* Temporarily hidden Faculty Section */}
+      {/*
       <LazyLoadSection>
         <SectionSuspense>
           <FacultySection />
         </SectionSuspense>
       </LazyLoadSection>
+      */}
       <LazyLoadSection>
         <SectionSuspense>
           <ContactSection />
