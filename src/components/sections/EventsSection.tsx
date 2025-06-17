@@ -3,12 +3,13 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { useUpcomingEvents } from "@/hooks/useEvents";
 import { formatDate } from "@/lib/utils";
-import { Event } from "@/types";
+import { CategoryService } from "@/services/category";
+import { Event, Category } from "@/types";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -37,7 +38,14 @@ const cardVariants = {
   },
 };
 
-const getEventTypeColor = (type: Event["type"]) => {
+const getEventTypeColor = (event: Event) => {
+  // Use category if available, fallback to deprecated type field
+  if (event.category?.color_class) {
+    return event.category.color_class;
+  }
+
+  // Fallback to old type-based colors for backward compatibility
+  const type = event.type;
   switch (type) {
     case "academic":
       return "bg-blue-100 text-blue-800";
@@ -52,7 +60,14 @@ const getEventTypeColor = (type: Event["type"]) => {
   }
 };
 
-const getEventTypeIcon = (type: Event["type"]) => {
+const getEventTypeIcon = (event: Event) => {
+  // Use category if available, fallback to deprecated type field
+  if (event.category?.icon_emoji) {
+    return event.category.icon_emoji;
+  }
+
+  // Fallback to old type-based icons for backward compatibility
+  const type = event.type;
   switch (type) {
     case "academic":
       return "🎓";
@@ -184,6 +199,21 @@ export default function EventsSection() {
   const [selectedType, setSelectedType] = useState<Event["type"] | "all">("all");
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  // Load categories
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const activeCategories = await CategoryService.getActiveCategories();
+        setCategories(activeCategories);
+      } catch (error) {
+        console.error("Failed to load categories:", error);
+      }
+    };
+
+    loadCategories();
+  }, []);
 
   // Fetch upcoming events from Supabase
   const { data: allEvents, isLoading, error } = useUpcomingEvents(20);
@@ -224,12 +254,19 @@ export default function EventsSection() {
       (event: Event) => new Date(event.date) >= now && new Date(event.date) <= threeMonthsFromNow
     )
     .sort((a: Event, b: Event) => new Date(a.date).getTime() - new Date(b.date).getTime());
-
   const filteredEvents = upcomingEvents.filter((event: Event) => {
-    const typeMatch = selectedType === "all" || event.type === selectedType;
+    // Type/Category filter - check both new category system and old type system
+    if (selectedType !== "all") {
+      const matchesCategory =
+        event.category?.slug === selectedType ||
+        event.category?.name.toLowerCase() === selectedType;
+      const matchesOldType = event.type === selectedType;
+      if (!matchesCategory && !matchesOldType) return false;
+    }
+
     const dateMatch =
       !selectedDate || new Date(event.date).toDateString() === selectedDate.toDateString();
-    return typeMatch && dateMatch;
+    return dateMatch;
   });
 
   const featuredEvent = events.find((event: Event) => event.featured);
@@ -287,7 +324,7 @@ export default function EventsSection() {
                     className="mb-2 block text-sm font-medium text-gray-700"
                   >
                     Event Type
-                  </label>
+                  </label>{" "}
                   <select
                     id="event-type-filter-desktop"
                     value={selectedType}
@@ -295,10 +332,11 @@ export default function EventsSection() {
                     className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="all">All Events</option>
-                    <option value="academic">🎓 Academic</option>
-                    <option value="cultural">🎭 Cultural</option>
-                    <option value="research">🔬 Research</option>
-                    <option value="workshop">🛠️ Workshop</option>
+                    {categories.map(category => (
+                      <option key={category.id} value={category.slug}>
+                        {category.icon_emoji} {category.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 {selectedDate && (
@@ -352,36 +390,28 @@ export default function EventsSection() {
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg">Event Statistics</CardTitle>
-              </CardHeader>
+              </CardHeader>{" "}
               <CardContent className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">Total Events</span>
-                  <span className="font-semibold text-blue-600">{events.length}</span>
+                  <span className="font-semibold text-blue-600">{filteredEvents.length}</span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Academic</span>
-                  <span className="font-semibold">
-                    {events.filter((e: Event) => e.type === "academic").length}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Cultural</span>
-                  <span className="font-semibold">
-                    {events.filter((e: Event) => e.type === "cultural").length}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Research</span>
-                  <span className="font-semibold">
-                    {events.filter((e: Event) => e.type === "research").length}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Workshop</span>
-                  <span className="font-semibold">
-                    {events.filter((e: Event) => e.type === "workshop").length}
-                  </span>
-                </div>
+                {/* Dynamic category statistics - only show categories with events */}
+                {categories
+                  .filter(
+                    category =>
+                      events.filter((e: Event) => e.category?.id === category.id).length > 0
+                  )
+                  .map(category => (
+                    <div key={category.id} className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">
+                        {category.icon_emoji} {category.name}
+                      </span>
+                      <span className="font-semibold">
+                        {events.filter((e: Event) => e.category?.id === category.id).length}
+                      </span>
+                    </div>
+                  ))}
               </CardContent>
             </Card>
           </div>
@@ -422,7 +452,7 @@ export default function EventsSection() {
                         <span className="text-sm sm:text-base">{featuredEvent.location}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span>{getEventTypeIcon(featuredEvent.type)}</span>
+                        <span>{getEventTypeIcon(featuredEvent)}</span>
                         <span className="text-sm capitalize sm:text-base">
                           {featuredEvent.type}
                         </span>
@@ -480,7 +510,7 @@ export default function EventsSection() {
                       className="mb-2 block text-sm font-medium text-gray-700"
                     >
                       Event Type
-                    </label>
+                    </label>{" "}
                     <select
                       id="event-type-filter-mobile"
                       value={selectedType}
@@ -488,10 +518,11 @@ export default function EventsSection() {
                       className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
                     >
                       <option value="all">All Events</option>
-                      <option value="academic">🎓 Academic</option>
-                      <option value="cultural">🎭 Cultural</option>
-                      <option value="research">🔬 Research</option>
-                      <option value="workshop">🛠️ Workshop</option>
+                      {categories.map(category => (
+                        <option key={category.id} value={category.slug}>
+                          {category.icon_emoji} {category.name}
+                        </option>
+                      ))}
                     </select>
                   </div>
                   {selectedDate && (
@@ -576,13 +607,14 @@ export default function EventsSection() {
                             </div>
                           )}
                           <div className="flex-1">
+                            {" "}
                             <div className="mb-3 flex items-center gap-2">
                               <span
                                 className={`rounded-full px-2 py-1 text-xs font-medium ${getEventTypeColor(
-                                  event.type
+                                  event
                                 )}`}
                               >
-                                {getEventTypeIcon(event.type)} {event.type}
+                                {getEventTypeIcon(event)} {event.category?.name || event.type}
                               </span>
                               {event.featured && (
                                 <span className="text-sm text-yellow-500">⭐</span>
