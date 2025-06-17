@@ -11,6 +11,31 @@ export default function AdminDashboard() {
         </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {/* Achievements Management */}
+          <Link href="/admin/achievements" className="group">
+            <div className="rounded-lg bg-white p-6 shadow-md transition-shadow hover:shadow-lg">
+              <div className="mb-4 flex items-center">
+                <div className="rounded-lg bg-yellow-100 p-3">
+                  <span className="text-2xl">🏆</span>
+                </div>
+                <div className="ml-4">
+                  <h3 className="text-lg font-semibold text-gray-900 group-hover:text-yellow-600">
+                    Achievements
+                  </h3>
+                  <p className="text-gray-500">Manage student & faculty achievements</p>
+                </div>
+              </div>
+              <div className="text-sm text-gray-600">
+                • Add new achievements
+                <br />
+                • Edit existing records
+                <br />
+                • Feature achievements
+                <br />• Manage categories
+              </div>
+            </div>
+          </Link>
+
           {/* Events Management */}
           <Link href="/admin/events" className="group">
             <div className="rounded-lg bg-white p-6 shadow-md transition-shadow hover:shadow-lg">

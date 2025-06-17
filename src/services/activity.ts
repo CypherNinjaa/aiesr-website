@@ -113,6 +113,7 @@ class ActivityService {
   async getActivityStats(): Promise<{
     totalActivities: number;
     eventActivities: number;
+    achievementActivities: number;
     systemActivities: number;
     userActivities: number;
     recentActivities: number; // last 24 hours
@@ -125,6 +126,11 @@ class ActivityService {
       .from("admin_activity_logs")
       .select("*", { count: "exact", head: true })
       .eq("resource_type", "event");
+
+    const { count: achievements } = await supabase
+      .from("admin_activity_logs")
+      .select("*", { count: "exact", head: true })
+      .eq("resource_type", "achievement");
 
     const { count: system } = await supabase
       .from("admin_activity_logs")
@@ -146,6 +152,7 @@ class ActivityService {
     return {
       totalActivities: total || 0,
       eventActivities: events || 0,
+      achievementActivities: achievements || 0,
       systemActivities: system || 0,
       userActivities: users || 0,
       recentActivities: recent || 0,

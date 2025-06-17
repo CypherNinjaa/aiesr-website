@@ -15,7 +15,9 @@ import {
 } from "@/hooks/useActivity";
 
 export default function ActivityPage() {
-  const [filter, setFilter] = useState<"all" | "events" | "system" | "users">("all");
+  const [filter, setFilter] = useState<"all" | "events" | "achievements" | "system" | "users">(
+    "all"
+  );
   const [limit] = useState(50);
 
   // Fetch real activity data
@@ -87,7 +89,7 @@ export default function ActivityPage() {
           <Link href="/admin">
             <Button variant="outline">← Back to Dashboard</Button>
           </Link>
-        </div>
+        </div>{" "}
         {/* Filters */}
         <Card className="mb-8 border-0 shadow-lg">
           <CardContent className="p-6">
@@ -105,6 +107,13 @@ export default function ActivityPage() {
                 size="sm"
               >
                 Event Activities
+              </Button>
+              <Button
+                variant={filter === "achievements" ? "default" : "outline"}
+                onClick={() => setFilter("achievements")}
+                size="sm"
+              >
+                Achievement Activities
               </Button>
               <Button
                 variant={filter === "system" ? "default" : "outline"}

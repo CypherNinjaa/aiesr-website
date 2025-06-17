@@ -38,3 +38,9 @@ export const ContactSection = lazy(() =>
 );
 
 export const EventsSection = lazy(() => import("@/components/sections/EventsSection"));
+
+export const AchievementsSection = lazy(() =>
+  import("@/components/sections/AchievementsSection").then(module => ({
+    default: module.AchievementsSection,
+  }))
+);

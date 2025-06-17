@@ -23,7 +23,7 @@ export default function Home() {
         <SectionSuspense>
           <EventsSection />
         </SectionSuspense>
-      </LazyLoadSection>
+      </LazyLoadSection>{" "}
       <LazyLoadSection>
         <SectionSuspense>
           <WhyChooseSection />

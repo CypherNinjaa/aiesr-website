@@ -196,6 +196,58 @@ export interface Database {
           last_login?: string | null;
         };
       };
+      achievements: {
+        Row: {
+          id: string;
+          title: string;
+          description: string;
+          category: "student" | "faculty" | "institutional" | "research" | "award";
+          type: "award" | "publication" | "recognition" | "milestone" | "collaboration";
+          achiever_name: string;
+          achiever_type: "student" | "faculty" | "department" | "institution";
+          date_achieved: string;
+          image_url: string | null;
+          details: Json | null; // Additional structured data
+          is_featured: boolean;
+          sort_order: number;
+          status: "draft" | "published" | "archived";
+          created_at: string;
+          updated_at: string;
+          created_by: string;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          description: string;
+          category: "student" | "faculty" | "institutional" | "research" | "award";
+          type: "award" | "publication" | "recognition" | "milestone" | "collaboration";
+          achiever_name: string;
+          achiever_type: "student" | "faculty" | "department" | "institution";
+          date_achieved: string;
+          image_url?: string | null;
+          details?: Json | null;
+          is_featured?: boolean;
+          sort_order?: number;
+          status?: "draft" | "published" | "archived";
+          created_by: string;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          description?: string;
+          category?: "student" | "faculty" | "institutional" | "research" | "award";
+          type?: "award" | "publication" | "recognition" | "milestone" | "collaboration";
+          achiever_name?: string;
+          achiever_type?: "student" | "faculty" | "department" | "institution";
+          date_achieved?: string;
+          image_url?: string | null;
+          details?: Json | null;
+          is_featured?: boolean;
+          sort_order?: number;
+          status?: "draft" | "published" | "archived";
+          updated_at?: string;
+        };
+      };
     };
   };
 }
