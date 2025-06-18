@@ -1,13 +1,13 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { Button } from "@/components/ui/Button";
-import { useSiteName, useContactEmail, useSocialMedia } from "@/contexts/PublicSettingsContext";
+import { useContactEmail, useSocialMedia } from "@/contexts/PublicSettingsContext";
 
 export const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
-  const siteName = useSiteName();
   const contactEmail = useContactEmail();
   const socialMedia = useSocialMedia();
   const quickLinks = [
@@ -57,19 +57,17 @@ export const Footer: React.FC = () => {
         {/* Main Footer Content */}
         <div className="container mx-auto px-4 py-16">
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
-            {/* Institute Information */}
+            {" "}
+            {/* Institute Information */}{" "}
             <div className="lg:col-span-1">
-              {" "}
               <div className="mb-6">
-                <div className="mb-4 flex items-center space-x-3">
-                  <div className="bg-burgundy flex h-12 w-12 items-center justify-center rounded-full">
-                    <span className="font-primary text-lg font-bold text-white">A</span>
-                  </div>
-                  <div>
-                    <h3 className="font-primary text-xl font-bold text-white">AIESR</h3>
-                    <p className="text-xs leading-tight text-gray-400">{siteName}</p>
-                  </div>
-                </div>
+                <Image
+                  src="/AIESR logo .png"
+                  alt="AIESR Logo"
+                  width={160}
+                  height={160}
+                  className="object-contain"
+                />
               </div>
               <p className="mb-6 leading-relaxed text-gray-400">
                 Nurturing literary excellence and critical thinking through comprehensive programs
@@ -107,7 +105,6 @@ export const Footer: React.FC = () => {
                 </div>
               </div>
             </div>
-
             {/* Quick Links */}
             <div>
               <h4 className="mb-6 text-lg font-semibold text-white">Quick Links</h4>
@@ -124,7 +121,6 @@ export const Footer: React.FC = () => {
                 ))}
               </ul>
             </div>
-
             {/* Academic Programs */}
             <div>
               <h4 className="mb-6 text-lg font-semibold text-white">Programs</h4>
@@ -141,7 +137,6 @@ export const Footer: React.FC = () => {
                 ))}
               </ul>
             </div>
-
             {/* Resources & Newsletter */}
             <div>
               <h4 className="mb-6 text-lg font-semibold text-white">Resources</h4>
