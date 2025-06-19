@@ -279,11 +279,11 @@ export const DynamicTestimonialsSection: React.FC = () => {
               className="bg-gold text-burgundy border-0 font-semibold hover:bg-yellow-600"
             >
               Start Your Application
-            </Button>
+            </Button>{" "}
             <Button
               variant="outline"
               size="lg"
-              className="hover:text-burgundy border-white text-white hover:bg-white"
+              className="border-white font-semibold text-white transition-colors duration-300 hover:border-white hover:bg-white hover:!text-[#8b0000]"
               onClick={() => (window.location.href = "/submit-testimonial")}
             >
               Share Your Story
