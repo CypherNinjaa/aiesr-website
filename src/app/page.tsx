@@ -5,10 +5,10 @@ import {
   WhyChooseSection,
   ProgramsSection,
   // FacultySection, // Temporarily hidden
-  TestimonialsSection,
   ContactSection,
   EventsSection,
 } from "@/components/sections";
+import { DynamicTestimonialsSection } from "@/components/sections/DynamicTestimonialsSection";
 import { SectionSuspense, LazyLoadSection } from "@/components/ui/SectionSuspense";
 
 export default function Home() {
@@ -28,11 +28,11 @@ export default function Home() {
         <SectionSuspense>
           <WhyChooseSection />
         </SectionSuspense>
-      </LazyLoadSection>
+      </LazyLoadSection>{" "}
       <LazyLoadSection>
         <SectionSuspense>
           {/* student success story */}
-          <TestimonialsSection />
+          <DynamicTestimonialsSection />
         </SectionSuspense>
       </LazyLoadSection>{" "}
       <LazyLoadSection>

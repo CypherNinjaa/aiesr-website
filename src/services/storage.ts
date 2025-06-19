@@ -193,4 +193,214 @@ export class StorageService {
     // Return original URL for external images
     return url;
   }
+
+  /**
+   * Upload a testimonial photo with validation and optimized settings
+   * @param file - The photo file to upload
+   * @param testimonialId - Optional testimonial ID for organizing files
+   * @returns Promise with upload result including optimized URLs
+   */
+  static async uploadTestimonialPhoto(
+    file: File,
+    testimonialId?: string
+  ): Promise<UploadResult & { thumbnailUrl?: string }> {
+    try {
+      // Validate file specifically for testimonials
+      const validationError = this.validateTestimonialPhoto(file);
+      if (validationError) {
+        return { success: false, error: validationError };
+      }
+
+      // Generate filename for testimonial photo
+      const fileExt = file.name.split(".").pop()?.toLowerCase();
+      const timestamp = Date.now();
+      const fileName = testimonialId
+        ? `${testimonialId}_${timestamp}.${fileExt}`
+        : `temp_${timestamp}.${fileExt}`;
+
+      // Organize into folders
+      const folder = testimonialId ? "approved" : "pending";
+      const filePath = `${folder}/${fileName}`;
+
+      console.log("Uploading testimonial photo:", { fileName, filePath, size: file.size });
+
+      // Upload to testimonial-photos bucket
+      const { data, error } = await supabase.storage
+        .from("testimonial-photos")
+        .upload(filePath, file, {
+          cacheControl: "3600",
+          upsert: false,
+          contentType: file.type,
+        });
+
+      if (error) {
+        console.error("Testimonial photo upload error:", error);
+        return {
+          success: false,
+          error: `Upload failed: ${error.message}`,
+        };
+      }
+
+      // Get public URL
+      const { data: publicUrlData } = supabase.storage
+        .from("testimonial-photos")
+        .getPublicUrl(filePath);
+
+      if (!publicUrlData.publicUrl) {
+        return {
+          success: false,
+          error: "Failed to get public URL for uploaded photo",
+        };
+      }
+
+      console.log("Testimonial photo uploaded successfully:", {
+        path: data.path,
+        url: publicUrlData.publicUrl,
+      });
+
+      // Generate thumbnail URL (optimized for profile display)
+      const thumbnailUrl = this.getOptimizedImageUrl(publicUrlData.publicUrl, {
+        width: 150,
+        height: 150,
+        quality: 80,
+        format: "webp",
+      });
+
+      return {
+        success: true,
+        url: publicUrlData.publicUrl,
+        path: data.path,
+        thumbnailUrl,
+      };
+    } catch (error) {
+      console.error("Error uploading testimonial photo:", error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Upload failed",
+      };
+    }
+  }
+
+  /**
+   * Move testimonial photo from pending to approved folder
+   * @param currentPath - Current file path in storage
+   * @param testimonialId - Testimonial ID for the new filename
+   * @returns Promise with new URL
+   */
+  static async approveTestimonialPhoto(
+    currentPath: string,
+    testimonialId: string
+  ): Promise<UploadResult> {
+    try {
+      // Extract filename and extension
+      const filename = currentPath.split("/").pop();
+      if (!filename) {
+        return { success: false, error: "Invalid file path" };
+      }
+
+      const fileExt = filename.split(".").pop();
+      const newFileName = `${testimonialId}_approved.${fileExt}`;
+      const newPath = `approved/${newFileName}`; // Move file from pending to approved
+      const { error } = await supabase.storage
+        .from("testimonial-photos")
+        .move(currentPath, newPath);
+
+      if (error) {
+        console.error("Error moving testimonial photo:", error);
+        return {
+          success: false,
+          error: `Failed to approve photo: ${error.message}`,
+        };
+      }
+
+      // Get new public URL
+      const { data: publicUrlData } = supabase.storage
+        .from("testimonial-photos")
+        .getPublicUrl(newPath);
+
+      return {
+        success: true,
+        url: publicUrlData.publicUrl,
+        path: newPath,
+      };
+    } catch (error) {
+      console.error("Error approving testimonial photo:", error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Approval failed",
+      };
+    }
+  }
+
+  /**
+   * Delete testimonial photo from storage
+   * @param filePath - Path to the file in storage
+   * @returns Promise with result
+   */
+  static async deleteTestimonialPhoto(filePath: string): Promise<UploadResult> {
+    try {
+      const { error } = await supabase.storage.from("testimonial-photos").remove([filePath]);
+
+      if (error) {
+        console.error("Error deleting testimonial photo:", error);
+        return {
+          success: false,
+          error: `Failed to delete photo: ${error.message}`,
+        };
+      }
+
+      console.log("Testimonial photo deleted successfully:", filePath);
+      return { success: true };
+    } catch (error) {
+      console.error("Error deleting testimonial photo:", error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Deletion failed",
+      };
+    }
+  }
+  /**
+   * Validate testimonial photo file
+   * @param file - File to validate
+   * @returns Error message if invalid, null if valid
+   */
+  private static validateTestimonialPhoto(file: File): string | null {
+    // Check file type - be more restrictive for testimonials
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+    if (!allowedTypes.includes(file.type)) {
+      return "Please upload a JPG, PNG, or WebP image for your photo";
+    }
+
+    // Check file size - 5MB limit for testimonials
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) {
+      return "Photo size must be less than 5MB";
+    }
+
+    // For testimonials, we'll do basic validation only
+    // Advanced dimension checking can be added later if needed
+    return null;
+  }
+
+  /**
+   * Extract file path from testimonial photo URL
+   * @param publicUrl - Public URL from Supabase storage
+   * @returns File path within the bucket
+   */
+  static extractTestimonialPhotoPath(publicUrl: string): string | null {
+    try {
+      const url = new URL(publicUrl);
+      const pathParts = url.pathname.split("/");
+      const bucketIndex = pathParts.indexOf("testimonial-photos");
+
+      if (bucketIndex === -1) {
+        return null;
+      }
+
+      return pathParts.slice(bucketIndex + 1).join("/");
+    } catch (error) {
+      console.error("Error extracting file path from URL:", error);
+      return null;
+    }
+  }
 }
