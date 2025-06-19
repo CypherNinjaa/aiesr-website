@@ -31,6 +31,7 @@ const navigationItems: NavigationItem[] = [
   },
   { label: "Faculty", href: "/faculty" },
   { label: "Research", href: "/research" },
+  { label: "Success Stories", href: "/testimonials" },
   { label: "Student Life", href: "/student-life" },
   { label: "Contact", href: "/contact" },
 ];

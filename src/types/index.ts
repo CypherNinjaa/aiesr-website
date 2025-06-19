@@ -236,3 +236,54 @@ export interface AchievementStats {
   recent_achievements: number;
   featured_achievements: number;
 }
+
+// Database Testimonial interfaces (for admin/database operations)
+export interface DatabaseTestimonial {
+  id: string;
+  student_name: string;
+  email?: string;
+  photo_url?: string;
+  story_text: string;
+  graduation_year?: number;
+  current_position?: string;
+  company?: string;
+  academic_program?:
+    | "BA English Literature"
+    | "MA English Literature"
+    | "PhD English Studies"
+    | "Certificate Courses"
+    | "Other";
+  status: "pending" | "approved" | "rejected";
+  is_featured: boolean;
+  rejection_reason?: string;
+  sort_order: number;
+  submitted_at: string;
+  approved_at?: string;
+  approved_by?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DatabaseTestimonialFormData {
+  student_name: string;
+  email?: string;
+  photo_url?: string;
+  story_text: string;
+  graduation_year?: number;
+  current_position?: string;
+  company?: string;
+  program?:
+    | "BA English Literature"
+    | "MA English Literature"
+    | "PhD English Studies"
+    | "Certificate Courses"
+    | "Other";
+}
+
+export interface TestimonialStats {
+  total: number;
+  pending: number;
+  approved: number;
+  rejected: number;
+  featured: number;
+}
