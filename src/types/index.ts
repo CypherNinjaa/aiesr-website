@@ -1,18 +1,63 @@
+// ============================================
+// PROGRAM INTERFACES - Dynamic Database-Driven Programs
+// ============================================
+
 export interface Program {
   id: string;
   title: string;
   description: string;
-  shortDescription: string;
+  short_description: string;
   duration: string;
   level: "undergraduate" | "postgraduate" | "doctoral" | "certificate";
+  fees?: string;
+  image_url?: string;
+  slug: string;
+
+  // Admin-controlled links and content
+  apply_link?: string;
+  learn_more_content?: string;
+
+  // JSON fields for flexible data
   eligibility: string[];
   curriculum: string[];
-  careerProspects: string[];
+  career_prospects: string[];
   highlights: string[];
-  image: string;
-  slug: string;
-  fees?: string;
+
+  // Display control
+  is_active: boolean;
+  is_featured: boolean;
+  sort_order: number;
+
+  // Metadata
+  created_at: string;
+  updated_at: string;
+  created_by?: string;
+  updated_by?: string;
 }
+
+// Data for creating new programs
+export interface CreateProgramData {
+  title: string;
+  description: string;
+  short_description: string;
+  duration: string;
+  level: "undergraduate" | "postgraduate" | "doctoral" | "certificate";
+  fees?: string;
+  image_url?: string;
+  slug: string;
+  apply_link?: string;
+  learn_more_content?: string;
+  eligibility: string[];
+  curriculum: string[];
+  career_prospects: string[];
+  highlights: string[];
+  is_active?: boolean;
+  is_featured?: boolean;
+  sort_order?: number;
+}
+
+// Data for updating existing programs
+export type UpdateProgramData = Partial<CreateProgramData>;
 
 export interface Faculty {
   id: string;
