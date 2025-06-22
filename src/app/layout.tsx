@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Toaster } from "react-hot-toast";
 import "./globals.css";
 import { SkipLinks } from "@/components/accessibility";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -31,6 +32,26 @@ export default function RootLayout({
             </PublicSettingsProvider>
           </QueryProvider>
         </ErrorBoundary>
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 4000,
+            style: {
+              background: "#363636",
+              color: "#fff",
+            },
+            success: {
+              style: {
+                background: "#4caf50",
+              },
+            },
+            error: {
+              style: {
+                background: "#f44336",
+              },
+            },
+          }}
+        />
       </body>
     </html>
   );
