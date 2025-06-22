@@ -12,13 +12,15 @@ import { Button } from "@/components/ui/Button";
 import { useProgramBySlug } from "@/hooks/usePrograms";
 
 interface ProgramDetailPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export default function ProgramDetailPage({ params }: ProgramDetailPageProps) {
-  const { data: program, isLoading, error } = useProgramBySlug(params.slug);
+  // Use React.use() for client components with promises in Next.js 15
+  const { slug } = React.use(params);
+  const { data: program, isLoading, error } = useProgramBySlug(slug);
 
   if (isLoading) {
     return (
