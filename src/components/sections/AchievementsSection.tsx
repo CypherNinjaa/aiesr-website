@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/Card";
 import { useFeaturedAchievements, useAchievementStats } from "@/hooks/useAchievements";
@@ -272,12 +273,12 @@ export const AchievementsSection: React.FC = () => {
           className="mt-16 text-center"
         >
           <p className="mb-4 text-lg text-gray-700">Ready to be part of our success story?</p>
-          <a
+          <Link
             href="/programs"
             className="bg-burgundy hover:bg-burgundy/90 inline-block rounded-lg px-8 py-3 font-semibold text-white transition-colors duration-300"
           >
             Explore Our Programs
-          </a>
+          </Link>
         </motion.div>
       </div>
     </section>
