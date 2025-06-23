@@ -59,20 +59,88 @@ export interface CreateProgramData {
 // Data for updating existing programs
 export type UpdateProgramData = Partial<CreateProgramData>;
 
+// ============================================
+// FACULTY INTERFACES - Dynamic Database-Driven Faculty
+// ============================================
+
+export interface FacultyPublication {
+  title: string;
+  year: number;
+  journal?: string;
+  book?: string;
+  url?: string;
+}
+
 export interface Faculty {
   id: string;
   name: string;
   designation: string;
-  specialization: string[];
-  education: string[];
-  experience: number;
-  publications: string[];
-  awards?: string[];
-  image: string;
-  bio: string;
   email?: string;
-  researchAreas?: string[];
+  phone?: string;
+
+  // Professional Information
+  specialization: string[];
+  experience: number;
+  education: string[];
+  qualifications: string[];
+
+  // Research & Academic
+  research_areas: string[];
+  publications: FacultyPublication[];
+  achievements: string[];
+
+  // Profile Information
+  bio?: string;
+  profile_image_url?: string;
+  office_location?: string;
+  office_hours?: string;
+
+  // Contact & Links
+  linkedin_url?: string;
+  research_gate_url?: string;
+  google_scholar_url?: string;
+  personal_website?: string;
+
+  // Display Settings
+  is_active: boolean;
+  is_featured: boolean;
+  sort_order: number;
+
+  // Metadata
+  created_at: string;
+  updated_at: string;
+  created_by?: string;
+  updated_by?: string;
 }
+
+// Data for creating new faculty
+export interface CreateFacultyData {
+  name: string;
+  designation: string;
+  email?: string;
+  phone?: string;
+  specialization: string[];
+  experience: number;
+  education: string[];
+  qualifications: string[];
+  research_areas: string[];
+  publications: FacultyPublication[];
+  achievements: string[];
+  bio?: string;
+  profile_image_url?: string;
+  office_location?: string;
+  office_hours?: string;
+  linkedin_url?: string;
+  research_gate_url?: string;
+  google_scholar_url?: string;
+  personal_website?: string;
+  is_active: boolean;
+  is_featured: boolean;
+  sort_order: number;
+}
+
+// Data for updating existing faculty
+export type UpdateFacultyData = Partial<CreateFacultyData>;
 
 export interface NewsArticle {
   id: string;
