@@ -4,7 +4,7 @@ import {
   HeroSection,
   WhyChooseSection,
   ProgramsSection,
-  // FacultySection, // Temporarily hidden
+  FacultySection,
   ContactSection,
   EventsSection,
 } from "@/components/sections";
@@ -38,16 +38,13 @@ export default function Home() {
       <LazyLoadSection>
         <SectionSuspense>
           <ProgramsSection />
-        </SectionSuspense>
+        </SectionSuspense>{" "}
       </LazyLoadSection>{" "}
-      {/* Temporarily hidden Faculty Section */}
-      {/*
       <LazyLoadSection>
         <SectionSuspense>
           <FacultySection />
         </SectionSuspense>
       </LazyLoadSection>
-      */}
       <LazyLoadSection>
         <SectionSuspense>
           <ContactSection />
