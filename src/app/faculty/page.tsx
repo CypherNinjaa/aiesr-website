@@ -71,12 +71,17 @@ export default function FacultyPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-white">
         {/* Header */}
         <div className="from-burgundy to-burgundy/90 bg-gradient-to-r py-20 text-white">
           <div className="container mx-auto px-4 text-center">
             <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-white border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
-            <p className="mt-4 text-white/90">Loading our distinguished faculty...</p>
+            <p className="mt-4 text-white">Loading our distinguished faculty...</p>
+          </div>
+        </div>
+        <div className="bg-gray-50 py-20">
+          <div className="container mx-auto px-4 text-center">
+            <p className="text-gray-600">Please wait while we fetch faculty information...</p>
           </div>
         </div>
       </div>
@@ -85,12 +90,19 @@ export default function FacultyPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-white">
         {/* Header */}
         <div className="from-burgundy to-burgundy/90 bg-gradient-to-r py-20 text-white">
           <div className="container mx-auto px-4 text-center">
-            <h1 className="font-primary mb-6 text-5xl font-bold">Our Faculty</h1>
+            <h1 className="font-primary mb-6 text-5xl font-bold text-white">Our Faculty</h1>
             <p className="text-red-200">Failed to load faculty members. Please try again later.</p>
+          </div>
+        </div>
+        <div className="bg-gray-50 py-20">
+          <div className="container mx-auto px-4 text-center">
+            <p className="text-gray-600">
+              We're experiencing technical difficulties. Please refresh the page or try again later.
+            </p>
           </div>
         </div>
       </div>
@@ -98,7 +110,7 @@ export default function FacultyPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       {/* Hero Header */}
       <div className="from-burgundy to-burgundy/90 bg-gradient-to-r py-20 text-white">
         <div className="container mx-auto px-4">
@@ -108,11 +120,11 @@ export default function FacultyPage() {
             transition={{ duration: 0.8 }}
             className="text-center"
           >
-            <h1 className="font-primary mb-6 text-5xl font-bold md:text-6xl">
+            <h1 className="font-primary text-gold mb-6 text-5xl font-bold md:text-6xl">
               Our Distinguished Faculty
             </h1>
             <div className="bg-gold mx-auto mb-6 h-1 w-32 rounded-full"></div>
-            <p className="mx-auto max-w-3xl text-xl leading-relaxed text-white/90">
+            <p className="text-gold mx-auto max-w-3xl text-xl leading-relaxed">
               Meet our world-class educators, researchers, and mentors who are shaping the future of
               literature and academia.
             </p>
@@ -120,24 +132,26 @@ export default function FacultyPage() {
             {/* Stats */}
             <div className="mx-auto mt-12 grid max-w-4xl grid-cols-1 gap-6 md:grid-cols-4">
               <div className="text-center">
-                <div className="text-gold text-3xl font-bold">{faculty.length}</div>
-                <div className="text-white/80">Faculty Members</div>
+                <div className="text-gold text-3xl font-bold drop-shadow-lg">{faculty.length}</div>
+                <div className="text-gold font-medium">Faculty Members</div>
               </div>
               <div className="text-center">
-                <div className="text-gold text-3xl font-bold">
+                <div className="text-gold text-3xl font-bold drop-shadow-lg">
                   {faculty.reduce((sum, f) => sum + f.experience, 0)}+
                 </div>
-                <div className="text-white/80">Years Experience</div>
+                <div className="text-gold font-medium">Years Experience</div>
               </div>
               <div className="text-center">
-                <div className="text-gold text-3xl font-bold">
+                <div className="text-gold text-3xl font-bold drop-shadow-lg">
                   {faculty.reduce((sum, f) => sum + f.publications.length, 0)}
                 </div>
-                <div className="text-white/80">Publications</div>
+                <div className="text-gold font-medium">Publications</div>
               </div>
               <div className="text-center">
-                <div className="text-gold text-3xl font-bold">{allSpecializations.length}</div>
-                <div className="text-white/80">Specializations</div>
+                <div className="text-gold text-3xl font-bold drop-shadow-lg">
+                  {allSpecializations.length}
+                </div>
+                <div className="text-gold font-medium">Specializations</div>
               </div>
             </div>
           </motion.div>
@@ -202,41 +216,43 @@ export default function FacultyPage() {
           </div>
 
           {/* Results count */}
-          <div className="mt-4 text-sm text-gray-600">
+          <div className="mt-4 text-sm font-medium text-gray-700">
             Showing {filteredFaculty.length} of {faculty.length} faculty members
           </div>
         </div>
       </div>
 
       {/* Faculty Grid/List */}
-      <div className="container mx-auto px-4 py-12">
-        {filteredFaculty.length === 0 ? (
-          <div className="py-12 text-center">
-            <Users className="mx-auto mb-4 h-16 w-16 text-gray-400" />
-            <h3 className="mb-2 text-xl font-medium text-gray-900">No faculty found</h3>
-            <p className="text-gray-600">Try adjusting your search or filter criteria.</p>
-          </div>
-        ) : (
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className={
-              viewMode === "grid"
-                ? "grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3"
-                : "space-y-6"
-            }
-          >
-            {filteredFaculty.map(member => (
-              <FacultyCard
-                key={member.id}
-                member={member}
-                viewMode={viewMode}
-                cardVariants={cardVariants}
-              />
-            ))}
-          </motion.div>
-        )}
+      <div className="bg-gray-50 py-12">
+        <div className="container mx-auto px-4">
+          {filteredFaculty.length === 0 ? (
+            <div className="py-12 text-center">
+              <Users className="mx-auto mb-4 h-16 w-16 text-gray-400" />
+              <h3 className="mb-2 text-xl font-medium text-gray-900">No faculty found</h3>
+              <p className="text-gray-600">Try adjusting your search or filter criteria.</p>
+            </div>
+          ) : (
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              className={
+                viewMode === "grid"
+                  ? "grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3"
+                  : "space-y-6"
+              }
+            >
+              {filteredFaculty.map(member => (
+                <FacultyCard
+                  key={member.id}
+                  member={member}
+                  viewMode={viewMode}
+                  cardVariants={cardVariants}
+                />
+              ))}
+            </motion.div>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -268,7 +284,7 @@ function FacultyCard({ member, viewMode, cardVariants }: FacultyCardProps) {
   if (viewMode === "list") {
     return (
       <motion.div variants={cardVariants}>
-        <Card className="transition-all duration-300 hover:shadow-lg">
+        <Card className="bg-white transition-all duration-300 hover:shadow-lg">
           <CardContent className="p-6">
             <div className="flex items-start space-x-6">
               {/* Photo */}
@@ -299,13 +315,13 @@ function FacultyCard({ member, viewMode, cardVariants }: FacultyCardProps) {
                   <div>
                     <h3 className="font-primary text-xl font-bold text-gray-900">{member.name}</h3>
                     <p className="text-burgundy font-medium">{member.designation}</p>
-                    <p className="mt-1 text-gray-600">
-                      <Clock className="mr-1 inline h-4 w-4" />
+                    <p className="mt-1 text-gray-700">
+                      <Clock className="mr-1 inline h-4 w-4 text-gray-600" />
                       {member.experience}+ years experience
                     </p>
                   </div>
                   <div className="text-right">
-                    <div className="text-sm text-gray-500">
+                    <div className="text-sm font-medium text-gray-700">
                       {member.publications.length} publications
                     </div>
                   </div>
@@ -316,27 +332,27 @@ function FacultyCard({ member, viewMode, cardVariants }: FacultyCardProps) {
                   {member.specialization.slice(0, 4).map((spec, idx) => (
                     <span
                       key={idx}
-                      className="bg-burgundy/10 text-burgundy rounded-full px-2 py-1 text-xs"
+                      className="bg-burgundy/10 text-burgundy rounded-full px-2 py-1 text-xs font-medium"
                     >
                       {spec}
                     </span>
                   ))}
                   {member.specialization.length > 4 && (
-                    <span className="rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-600">
+                    <span className="rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">
                       +{member.specialization.length - 4} more
                     </span>
                   )}
                 </div>
 
                 {/* Contact */}
-                <div className="mt-3 flex items-center space-x-4 text-sm text-gray-600">
+                <div className="mt-3 flex items-center space-x-4 text-sm text-gray-700">
                   <div className="flex items-center">
-                    <Mail className="mr-1 h-4 w-4" />
+                    <Mail className="mr-1 h-4 w-4 text-gray-600" />
                     {member.email}
                   </div>
                   {member.office_location && (
                     <div className="flex items-center">
-                      <MapPin className="mr-1 h-4 w-4" />
+                      <MapPin className="mr-1 h-4 w-4 text-gray-600" />
                       {member.office_location}
                     </div>
                   )}
@@ -352,7 +368,7 @@ function FacultyCard({ member, viewMode, cardVariants }: FacultyCardProps) {
   // Grid view
   return (
     <motion.div variants={cardVariants}>
-      <Card className="group h-full overflow-hidden border-0 shadow-lg transition-all duration-300 hover:shadow-xl">
+      <Card className="h-full overflow-hidden border-0 shadow-lg transition-all duration-300 hover:shadow-xl">
         {/* Faculty Photo */}
         <div className="from-burgundy to-gold relative h-64 overflow-hidden bg-gradient-to-br">
           {member.profile_image_url ? (
@@ -360,7 +376,7 @@ function FacultyCard({ member, viewMode, cardVariants }: FacultyCardProps) {
               src={getPublicPhotoUrl(member.profile_image_url)}
               alt={`${member.name} - Faculty Photo`}
               fill
-              className="object-cover transition-transform duration-300 group-hover:scale-105"
+              className="object-cover transition-transform duration-300 hover:scale-105"
               sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
             />
           ) : (
@@ -382,24 +398,24 @@ function FacultyCard({ member, viewMode, cardVariants }: FacultyCardProps) {
         </div>
 
         {/* Faculty Details */}
-        <CardContent className="p-6">
+        <CardContent className="bg-white p-6 text-gray-900">
           {/* Specialization */}
           <div className="mb-4">
             <h4 className="mb-2 flex items-center text-sm font-semibold text-gray-800">
-              <BookOpen className="mr-1 h-4 w-4" />
+              <BookOpen className="mr-1 h-4 w-4 text-gray-600" />
               Specializations
             </h4>
             <div className="flex flex-wrap gap-1">
               {member.specialization.slice(0, 2).map((spec, idx) => (
                 <span
                   key={idx}
-                  className="bg-burgundy/10 text-burgundy rounded-full px-2 py-1 text-xs"
+                  className="bg-burgundy/10 text-burgundy rounded-full px-2 py-1 text-xs font-medium"
                 >
                   {spec}
                 </span>
               ))}
               {member.specialization.length > 2 && (
-                <span className="rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-600">
+                <span className="rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">
                   +{member.specialization.length - 2} more
                 </span>
               )}
@@ -411,9 +427,9 @@ function FacultyCard({ member, viewMode, cardVariants }: FacultyCardProps) {
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <Award className="mr-1 h-4 w-4 text-gray-600" />
-                <span className="text-sm text-gray-600">Publications</span>
+                <span className="text-sm font-medium text-gray-700">Publications</span>
               </div>
-              <span className="text-gold font-semibold">{member.publications.length}</span>
+              <span className="text-gold font-bold">{member.publications.length}</span>
             </div>
           </div>
 
@@ -421,7 +437,7 @@ function FacultyCard({ member, viewMode, cardVariants }: FacultyCardProps) {
           {member.research_areas && member.research_areas.length > 0 && (
             <div className="mb-4">
               <h4 className="mb-2 text-sm font-semibold text-gray-800">Research Focus</h4>
-              <p className="text-xs text-gray-600">
+              <p className="text-sm text-gray-700">
                 {member.research_areas.slice(0, 2).join(", ")}
                 {member.research_areas.length > 2 && "..."}
               </p>
@@ -430,13 +446,13 @@ function FacultyCard({ member, viewMode, cardVariants }: FacultyCardProps) {
 
           {/* Contact Info */}
           <div className="mb-4 space-y-2">
-            <div className="flex items-center text-sm text-gray-600">
-              <Mail className="mr-2 h-4 w-4" />
+            <div className="flex items-center text-sm text-gray-700">
+              <Mail className="mr-2 h-4 w-4 text-gray-600" />
               <span className="truncate">{member.email}</span>
             </div>
             {member.office_location && (
-              <div className="flex items-center text-sm text-gray-600">
-                <MapPin className="mr-2 h-4 w-4" />
+              <div className="flex items-center text-sm text-gray-700">
+                <MapPin className="mr-2 h-4 w-4 text-gray-600" />
                 <span>{member.office_location}</span>
               </div>
             )}
@@ -444,13 +460,14 @@ function FacultyCard({ member, viewMode, cardVariants }: FacultyCardProps) {
 
           {/* Action Buttons */}
           <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="group-hover:bg-burgundy flex-1 transition-colors group-hover:text-white"
-            >
-              View Profile
-            </Button>
+            <div className="flex-1">
+              <button
+                type="button"
+                className="border-burgundy text-burgundy focus:ring-burgundy h-9 w-full rounded-md border-2 bg-white px-3 text-sm font-medium focus:ring-2 focus:ring-offset-2 focus:outline-none"
+              >
+                View Profile
+              </button>
+            </div>
             {(member.linkedin_url || member.google_scholar_url || member.personal_website) && (
               <Button variant="ghost" size="sm" className="px-3">
                 <ExternalLink className="h-4 w-4" />

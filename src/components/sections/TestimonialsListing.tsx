@@ -33,7 +33,7 @@ const TestimonialCard: React.FC<{ testimonial: DatabaseTestimonial }> = ({ testi
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
+      className="border-burgundy rounded-lg border-l-4 bg-gray-200 p-6 shadow-lg transition-shadow hover:shadow-xl"
     >
       {/* Student Info Header */}
       <div className="mb-4 flex items-center">
@@ -273,7 +273,7 @@ export const TestimonialsListing: React.FC = () => {
       )}
 
       {/* Call to Action */}
-      <div className="from-burgundy mt-12 rounded-lg bg-gradient-to-r to-red-900 p-8 text-center text-white">
+      <div className="bg-burgundy mt-12 rounded-lg p-8 text-center text-white">
         <h3 className="mb-4 text-2xl font-bold">Share Your Success Story</h3>
         <p className="mx-auto mb-6 max-w-2xl text-gray-200">
           Inspire future students by sharing your journey with AIESR. Your story could be the
