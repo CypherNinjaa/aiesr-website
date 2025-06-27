@@ -400,3 +400,56 @@ export interface TestimonialStats {
   rejected: number;
   featured: number;
 }
+
+// ============================================
+// GALLERY SLIDER INTERFACES - Homepage Dynamic Gallery
+// ============================================
+
+export interface GallerySlide {
+  id: string;
+  title: string;
+  subtitle?: string;
+  description?: string;
+  image_url: string;
+  image_alt?: string;
+  link_url?: string;
+  link_text?: string;
+  sort_order: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+// Data for creating new gallery slides
+export interface CreateGallerySlideData {
+  title: string;
+  subtitle?: string;
+  description?: string;
+  image_url: string;
+  image_alt?: string;
+  link_url?: string;
+  link_text?: string;
+  sort_order?: number;
+  is_active?: boolean;
+}
+
+// Data for updating gallery slides
+export interface UpdateGallerySlideData {
+  title?: string;
+  subtitle?: string;
+  description?: string;
+  image_url?: string;
+  image_alt?: string;
+  link_url?: string;
+  link_text?: string;
+  sort_order?: number;
+  is_active?: boolean;
+}
+
+// Upload options for gallery images
+export interface GalleryImageUpload {
+  type: "url" | "file";
+  data: string | File;
+}
+
+// ============================================

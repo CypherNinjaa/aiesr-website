@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  HeroSection,
+  // HeroSection, // Commented out - using gallery slider instead
   WhyChooseSection,
   ProgramsSection,
   FacultySection,
@@ -9,14 +9,19 @@ import {
   EventsSection,
 } from "@/components/sections";
 import { DynamicTestimonialsSection } from "@/components/sections/DynamicTestimonialsSection";
+import { ProfessionalGallerySlider } from "@/components/sections/ProfessionalGallerySlider";
 import { SectionSuspense, LazyLoadSection } from "@/components/ui/SectionSuspense";
 
 export default function Home() {
   return (
     <div className="min-h-screen">
-      {/* Hero section loads immediately */}
-      <SectionSuspense>
+      {/* Hero section commented out - Gallery slider shows first */}
+      {/* <SectionSuspense>
         <HeroSection />
+      </SectionSuspense> */}
+      {/* Professional Gallery Slider - now shows first on homepage */}
+      <SectionSuspense>
+        <ProfessionalGallerySlider />
       </SectionSuspense>
       {/* Other sections load when they come into view */}
       <LazyLoadSection>
