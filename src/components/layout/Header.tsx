@@ -22,12 +22,6 @@ const navigationItems: NavigationItem[] = [
   {
     label: "Programs",
     href: "/programs",
-    children: [
-      { label: "Undergraduate", href: "/programs/undergraduate" },
-      { label: "Postgraduate", href: "/programs/postgraduate" },
-      { label: "Doctoral", href: "/programs/doctoral" },
-      { label: "Certificate Courses", href: "/programs/certificate" },
-    ],
   },
   { label: "Faculty", href: "/faculty" },
   { label: "Research", href: "/research" },
@@ -92,8 +86,10 @@ export const Header: React.FC = () => {
                   <Link
                     href={item.href}
                     className="hover:text-burgundy font-medium text-gray-700 transition-colors duration-200"
-                    aria-expanded={item.children ? "false" : undefined}
-                    aria-haspopup={item.children ? "true" : undefined}
+                    {...(item.children && {
+                      "aria-expanded": false,
+                      "aria-haspopup": true,
+                    })}
                   >
                     {item.label}
                   </Link>
