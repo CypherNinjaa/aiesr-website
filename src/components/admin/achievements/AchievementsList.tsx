@@ -42,7 +42,6 @@ const AchievementRow: React.FC<AchievementRowProps> = ({ achievement, onDelete }
 
   return (
     <tr className="hover:bg-gray-50">
-      {" "}
       <td className="px-6 py-4 whitespace-nowrap">
         <div className="flex items-center">
           <div className="mr-3 text-2xl">{achievement.category?.icon_emoji || "🏆"}</div>
@@ -115,6 +114,8 @@ export const AchievementsList: React.FC = () => {
     data: achievementsData,
     isLoading,
     error,
+    refetch,
+    isFetching,
   } = useAchievements({
     ...(filters.status && { status: filters.status }),
     ...(filters.category && { category_id: filters.category }),
@@ -131,9 +132,14 @@ export const AchievementsList: React.FC = () => {
     setFilters(prev => ({ ...prev, [key]: value }));
   };
 
+  const handleRefresh = () => {
+    refetch();
+  };
+
   const handleDelete = async (id: string) => {
     try {
       await deleteMutation.mutateAsync(id);
+      // Automatic refresh happens via query invalidation in the hook
     } catch (error) {
       console.error("Error deleting achievement:", error);
       // Handle error appropriately - could use a toast notification system
@@ -145,7 +151,7 @@ export const AchievementsList: React.FC = () => {
       <div className="py-12 text-center">
         <div className="mb-4 text-red-600">⚠️ Error loading achievements</div>
         <button
-          onClick={() => window.location.reload()}
+          onClick={handleRefresh}
           className="bg-burgundy hover:bg-burgundy/90 rounded-lg px-4 py-2 text-white"
         >
           Retry
@@ -160,14 +166,28 @@ export const AchievementsList: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Achievements Management</h1>
-          <p className="text-gray-600">Manage student and faculty achievements</p>
+          <p className="text-gray-600">
+            Manage student and faculty achievements ({totalCount} total)
+            {isFetching && <span className="ml-2 text-blue-600">Refreshing...</span>}
+          </p>
         </div>
-        <Link
-          href="/admin/achievements/new"
-          className="bg-burgundy hover:bg-burgundy/90 rounded-lg px-4 py-2 font-semibold text-white"
-        >
-          Add New Achievement
-        </Link>
+        <div className="flex items-center space-x-3">
+          <button
+            onClick={handleRefresh}
+            disabled={isLoading || isFetching}
+            className="flex items-center rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 disabled:opacity-50"
+            title="Refresh achievements list"
+          >
+            <span className={`mr-2 ${isFetching ? "animate-spin" : ""}`}>🔄</span>
+            Refresh
+          </button>
+          <Link
+            href="/admin/achievements/new"
+            className="bg-burgundy hover:bg-burgundy/90 rounded-lg px-4 py-2 font-semibold text-white"
+          >
+            Add New Achievement
+          </Link>
+        </div>
       </div>
 
       {/* Filters */}
