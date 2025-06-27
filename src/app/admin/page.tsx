@@ -61,6 +61,31 @@ export default function AdminDashboard() {
             </div>
           </Link>
 
+          {/* Gallery Management */}
+          <Link href="/admin/gallery" className="group">
+            <div className="rounded-lg bg-white p-6 shadow-md transition-shadow hover:shadow-lg">
+              <div className="mb-4 flex items-center">
+                <div className="rounded-lg bg-indigo-100 p-3">
+                  <span className="text-2xl">🖼️</span>
+                </div>
+                <div className="ml-4">
+                  <h3 className="text-lg font-semibold text-gray-900 group-hover:text-indigo-600">
+                    Gallery Management
+                  </h3>
+                  <p className="text-gray-500">Manage homepage gallery slider</p>
+                </div>
+              </div>
+              <div className="text-sm text-gray-600">
+                • Add new slides
+                <br />
+                • Upload images
+                <br />
+                • Reorder slides
+                <br />• Toggle active status
+              </div>
+            </div>
+          </Link>
+
           {/* Categories Management */}
           <Link href="/admin/categories" className="group">
             <div className="rounded-lg bg-white p-6 shadow-md transition-shadow hover:shadow-lg">

@@ -37,6 +37,7 @@
     "next": "15.3.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-dropzone": "^14.3.8",
     "react-hook-form": "^7.57.0",
     "react-hot-toast": "^2.5.2",
     "swiper": "^11.2.8",
