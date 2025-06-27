@@ -4,12 +4,15 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
+import { RefreshButton } from "@/components/ui/RefreshButton";
+import { useNotifications } from "@/contexts/NotificationContext";
 import { AnalyticsService, AnalyticsData } from "@/services/analytics";
 
 export default function AnalyticsPage() {
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { showSuccess, showError, showInfo } = useNotifications();
 
   useEffect(() => {
     async function fetchAnalytics() {
@@ -17,27 +20,34 @@ export default function AnalyticsPage() {
         setLoading(true);
         const data = await AnalyticsService.getAnalyticsData();
         setAnalytics(data);
+        showSuccess("Analytics Loaded", "Analytics data has been loaded successfully!", 3000);
       } catch (err) {
         console.error("Error fetching analytics:", err);
-        setError(err instanceof Error ? err.message : "Failed to load analytics");
+        const errorMessage = err instanceof Error ? err.message : "Failed to load analytics";
+        setError(errorMessage);
+        showError("Loading Failed", errorMessage);
       } finally {
         setLoading(false);
       }
     }
 
     fetchAnalytics();
-  }, []);
+  }, [showSuccess, showError]);
 
   // Function to refresh analytics data
   const refreshAnalytics = async () => {
     try {
       setLoading(true);
       setError(null);
+      showInfo("Refreshing Analytics", "Loading latest analytics data...", 2000);
       const data = await AnalyticsService.getAnalyticsData();
       setAnalytics(data);
+      showSuccess("Analytics Refreshed", "Analytics data has been updated successfully!");
     } catch (err) {
       console.error("Error refreshing analytics:", err);
-      setError(err instanceof Error ? err.message : "Failed to refresh analytics");
+      const errorMessage = err instanceof Error ? err.message : "Failed to refresh analytics";
+      setError(errorMessage);
+      showError("Refresh Failed", errorMessage);
     } finally {
       setLoading(false);
     }
@@ -67,7 +77,10 @@ export default function AnalyticsPage() {
               <div className="mb-4 text-6xl text-red-500">⚠️</div>
               <h2 className="mb-2 text-xl font-semibold text-gray-900">Error Loading Analytics</h2>
               <p className="mb-4 text-gray-600">{error}</p>
-              <Button onClick={() => window.location.reload()}>Try Again</Button>
+              <div className="space-x-3">
+                <RefreshButton onRefresh={refreshAnalytics} isLoading={loading} />
+                <Button onClick={() => window.location.reload()}>Reload Page</Button>
+              </div>
             </div>
           </div>
         </div>
@@ -102,9 +115,12 @@ export default function AnalyticsPage() {
             <p className="mt-2 text-gray-600">View event statistics and performance metrics</p>
           </div>
           <div className="flex gap-3">
-            <Button variant="outline" onClick={refreshAnalytics} disabled={loading}>
-              {loading ? "Refreshing..." : "🔄 Refresh"}
-            </Button>
+            <RefreshButton
+              onRefresh={refreshAnalytics}
+              isLoading={loading}
+              variant="outline"
+              label="Refresh Analytics"
+            />
             <Link href="/admin">
               <Button variant="outline">← Back to Dashboard</Button>
             </Link>

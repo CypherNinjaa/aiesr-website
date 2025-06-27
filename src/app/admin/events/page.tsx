@@ -3,12 +3,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
+import { RefreshButton } from "@/components/ui/RefreshButton";
+import { useNotifications } from "@/contexts/NotificationContext";
 import { useEvents, useDeleteEvent } from "@/hooks/useEvents";
 import { formatDate } from "@/lib/utils";
 import { CategoryService } from "@/services/category";
 import { Event, Category } from "@/types";
 
 export default function AdminEventsPage() {
+  const { showSuccess, showError, showInfo } = useNotifications();
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [categories, setCategories] = useState<Category[]>([]);
@@ -21,26 +24,41 @@ export default function AdminEventsPage() {
         setCategories(activeCategories);
       } catch (error) {
         console.error("Failed to load categories:", error);
+        showError("Loading Failed", "Failed to load event categories", 5000);
       }
     };
 
     loadCategories();
-  }, []);
+  }, [showError]);
 
   const {
     data: events,
     isLoading,
     error,
+    refetch,
+    isFetching,
   } = useEvents({
     ...(statusFilter !== "all" && { status: statusFilter }),
     ...(categoryFilter !== "all" && { category_id: categoryFilter }),
   });
 
   const deleteEvent = useDeleteEvent();
-  const handleDelete = (id: string, title: string) => {
+
+  const handleRefresh = () => {
+    refetch();
+    showInfo("Refreshing Data", "Loading latest events...", 2000);
+  };
+
+  const handleDelete = async (id: string, title: string) => {
     // eslint-disable-next-line no-alert
     if (window.confirm(`Are you sure you want to delete "${title}"?`)) {
-      deleteEvent.mutate(id);
+      try {
+        await deleteEvent.mutateAsync(id);
+        showSuccess("Event Deleted", `"${title}" has been deleted successfully.`, 3000);
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : "Failed to delete event";
+        showError("Delete Failed", errorMessage, 5000);
+      }
     }
   };
 
@@ -99,14 +117,27 @@ export default function AdminEventsPage() {
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Events Management</h1>
-          <p className="mt-2 text-gray-600">Create and manage all events</p>
+          <p className="mt-2 text-gray-600">
+            Create and manage all events ({events?.length || 0} total)
+            {isFetching && <span className="ml-2 text-blue-600">Refreshing...</span>}
+          </p>
         </div>
-        <Link
-          href="/admin/events/new"
-          className="rounded-md bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700"
-        >
-          Add New Event
-        </Link>
+        <div className="flex items-center space-x-3">
+          <RefreshButton
+            onRefresh={handleRefresh}
+            isLoading={isLoading}
+            isFetching={isFetching}
+            variant="outline"
+            size="md"
+            label="Refresh"
+          />
+          <Link
+            href="/admin/events/new"
+            className="rounded-md bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700"
+          >
+            Add New Event
+          </Link>
+        </div>
       </div>
       {/* Filters */}
       <div className="mb-6 flex flex-wrap gap-4">

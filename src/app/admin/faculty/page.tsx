@@ -11,6 +11,8 @@ import React, { useState } from "react";
 import { FacultyForm } from "@/components/admin/faculty/FacultyForm";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
+import { RefreshButton } from "@/components/ui/RefreshButton";
+import { useNotifications } from "@/contexts/NotificationContext";
 import {
   useAllFacultyAdmin,
   useDeleteFaculty,
@@ -21,14 +23,20 @@ import { getPublicPhotoUrl } from "@/services/faculty";
 import { Faculty } from "@/types";
 
 export default function FacultyPage() {
+  const { showSuccess, showError, showWarning, showInfo } = useNotifications();
   const [showForm, setShowForm] = useState(false);
   const [editingFaculty, setEditingFaculty] = useState<Faculty | null>(null);
   const [viewingFaculty, setViewingFaculty] = useState<Faculty | null>(null);
-  const { data: faculty = [], isLoading, error } = useAllFacultyAdmin();
+  const { data: faculty = [], isLoading, error, refetch, isFetching } = useAllFacultyAdmin();
 
   const deleteFaculty = useDeleteFaculty();
   const toggleStatus = useToggleFacultyStatus();
   const toggleFeatured = useToggleFacultyFeatured();
+
+  const handleRefresh = () => {
+    refetch();
+    showInfo("Refreshing Data", "Loading latest faculty information...", 2000);
+  };
 
   const handleEdit = (member: Faculty) => {
     setEditingFaculty(member);
@@ -38,14 +46,32 @@ export default function FacultyPage() {
   const handleView = (member: Faculty) => {
     setViewingFaculty(member);
   };
+
   const handleDelete = async (member: Faculty) => {
-    // Use a custom confirm dialog instead of window.confirm
+    showWarning(
+      "Confirm Deletion",
+      `Are you sure you want to delete ${member.name}? This action cannot be undone.`,
+      0 // Don't auto-dismiss
+    );
+
+    // For now, we'll still use confirm but in a real app you'd use a modal
     // eslint-disable-next-line no-alert
     const confirmed = window.confirm(
       `Are you sure you want to delete ${member.name}? This action cannot be undone.`
     );
     if (confirmed) {
-      await deleteFaculty.mutateAsync(member.id);
+      try {
+        await deleteFaculty.mutateAsync(member.id);
+        showSuccess(
+          "Faculty Deleted",
+          `${member.name} has been removed from the faculty list.`,
+          3000
+        );
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : "Failed to delete faculty member";
+        showError("Delete Failed", errorMessage, 5000);
+      }
     }
   };
 
@@ -334,12 +360,25 @@ export default function FacultyPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Faculty Management</h1>
-          <p className="text-gray-600">Manage faculty members and their profiles</p>
+          <p className="text-gray-600">
+            Manage faculty members and their profiles ({faculty.length} total)
+            {isFetching && <span className="ml-2 text-blue-600">Refreshing...</span>}
+          </p>
         </div>
-        <Button onClick={() => setShowForm(true)}>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Faculty Member
-        </Button>
+        <div className="flex items-center space-x-3">
+          <RefreshButton
+            onRefresh={handleRefresh}
+            isLoading={isLoading}
+            isFetching={isFetching}
+            variant="outline"
+            size="md"
+            label="Refresh"
+          />
+          <Button onClick={() => setShowForm(true)}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add Faculty Member
+          </Button>
+        </div>
       </div>{" "}
       {/* Stats */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:gap-6">

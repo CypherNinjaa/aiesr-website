@@ -8,6 +8,8 @@
 import { Loader2, Plus } from "lucide-react";
 import React, { useState } from "react";
 import { Button } from "@/components/ui/Button";
+import { RefreshButton } from "@/components/ui/RefreshButton";
+import { useNotifications } from "@/contexts/NotificationContext";
 import { useAllProgramsAdmin } from "@/hooks/usePrograms";
 import { Program } from "@/types";
 import { ProgramForm } from "./ProgramForm";
@@ -16,10 +18,16 @@ import { ProgramsList } from "./ProgramsList";
 type ViewMode = "list" | "create" | "edit";
 
 export function ProgramsManagement() {
+  const { showInfo } = useNotifications();
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [editingProgram, setEditingProgram] = useState<Program | null>(null);
 
-  const { data: programs, isLoading, error } = useAllProgramsAdmin();
+  const { data: programs, isLoading, error, refetch, isFetching } = useAllProgramsAdmin();
+
+  const handleRefresh = () => {
+    refetch();
+    showInfo("Refreshing Data", "Loading latest programs...", 2000);
+  };
 
   const handleCreateNew = () => {
     setEditingProgram(null);
@@ -54,7 +62,13 @@ export function ProgramsManagement() {
     return (
       <div className="py-12 text-center">
         <p className="mb-4 text-red-600">Error loading programs</p>
-        <Button onClick={() => window.location.reload()}>Try Again</Button>
+        <RefreshButton
+          onRefresh={handleRefresh}
+          isLoading={isLoading}
+          isFetching={isFetching}
+          variant="primary"
+          label="Try Again"
+        />
       </div>
     );
   }
@@ -71,15 +85,28 @@ export function ProgramsManagement() {
           )}
           <div className="text-sm text-gray-500">
             {programs ? `${programs.length} total programs` : ""}
+            {isFetching && <span className="ml-2 text-blue-600">Refreshing...</span>}
           </div>
         </div>
 
-        {viewMode === "list" && (
-          <Button onClick={handleCreateNew} className="flex items-center gap-2">
-            <Plus className="h-4 w-4" />
-            Add New Program
-          </Button>
-        )}
+        <div className="flex items-center space-x-3">
+          {viewMode === "list" && (
+            <>
+              <RefreshButton
+                onRefresh={handleRefresh}
+                isLoading={isLoading}
+                isFetching={isFetching}
+                variant="outline"
+                size="md"
+                label="Refresh"
+              />
+              <Button onClick={handleCreateNew} className="flex items-center gap-2">
+                <Plus className="h-4 w-4" />
+                Add New Program
+              </Button>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Main Content */}

@@ -5,6 +5,8 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { LoadingSpinner } from "@/components/ui/Loading";
+import { RefreshButton } from "@/components/ui/RefreshButton";
+import { useNotifications } from "@/contexts/NotificationContext";
 import {
   useActivityLogs,
   useActivityStats,
@@ -19,27 +21,55 @@ export default function ActivityPage() {
     "all"
   );
   const [limit] = useState(50);
+  const { showSuccess, showError, showInfo, addNotification } = useNotifications();
 
   // Fetch real activity data
-  const { data: activityData, isLoading, error, refetch } = useActivityLogs({ limit });
+  const { data: activityData, isLoading, error, refetch, isFetching } = useActivityLogs({ limit });
   const { data: stats, isLoading: statsLoading } = useActivityStats();
   const cleanupMutation = useCleanupLogs();
 
   const activities = activityData?.data || [];
   const filteredActivities = getFilteredActivities(activities, filter);
+
+  // Handle refresh
+  const handleRefresh = () => {
+    refetch();
+    showInfo("Refreshing Activity", "Loading latest activity logs...", 2000);
+  };
+
   const handleCleanup = async () => {
-    // eslint-disable-next-line no-alert
-    if (window.confirm("Are you sure you want to delete logs older than 90 days?")) {
-      try {
-        const deletedCount = await cleanupMutation.mutateAsync(90);
-        // eslint-disable-next-line no-alert
-        window.alert(`Successfully deleted ${deletedCount} old activity logs.`);
-      } catch (error) {
-        console.error("Cleanup failed:", error);
-        // eslint-disable-next-line no-alert
-        window.alert("Failed to cleanup old logs. Please try again.");
-      }
-    }
+    // Use notification system instead of browser confirm
+    addNotification({
+      type: "warning",
+      title: "Confirm Cleanup",
+      message:
+        "Are you sure you want to delete logs older than 90 days? This action cannot be undone.",
+      duration: 0, // Don't auto-dismiss
+      actions: [
+        {
+          label: "Cancel",
+          onClick: () => {}, // Just closes the notification
+          variant: "secondary",
+        },
+        {
+          label: "Delete Logs",
+          onClick: async () => {
+            try {
+              const deletedCount = await cleanupMutation.mutateAsync(90);
+              showSuccess(
+                "Cleanup Complete",
+                `Successfully deleted ${deletedCount} old activity logs.`
+              );
+              refetch(); // Refresh the activity logs
+            } catch (error) {
+              console.error("Cleanup failed:", error);
+              showError("Cleanup Failed", "Failed to cleanup old logs. Please try again.");
+            }
+          },
+          variant: "primary",
+        },
+      ],
+    });
   };
 
   if (isLoading) {
@@ -68,7 +98,10 @@ export default function ActivityPage() {
                 <p className="mb-4 text-gray-600">
                   {error instanceof Error ? error.message : "An unknown error occurred"}
                 </p>
-                <Button onClick={() => refetch()}>Try Again</Button>
+                <div className="space-x-3">
+                  <RefreshButton onRefresh={handleRefresh} isLoading={isLoading} />
+                  <Button onClick={() => window.location.reload()}>Reload Page</Button>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -86,9 +119,18 @@ export default function ActivityPage() {
             <h1 className="text-3xl font-bold text-gray-900">Activity Log</h1>
             <p className="mt-2 text-gray-600">View recent system and user activities</p>
           </div>
-          <Link href="/admin">
-            <Button variant="outline">← Back to Dashboard</Button>
-          </Link>
+          <div className="flex items-center space-x-3">
+            <RefreshButton
+              onRefresh={handleRefresh}
+              isLoading={isLoading}
+              isFetching={isFetching}
+              variant="outline"
+              label="Refresh Logs"
+            />
+            <Link href="/admin">
+              <Button variant="outline">← Back to Dashboard</Button>
+            </Link>
+          </div>
         </div>{" "}
         {/* Filters */}
         <Card className="mb-8 border-0 shadow-lg">
