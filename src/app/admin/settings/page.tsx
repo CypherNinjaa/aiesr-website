@@ -4,11 +4,14 @@ import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
+import { RefreshButton } from "@/components/ui/RefreshButton";
+import { useNotifications } from "@/contexts/NotificationContext";
 import { useSettingsForm } from "@/hooks/useSettings";
 import { SettingsData } from "@/services/settings";
 
 export default function SettingsPage() {
   const { settings, isLoading, save, isSaving, error } = useSettingsForm();
+  const { showSuccess, showError, showInfo } = useNotifications();
   const [formData, setFormData] = useState<SettingsData | null>(null);
   const [hasChanges, setHasChanges] = useState(false);
 
@@ -126,16 +129,28 @@ export default function SettingsPage() {
     );
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (formData) {
-      save(formData);
+      try {
+        await save(formData);
+        showSuccess("Settings Saved", "Your settings have been saved successfully!");
+      } catch (_error) {
+        showError("Save Failed", "Failed to save settings. Please try again.");
+      }
     }
   };
 
   const handleReset = () => {
     if (settings) {
       setFormData(settings);
+      showInfo("Settings Reset", "Settings have been reset to saved values.", 3000);
     }
+  };
+
+  // Handle refresh - just reloads the page since settings are static
+  const handleRefresh = () => {
+    window.location.reload();
+    showInfo("Refreshing Settings", "Reloading settings page...", 2000);
   };
 
   if (isLoading) {
@@ -183,6 +198,13 @@ export default function SettingsPage() {
             )}
           </div>{" "}
           <div className="flex flex-wrap gap-2">
+            <RefreshButton
+              onRefresh={handleRefresh}
+              isLoading={isLoading}
+              variant="outline"
+              size="sm"
+              label="Refresh"
+            />
             {hasChanges && (
               <Button variant="outline" onClick={handleReset}>
                 Reset

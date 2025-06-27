@@ -9,7 +9,9 @@ import { AlertCircle, Loader2, Plus, X, Upload, User, Trash2 } from "lucide-reac
 import Image from "next/image";
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/Button";
+import { useNotifications } from "@/contexts/NotificationContext";
 import { useCreateFaculty, useUpdateFaculty, useUploadFacultyPhoto } from "@/hooks/useFaculty";
+import { useFormValidation, commonValidationRules } from "@/hooks/useFormValidation";
 import { validateFacultyData } from "@/services/faculty";
 import { Faculty, CreateFacultyData, FacultyPublication } from "@/types";
 
@@ -77,6 +79,8 @@ const initialPublication: FacultyPublication = {
 };
 
 export function FacultyForm({ faculty, onSuccess, onCancel }: FacultyFormProps) {
+  const { showSuccess, showError, showWarning } = useNotifications();
+  const { validateAndNotify } = useFormValidation();
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [errors, setErrors] = useState<string[]>([]);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -96,6 +100,28 @@ export function FacultyForm({ faculty, onSuccess, onCancel }: FacultyFormProps) 
 
   const isEditing = !!faculty;
   const isLoading = createFaculty.isPending || updateFaculty.isPending || uploadPhoto.isPending;
+
+  // Define validation rules for faculty data
+  const validationRules = [
+    commonValidationRules.required("name", "Faculty Name"),
+    commonValidationRules.required("designation", "Designation"),
+    commonValidationRules.required("email", "Email"),
+    commonValidationRules.email("email", "Email"),
+    commonValidationRules.required("phone", "Phone"),
+    commonValidationRules.minLength("name", "Faculty Name", 2),
+    commonValidationRules.minLength("bio", "Bio", 20),
+    commonValidationRules.positiveNumber("experience", "Experience"),
+    {
+      field: "linkedin_url",
+      label: "LinkedIn URL",
+      custom: (value: unknown) => {
+        if (value && typeof value === "string" && value.trim() && !value.includes("linkedin.com")) {
+          return "LinkedIn URL must be a valid LinkedIn profile link";
+        }
+        return null;
+      },
+    },
+  ];
 
   // Load faculty data for editing
   useEffect(() => {
@@ -225,10 +251,20 @@ export function FacultyForm({ faculty, onSuccess, onCancel }: FacultyFormProps) 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validate form data
+    // Use new validation system with notifications
+    if (!validateAndNotify({ ...formData } as Record<string, unknown>, validationRules)) {
+      return;
+    }
+
+    // Additional custom validation using existing validateFacultyData
     const validationErrors = validateFacultyData(formData);
     if (validationErrors.length > 0) {
       setErrors(validationErrors);
+      showError(
+        "Form Validation Failed",
+        `Please fix ${validationErrors.length} error${validationErrors.length > 1 ? "s" : ""}: ${validationErrors[0]}`,
+        6000
+      );
       return;
     }
 
@@ -237,8 +273,10 @@ export function FacultyForm({ faculty, onSuccess, onCancel }: FacultyFormProps) 
 
       // Upload photo if a new file is selected
       if (selectedFile) {
+        showWarning("Uploading Photo", "Please wait while we upload the faculty photo...", 3000);
         const tempId = faculty?.id || "temp-" + Date.now();
         photoUrl = await uploadPhoto.mutateAsync({ file: selectedFile, facultyId: tempId });
+        showSuccess("Photo Uploaded", "Faculty photo uploaded successfully!", 2000);
       }
 
       const facultyData: CreateFacultyData = {
@@ -268,14 +306,26 @@ export function FacultyForm({ faculty, onSuccess, onCancel }: FacultyFormProps) 
 
       if (isEditing && faculty) {
         await updateFaculty.mutateAsync({ id: faculty.id, data: facultyData });
+        showSuccess(
+          "Faculty Updated",
+          `${formData.name}'s profile has been updated successfully!`,
+          4000
+        );
       } else {
         await createFaculty.mutateAsync(facultyData);
+        showSuccess("Faculty Added", `${formData.name} has been added to the faculty list!`, 4000);
       }
 
       onSuccess();
     } catch (error) {
       console.error("Error saving faculty:", error);
-      setErrors([error instanceof Error ? error.message : "Failed to save faculty member"]);
+      const errorMessage = error instanceof Error ? error.message : "Failed to save faculty member";
+      setErrors([errorMessage]);
+      showError(
+        isEditing ? "Update Failed" : "Creation Failed",
+        `Failed to ${isEditing ? "update" : "create"} faculty member: ${errorMessage}`,
+        6000
+      );
     }
   };
 

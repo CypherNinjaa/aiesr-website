@@ -2,8 +2,10 @@
 
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
+import { useNotifications } from "@/contexts/NotificationContext";
 import { useCreateAchievement, useUpdateAchievement } from "@/hooks/useAchievements";
 import { useActiveCategories } from "@/hooks/useCategories";
+import { useFormValidation, commonValidationRules } from "@/hooks/useFormValidation";
 import { AchievementFormData } from "@/types";
 
 interface AchievementFormProps {
@@ -21,6 +23,8 @@ export const AchievementForm: React.FC<AchievementFormProps> = ({
   const createMutation = useCreateAchievement();
   const updateMutation = useUpdateAchievement();
   const { data: categories = [], isLoading: _categoriesLoading } = useActiveCategories();
+  const { showSuccess, showError } = useNotifications();
+  const { validateAndNotify } = useFormValidation();
 
   const [formData, setFormData] = useState<AchievementFormData>({
     title: initialData?.title || "",
@@ -47,8 +51,30 @@ export const AchievementForm: React.FC<AchievementFormProps> = ({
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [validationError, setValidationError] = useState<string>("");
-  const [successMessage, setSuccessMessage] = useState<string>("");
+
+  // Define validation rules
+  const validationRules = [
+    commonValidationRules.required("title", "Achievement Title"),
+    commonValidationRules.required("achiever_name", "Achiever Name"),
+    commonValidationRules.required("category_id", "Category"),
+    commonValidationRules.required("type", "Type"),
+    commonValidationRules.required("achiever_type", "Achiever Type"),
+    commonValidationRules.required("date_achieved", "Date Achieved"),
+    commonValidationRules.required("description", "Description"),
+    commonValidationRules.minLength("title", "Achievement Title", 3),
+    commonValidationRules.minLength("description", "Description", 10),
+    commonValidationRules.date("date_achieved", "Date Achieved"),
+    {
+      field: "image_url",
+      label: "Image URL",
+      custom: (value: unknown) => {
+        if (value && typeof value === "string" && value.trim() && !/^https?:\/\/.+/.test(value)) {
+          return "Image URL must be a valid HTTP/HTTPS URL";
+        }
+        return null;
+      },
+    },
+  ];
 
   // Set default category when categories load and no category is selected
   useEffect(() => {
@@ -94,12 +120,9 @@ export const AchievementForm: React.FC<AchievementFormProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setValidationError("");
-    setSuccessMessage("");
 
-    // Validate required fields
-    if (!formData.category_id) {
-      setValidationError("Please select a category");
+    // Validate form data with notifications
+    if (!validateAndNotify({ ...formData } as Record<string, unknown>, validationRules)) {
       setIsSubmitting(false);
       return;
     }
@@ -110,10 +133,18 @@ export const AchievementForm: React.FC<AchievementFormProps> = ({
     try {
       if (isEdit && achievementId) {
         await updateMutation.mutateAsync({ id: achievementId, data: formData });
-        setSuccessMessage("Achievement updated successfully!");
+        showSuccess(
+          "Achievement Updated",
+          `"${formData.title}" has been updated successfully!`,
+          3000
+        );
       } else {
         await createMutation.mutateAsync({ data: formData, userId: "admin" });
-        setSuccessMessage("Achievement created successfully!");
+        showSuccess(
+          "Achievement Created",
+          `"${formData.title}" has been created successfully!`,
+          3000
+        );
       }
 
       // Wait a moment to show success message, then redirect
@@ -122,7 +153,12 @@ export const AchievementForm: React.FC<AchievementFormProps> = ({
       }, 1500);
     } catch (error) {
       console.error("Error submitting form:", error);
-      setValidationError("An error occurred while saving. Please try again.");
+      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+      showError(
+        "Save Failed",
+        `Failed to ${isEdit ? "update" : "create"} achievement: ${errorMessage}`,
+        8000
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -130,16 +166,6 @@ export const AchievementForm: React.FC<AchievementFormProps> = ({
 
   return (
     <div className="mx-auto max-w-4xl">
-      {validationError && (
-        <div className="mb-4 rounded-md border border-red-200 bg-red-50 p-4">
-          <p className="text-sm text-red-600">{validationError}</p>
-        </div>
-      )}
-      {successMessage && (
-        <div className="mb-4 rounded-md border border-green-200 bg-green-50 p-4">
-          <p className="text-sm text-green-600">{successMessage}</p>
-        </div>
-      )}
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Basic Information */}
         <div className="rounded-lg bg-white p-6 shadow-md">

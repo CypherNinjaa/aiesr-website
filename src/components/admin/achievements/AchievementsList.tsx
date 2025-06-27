@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import React, { useState } from "react";
+import { RefreshButton } from "@/components/ui/RefreshButton";
+import { useNotifications } from "@/contexts/NotificationContext";
 import { useAchievements, useDeleteAchievement } from "@/hooks/useAchievements";
 import { useCategories } from "@/hooks/useCategories";
 import { Achievement } from "@/types";
@@ -100,6 +102,7 @@ const AchievementRow: React.FC<AchievementRowProps> = ({ achievement, onDelete }
 };
 
 export const AchievementsList: React.FC = () => {
+  const { showSuccess, showError, showInfo } = useNotifications();
   const [filters, setFilters] = useState<{
     status: "" | "draft" | "published" | "archived";
     category: string;
@@ -130,19 +133,29 @@ export const AchievementsList: React.FC = () => {
 
   const handleFilterChange = (key: string, value: string) => {
     setFilters(prev => ({ ...prev, [key]: value }));
+    showInfo("Filter Applied", `Showing achievements filtered by ${key}: ${value || "All"}`, 2000);
   };
 
   const handleRefresh = () => {
     refetch();
+    showInfo("Refreshing Data", "Loading latest achievements...", 2000);
   };
 
   const handleDelete = async (id: string) => {
+    const achievement = achievements.find(a => a.id === id);
+    const achievementTitle = achievement?.title || "Achievement";
+
     try {
       await deleteMutation.mutateAsync(id);
-      // Automatic refresh happens via query invalidation in the hook
+      showSuccess(
+        "Achievement Deleted",
+        `"${achievementTitle}" has been deleted successfully.`,
+        3000
+      );
     } catch (error) {
       console.error("Error deleting achievement:", error);
-      // Handle error appropriately - could use a toast notification system
+      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+      showError("Delete Failed", `Failed to delete "${achievementTitle}": ${errorMessage}`, 6000);
     }
   };
 
@@ -150,12 +163,13 @@ export const AchievementsList: React.FC = () => {
     return (
       <div className="py-12 text-center">
         <div className="mb-4 text-red-600">⚠️ Error loading achievements</div>
-        <button
-          onClick={handleRefresh}
-          className="bg-burgundy hover:bg-burgundy/90 rounded-lg px-4 py-2 text-white"
-        >
-          Retry
-        </button>
+        <RefreshButton
+          onRefresh={handleRefresh}
+          isLoading={isLoading}
+          isFetching={isFetching}
+          variant="primary"
+          label="Retry"
+        />
       </div>
     );
   }
@@ -172,15 +186,14 @@ export const AchievementsList: React.FC = () => {
           </p>
         </div>
         <div className="flex items-center space-x-3">
-          <button
-            onClick={handleRefresh}
-            disabled={isLoading || isFetching}
-            className="flex items-center rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 disabled:opacity-50"
-            title="Refresh achievements list"
-          >
-            <span className={`mr-2 ${isFetching ? "animate-spin" : ""}`}>🔄</span>
-            Refresh
-          </button>
+          <RefreshButton
+            onRefresh={handleRefresh}
+            isLoading={isLoading}
+            isFetching={isFetching}
+            variant="outline"
+            size="md"
+            label="Refresh"
+          />
           <Link
             href="/admin/achievements/new"
             className="bg-burgundy hover:bg-burgundy/90 rounded-lg px-4 py-2 font-semibold text-white"

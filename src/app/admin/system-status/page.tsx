@@ -4,6 +4,8 @@ import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
+import { RefreshButton } from "@/components/ui/RefreshButton";
+import { useNotifications } from "@/contexts/NotificationContext";
 import { supabase } from "@/lib/supabase";
 
 interface SystemStatus {
@@ -26,9 +28,12 @@ export default function SystemStatusPage() {
   const [status, setStatus] = useState<SystemStatus | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [lastChecked, setLastChecked] = useState<Date | null>(null);
+  const { showSuccess, showError, showInfo } = useNotifications();
 
   const checkSystemHealth = async () => {
     setIsLoading(true);
+    showInfo("Checking System Status", "Running health checks...", 2000);
+
     const newStatus: SystemStatus = {
       database: { status: "healthy", latency: 0 },
       storage: { status: "healthy" },
@@ -45,6 +50,7 @@ export default function SystemStatusPage() {
       if (dbError) {
         newStatus.database.status = "down";
         newStatus.database.error = dbError.message;
+        showError("Database Error", `Database connectivity failed: ${dbError.message}`);
       } else {
         newStatus.database.latency = dbLatency;
         if (dbLatency > 1000) {
@@ -87,10 +93,23 @@ export default function SystemStatusPage() {
     setStatus(newStatus);
     setLastChecked(new Date());
     setIsLoading(false);
+
+    // Show completion notification
+    const hasErrors =
+      newStatus.database.status === "down" ||
+      newStatus.storage.status === "down" ||
+      newStatus.auth.status === "down";
+
+    if (hasErrors) {
+      showError("System Issues Detected", "Some services are experiencing problems.");
+    } else {
+      showSuccess("System Status Updated", "All systems are operational!");
+    }
   };
 
   useEffect(() => {
     checkSystemHealth();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getStatusColor = (status: "healthy" | "degraded" | "down") => {
@@ -151,19 +170,12 @@ export default function SystemStatusPage() {
             )}
           </div>
           <div className="flex gap-2">
-            <Button onClick={checkSystemHealth} disabled={isLoading} variant="outline">
-              {isLoading ? (
-                <>
-                  <span className="mr-2 animate-spin">⏳</span>
-                  Checking...
-                </>
-              ) : (
-                <>
-                  <span className="mr-2">🔄</span>
-                  Refresh
-                </>
-              )}
-            </Button>
+            <RefreshButton
+              onRefresh={checkSystemHealth}
+              isLoading={isLoading}
+              variant="outline"
+              label="Check Status"
+            />
             <Link href="/admin">
               <Button variant="outline">← Back to Dashboard</Button>
             </Link>

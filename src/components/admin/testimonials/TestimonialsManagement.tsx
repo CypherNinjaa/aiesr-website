@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/Button";
+import { RefreshButton } from "@/components/ui/RefreshButton";
+import { useNotifications } from "@/contexts/NotificationContext";
 import { useTestimonials, useTestimonialActions } from "@/hooks/useTestimonials";
 import { DatabaseTestimonial } from "@/types";
 
@@ -281,6 +283,7 @@ const TestimonialRow: React.FC<TestimonialRowProps> = ({
 };
 
 export const TestimonialsManagement: React.FC = () => {
+  const { showSuccess, showError, showInfo } = useNotifications();
   const [statusFilter, setStatusFilter] = useState<"all" | "pending" | "approved" | "rejected">(
     "all"
   );
@@ -292,6 +295,7 @@ export const TestimonialsManagement: React.FC = () => {
     isLoading,
     error,
     refetch,
+    isFetching,
   } = useTestimonials({
     status: statusFilter === "all" ? undefined : statusFilter,
     limit: pageSize,
@@ -301,24 +305,58 @@ export const TestimonialsManagement: React.FC = () => {
   const { approveTestimonial, rejectTestimonial, toggleFeatured, deleteTestimonial } =
     useTestimonialActions();
 
-  const handleApprove = async (id: string) => {
-    await approveTestimonial.mutateAsync(id);
+  const handleRefresh = () => {
     refetch();
+    showInfo("Refreshing Data", "Loading latest testimonials...", 2000);
+  };
+
+  const handleApprove = async (id: string) => {
+    try {
+      await approveTestimonial.mutateAsync(id);
+      showSuccess("Testimonial Approved", "The testimonial has been approved successfully.", 3000);
+      refetch();
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to approve testimonial";
+      showError("Approval Failed", errorMessage, 5000);
+    }
   };
 
   const handleReject = async (id: string, reason: string) => {
-    await rejectTestimonial.mutateAsync({ id, reason });
-    refetch();
+    try {
+      await rejectTestimonial.mutateAsync({ id, reason });
+      showSuccess("Testimonial Rejected", "The testimonial has been rejected.", 3000);
+      refetch();
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to reject testimonial";
+      showError("Rejection Failed", errorMessage, 5000);
+    }
   };
 
   const handleToggleFeatured = async (id: string) => {
-    await toggleFeatured.mutateAsync(id);
-    refetch();
+    try {
+      await toggleFeatured.mutateAsync(id);
+      showSuccess(
+        "Featured Status Updated",
+        "The testimonial featured status has been updated.",
+        3000
+      );
+      refetch();
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to update featured status";
+      showError("Update Failed", errorMessage, 5000);
+    }
   };
 
   const handleDelete = async (id: string) => {
-    await deleteTestimonial.mutateAsync(id);
-    refetch();
+    try {
+      await deleteTestimonial.mutateAsync(id);
+      showSuccess("Testimonial Deleted", "The testimonial has been deleted successfully.", 3000);
+      refetch();
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to delete testimonial";
+      showError("Delete Failed", errorMessage, 5000);
+    }
   };
 
   if (isLoading) {
@@ -333,9 +371,14 @@ export const TestimonialsManagement: React.FC = () => {
     return (
       <div className="rounded-lg border border-red-200 bg-red-50 p-4">
         <p className="text-red-700">Error loading testimonials: {error.message}</p>
-        <Button onClick={() => refetch()} className="mt-2">
-          Retry
-        </Button>
+        <RefreshButton
+          onRefresh={handleRefresh}
+          isLoading={isLoading}
+          isFetching={isFetching}
+          variant="primary"
+          label="Retry"
+          className="mt-2"
+        />
       </div>
     );
   }
@@ -437,9 +480,14 @@ export const TestimonialsManagement: React.FC = () => {
               <option value="rejected">Rejected</option>
             </select>
 
-            <Button onClick={() => refetch()} variant="outline">
-              Refresh
-            </Button>
+            <RefreshButton
+              onRefresh={handleRefresh}
+              isLoading={isLoading}
+              isFetching={isFetching}
+              variant="outline"
+              size="md"
+              label="Refresh"
+            />
           </div>
         </div>
       </div>

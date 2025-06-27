@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
+import { RefreshButton } from "@/components/ui/RefreshButton";
+import { useNotifications } from "@/contexts/NotificationContext";
 import {
   useCategories,
   useCreateCategory,
@@ -15,13 +17,20 @@ export default function CategoriesPage() {
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
 
   // Use React Query hooks for data fetching and mutations
-  const { data: categories = [], isLoading: loading, error } = useCategories();
+  const { data: categories = [], isLoading: loading, error, refetch, isFetching } = useCategories();
   const createCategory = useCreateCategory();
   const updateCategory = useUpdateCategory();
   const deleteCategory = useDeleteCategory();
+  const { showSuccess, showError, showInfo, addNotification } = useNotifications();
 
   const isSubmitting =
     createCategory.isPending || updateCategory.isPending || deleteCategory.isPending;
+
+  // Handle refresh
+  const handleRefresh = () => {
+    refetch();
+    showInfo("Refreshing Categories", "Loading latest category data...", 2000);
+  };
 
   // Handle create category
   const handleCreateCategory = async (categoryData: Record<string, unknown>) => {
@@ -36,11 +45,14 @@ export default function CategoriesPage() {
       const result = await createCategory.mutateAsync(finalData);
       if (result) {
         setIsCreateModalOpen(false);
+        showSuccess("Category Created", `"${categoryData.name}" has been added successfully!`);
       }
     } catch (error) {
       console.error("Error creating category:", error);
-      // eslint-disable-next-line no-alert
-      alert("Error creating category. Please try again.");
+      showError(
+        "Creation Failed",
+        error instanceof Error ? error.message : "Failed to create category. Please try again."
+      );
     }
   };
 
@@ -58,30 +70,51 @@ export default function CategoriesPage() {
       });
       if (result) {
         setEditingCategory(null);
+        showSuccess("Category Updated", `"${categoryData.name}" has been updated successfully!`);
       }
     } catch (error) {
       console.error("Error updating category:", error);
-      // eslint-disable-next-line no-alert
-      alert("Error updating category. Please try again.");
+      showError(
+        "Update Failed",
+        error instanceof Error ? error.message : "Failed to update category. Please try again."
+      );
     }
   };
 
   // Handle delete category
   const handleDeleteCategory = async (category: Category) => {
-    if (
-      // eslint-disable-next-line no-alert
-      !confirm(`Are you sure you want to delete "${category.name}"? This action cannot be undone.`)
-    ) {
-      return;
-    }
-
-    try {
-      await deleteCategory.mutateAsync(category.id);
-    } catch (error) {
-      console.error("Error deleting category:", error);
-      // eslint-disable-next-line no-alert
-      alert("Error deleting category. Please try again.");
-    }
+    // Show warning notification with actions instead of browser confirm
+    addNotification({
+      type: "warning",
+      title: "Confirm Deletion",
+      message: `Are you sure you want to delete "${category.name}"? This action cannot be undone.`,
+      duration: 0, // Don't auto-dismiss
+      actions: [
+        {
+          label: "Cancel",
+          onClick: () => {}, // Just closes the notification
+          variant: "secondary",
+        },
+        {
+          label: "Delete",
+          onClick: async () => {
+            try {
+              await deleteCategory.mutateAsync(category.id);
+              showSuccess("Category Deleted", `"${category.name}" has been deleted successfully!`);
+            } catch (error) {
+              console.error("Error deleting category:", error);
+              showError(
+                "Delete Failed",
+                error instanceof Error
+                  ? error.message
+                  : "Failed to delete category. Please try again."
+              );
+            }
+          },
+          variant: "primary",
+        },
+      ],
+    });
   };
 
   if (error) {
@@ -89,12 +122,15 @@ export default function CategoriesPage() {
       <div className="flex min-h-64 items-center justify-center">
         <div className="text-center">
           <p className="text-red-600">Error loading categories: {error.message}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="mt-2 text-blue-600 hover:text-blue-800"
-          >
-            Retry
-          </button>
+          <div className="mt-4 space-x-2">
+            <RefreshButton onRefresh={handleRefresh} isLoading={loading} />
+            <button
+              onClick={() => window.location.reload()}
+              className="text-blue-600 hover:text-blue-800"
+            >
+              Reload Page
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -119,12 +155,20 @@ export default function CategoriesPage() {
               Manage event categories dynamically. Categories are used to organize events.
             </p>
           </div>
-          <button
-            onClick={() => setIsCreateModalOpen(true)}
-            className="rounded-md bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
-          >
-            Create Category
-          </button>
+          <div className="flex items-center space-x-3">
+            <RefreshButton
+              onRefresh={handleRefresh}
+              isLoading={loading}
+              isFetching={isFetching}
+              variant="outline"
+            />
+            <button
+              onClick={() => setIsCreateModalOpen(true)}
+              className="rounded-md bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
+            >
+              Create Category
+            </button>
+          </div>
         </div>
 
         {/* Categories Grid */}
