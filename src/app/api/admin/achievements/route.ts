@@ -78,19 +78,60 @@ export async function POST(request: NextRequest) {
     }
     const body = await request.json();
 
+    // Debug: Log the incoming data
+    console.log("Received achievement data:", {
+      category_id: body.category_id,
+      achiever_type: body.achiever_type,
+      title: body.title,
+      // Log just key fields to avoid overwhelming logs
+    });
+
     // Generate a UUID for created_by since we don't have authentication yet
     // In a real app, you'd get this from the authenticated user
     const userId = crypto.randomUUID();
 
+    // Handle the category field mapping
+    // If category_id is provided, we need to map it appropriately for the old schema
+    const insertData = {
+      ...body,
+      created_by: userId,
+      sort_order: body.sort_order || 0,
+      status: body.status || "draft",
+      is_featured: body.is_featured || false,
+    };
+
+    // Map category_id to category if the old schema is still in use
+    if (body.category_id && !body.category) {
+      // Map based on achiever_type to provide reasonable defaults
+      // Old category values: 'student', 'faculty', 'institutional', 'research', 'award'
+      switch (body.achiever_type) {
+        case "student":
+          insertData.category = "student";
+          break;
+        case "faculty":
+          insertData.category = "faculty";
+          break;
+        case "department":
+        case "institution":
+          insertData.category = "institutional";
+          break;
+        default:
+          // Default to 'award' for general achievements
+          insertData.category = "award";
+      }
+    }
+
+    // Debug: Log the final data being inserted
+    console.log("Final insert data:", {
+      category: insertData.category,
+      category_id: insertData.category_id,
+      achiever_type: insertData.achiever_type,
+      title: insertData.title,
+    });
+
     const { data, error } = await supabaseAdmin
       .from("achievements")
-      .insert({
-        ...body,
-        created_by: userId,
-        sort_order: body.sort_order || 0,
-        status: body.status || "draft",
-        is_featured: body.is_featured || false,
-      })
+      .insert(insertData)
       .select()
       .single();
 

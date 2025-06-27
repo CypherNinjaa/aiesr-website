@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useCreateAchievement, useUpdateAchievement } from "@/hooks/useAchievements";
 import { useActiveCategories } from "@/hooks/useCategories";
 import { AchievementFormData } from "@/types";
@@ -20,12 +20,12 @@ export const AchievementForm: React.FC<AchievementFormProps> = ({
   const router = useRouter();
   const createMutation = useCreateAchievement();
   const updateMutation = useUpdateAchievement();
-  const { data: categories = [] } = useActiveCategories();
+  const { data: categories = [], isLoading: _categoriesLoading } = useActiveCategories();
 
   const [formData, setFormData] = useState<AchievementFormData>({
     title: initialData?.title || "",
     description: initialData?.description || "",
-    category_id: initialData?.category_id || categories[0]?.id || "",
+    category_id: initialData?.category_id || "",
     type: initialData?.type || "award",
     achiever_name: initialData?.achiever_name || "",
     achiever_type: initialData?.achiever_type || "student",
@@ -47,6 +47,18 @@ export const AchievementForm: React.FC<AchievementFormProps> = ({
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [validationError, setValidationError] = useState<string>("");
+  const [successMessage, setSuccessMessage] = useState<string>("");
+
+  // Set default category when categories load and no category is selected
+  useEffect(() => {
+    if (categories.length > 0 && !formData.category_id && !initialData?.category_id) {
+      setFormData(prev => ({
+        ...prev,
+        category_id: categories[0].id,
+      }));
+    }
+  }, [categories, formData.category_id, initialData?.category_id]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -82,16 +94,35 @@ export const AchievementForm: React.FC<AchievementFormProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setValidationError("");
+    setSuccessMessage("");
+
+    // Validate required fields
+    if (!formData.category_id) {
+      setValidationError("Please select a category");
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Debug: Log the data being sent
+    console.log("Submitting achievement data:", formData);
 
     try {
       if (isEdit && achievementId) {
         await updateMutation.mutateAsync({ id: achievementId, data: formData });
+        setSuccessMessage("Achievement updated successfully!");
       } else {
-        await createMutation.mutateAsync({ data: formData, userId: "admin" }); // TODO: Get actual user ID
+        await createMutation.mutateAsync({ data: formData, userId: "admin" });
+        setSuccessMessage("Achievement created successfully!");
       }
-      router.push("/admin/achievements");
+
+      // Wait a moment to show success message, then redirect
+      setTimeout(() => {
+        router.push("/admin/achievements");
+      }, 1500);
     } catch (error) {
       console.error("Error submitting form:", error);
+      setValidationError("An error occurred while saving. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -99,6 +130,16 @@ export const AchievementForm: React.FC<AchievementFormProps> = ({
 
   return (
     <div className="mx-auto max-w-4xl">
+      {validationError && (
+        <div className="mb-4 rounded-md border border-red-200 bg-red-50 p-4">
+          <p className="text-sm text-red-600">{validationError}</p>
+        </div>
+      )}
+      {successMessage && (
+        <div className="mb-4 rounded-md border border-green-200 bg-green-50 p-4">
+          <p className="text-sm text-green-600">{successMessage}</p>
+        </div>
+      )}
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Basic Information */}
         <div className="rounded-lg bg-white p-6 shadow-md">
@@ -146,11 +187,17 @@ export const AchievementForm: React.FC<AchievementFormProps> = ({
                 className="focus:border-burgundy focus:ring-burgundy mt-1 block w-full rounded-md border-gray-300 shadow-sm"
               >
                 <option value="">Select a category</option>
-                {categories.map(category => (
-                  <option key={category.id} value={category.id}>
-                    {category.icon_emoji} {category.name}
+                {categories.length === 0 ? (
+                  <option value="" disabled>
+                    Loading categories...
                   </option>
-                ))}
+                ) : (
+                  categories.map(category => (
+                    <option key={category.id} value={category.id}>
+                      {category.icon_emoji} {category.name}
+                    </option>
+                  ))
+                )}
               </select>
             </div>
             <div>
@@ -416,7 +463,7 @@ export const AchievementForm: React.FC<AchievementFormProps> = ({
           </button>
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting || categories.length === 0 || !formData.category_id}
             className="bg-burgundy hover:bg-burgundy/90 rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
           >
             {isSubmitting ? "Saving..." : isEdit ? "Update Achievement" : "Create Achievement"}
