@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
-import Link from "next/link";
 import React from "react";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
@@ -202,23 +201,13 @@ export const FacultySection: React.FC = () => {
                   )}
 
                   {/* View Profile Button */}
-                  {(() => {
-                    const slug = member.name
-                      .toLowerCase()
-                      .replace(/\s+/g, "-")
-                      .replace(/[^a-z0-9-]/g, "");
-                    return (
-                      <Link href={`/faculty/${slug}`}>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="group-hover:bg-burgundy mt-4 w-full transition-colors group-hover:text-white"
-                        >
-                          View Profile
-                        </Button>
-                      </Link>
-                    );
-                  })()}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="group-hover:bg-burgundy mt-4 w-full transition-colors group-hover:text-white"
+                  >
+                    View Profile
+                  </Button>
                 </CardContent>
 
                 {/* Hover Effect */}
