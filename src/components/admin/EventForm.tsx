@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation";
 import React, { useState, useEffect, useRef } from "react";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
 import { useEvent, useCreateEvent, useUpdateEvent } from "@/hooks/useEvents";
+import { useEventSponsors } from "@/hooks/useSponsors";
 import { CategoryService } from "@/services/category";
 import { StorageService } from "@/services/storage";
 import { Event, Category } from "@/types";
+import EventSponsorManager from "./events/EventSponsorManager";
 
 interface EventFormProps {
   eventId?: string;
@@ -24,6 +26,9 @@ export default function EventForm({ eventId }: EventFormProps) {
 
   const createEvent = useCreateEvent();
   const updateEvent = useUpdateEvent();
+
+  // Get event sponsors for editing
+  const { data: eventSponsors = [] } = useEventSponsors(eventId || "", isEditing);
   const [formData, setFormData] = useState<Partial<Event>>({
     title: "",
     description: "",
@@ -912,6 +917,21 @@ export default function EventForm({ eventId }: EventFormProps) {
               Enter schedule as JSON array. Leave empty if no schedule needed.
             </p>
           </div>
+          {/* Event Sponsors Section */}
+          {(isEditing && eventId) || (!isEditing && formData.title) ? (
+            <div className="rounded-lg border border-gray-200 p-6">
+              <EventSponsorManager
+                eventId={eventId || "temp-event-id"}
+                eventSponsors={eventSponsors}
+              />
+            </div>
+          ) : (
+            <div className="rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-6 text-center">
+              <p className="text-gray-500">
+                {isEditing ? "Loading sponsors..." : "Save the event first to add sponsors"}
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Form Actions */}

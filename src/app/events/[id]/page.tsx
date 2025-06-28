@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import React from "react";
+import EventSponsorsDisplay from "@/components/events/EventSponsorsDisplay";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { useEvent, useEventsByType } from "@/hooks/useEvents";
@@ -566,7 +567,19 @@ export default function EventPage({ params }: EventPageProps) {
             </div>
           </div>
         </div>
-      </section>{" "}
+      </section>
+      {/* Event Sponsors */}
+      <section className="bg-white py-16">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.5 }}
+          >
+            <EventSponsorsDisplay eventId={event.id} />
+          </motion.div>
+        </div>
+      </section>
       {/* Related Events */}
       {filteredRelatedEvents.length > 0 && (
         <section className="bg-gray-50 py-16">

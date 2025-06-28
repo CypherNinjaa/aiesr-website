@@ -1,0 +1,27 @@
+.tierBadge {
+  background-color: var(--tier-color);
+}
+
+.tierIndicator {
+  background-color: var(--tier-color);
+}
+
+.platinum {
+  background-color: #e5e7eb;
+}
+
+.gold {
+  background-color: #f59e0b;
+}
+
+.silver {
+  background-color: #6b7280;
+}
+
+.bronze {
+  background-color: #cd7c2f;
+}
+
+.partner {
+  background-color: #3b82f6;
+}
