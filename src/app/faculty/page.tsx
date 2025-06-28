@@ -283,10 +283,7 @@ interface FacultyCardProps {
 
 function FacultyCard({ member, viewMode, cardVariants }: FacultyCardProps) {
   // Generate URL-friendly slug from faculty name
-  const facultySlug = member.name
-    .toLowerCase()
-    .replace(/\s+/g, "-")
-    .replace(/[^a-z0-9-]/g, "");
+  const facultySlug = member.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
   if (viewMode === "list") {
     return (
       <motion.div variants={cardVariants}>
@@ -470,7 +467,7 @@ function FacultyCard({ member, viewMode, cardVariants }: FacultyCardProps) {
               <Link href={`/faculty/${facultySlug}`}>
                 <button
                   type="button"
-                  className="border-burgundy text-burgundy focus:ring-burgundy hover:bg-burgundy h-9 w-full rounded-md border-2 bg-white px-3 text-sm font-medium transition-colors hover:text-white focus:ring-2 focus:ring-offset-2 focus:outline-none"
+                  className="border-burgundy text-burgundy focus:ring-burgundy h-9 w-full rounded-md border-2 bg-white px-3 text-sm font-medium focus:ring-2 focus:ring-offset-2 focus:outline-none hover:bg-burgundy hover:text-white transition-colors"
                 >
                   View Profile
                 </button>

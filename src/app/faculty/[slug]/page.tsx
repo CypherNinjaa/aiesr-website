@@ -5,83 +5,81 @@
 "use client";
 
 import { motion } from "framer-motion";
-import {
+import { 
   ArrowLeft,
-  Mail,
-  Phone,
-  MapPin,
-  Clock,
-  ExternalLink,
-  BookOpen,
-  Award,
+  Mail, 
+  Phone, 
+  MapPin, 
+  Clock, 
+  ExternalLink, 
+  BookOpen, 
+  Award, 
   GraduationCap,
   User,
   Calendar,
   Globe,
-  FileText,
+  FileText
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import React from "react";
+import { Button } from "@/components/ui/Button";
+import { Card, CardContent } from "@/components/ui/Card";
 import { useActiveFaculty } from "@/hooks/useFaculty";
 import { getPublicPhotoUrl } from "@/services/faculty";
 
 const pageVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
+  visible: { 
+    opacity: 1, 
     y: 0,
-    transition: { duration: 0.6, ease: "easeOut" },
-  },
+    transition: { duration: 0.6, ease: "easeOut" }
+  }
 };
 
 const sectionVariants = {
   hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
+  visible: { 
+    opacity: 1, 
     y: 0,
-    transition: { duration: 0.5, ease: "easeOut" },
-  },
+    transition: { duration: 0.5, ease: "easeOut" }
+  }
 };
 
 export default function FacultyProfilePage() {
   const params = useParams();
   const { data: faculty = [], isLoading, error } = useActiveFaculty();
-
+  
   const slug = params.slug as string;
-
+  
   // Find faculty member by slug (name converted to URL-friendly format)
-  const facultyMember = faculty.find(
-    member =>
-      member.name
-        .toLowerCase()
-        .replace(/\s+/g, "-")
-        .replace(/[^a-z0-9-]/g, "") === slug
+  const facultyMember = faculty.find(member => 
+    member.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') === slug
   );
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 pt-20">
-        <div className="border-b bg-white">
+        <div className="bg-white border-b">
           <div className="container mx-auto px-4 py-6">
             <div className="flex items-center gap-4">
-              <div className="bg-burgundy/20 h-8 w-8 animate-pulse rounded"></div>
-              <div className="bg-burgundy/20 h-6 w-32 animate-pulse rounded"></div>
+              <div className="w-8 h-8 bg-burgundy/20 rounded animate-pulse"></div>
+              <div className="w-32 h-6 bg-burgundy/20 rounded animate-pulse"></div>
             </div>
           </div>
         </div>
         <div className="container mx-auto px-4 py-12">
-          <div className="mx-auto max-w-4xl space-y-6">
-            <div className="bg-burgundy/10 h-64 w-full animate-pulse rounded-lg"></div>
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <div className="max-w-4xl mx-auto space-y-6">
+            <div className="w-full h-64 bg-burgundy/10 rounded-lg animate-pulse"></div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="space-y-4">
-                <div className="bg-burgundy/10 h-32 w-full animate-pulse rounded"></div>
-                <div className="bg-burgundy/10 h-24 w-full animate-pulse rounded"></div>
+                <div className="w-full h-32 bg-burgundy/10 rounded animate-pulse"></div>
+                <div className="w-full h-24 bg-burgundy/10 rounded animate-pulse"></div>
               </div>
-              <div className="space-y-4 lg:col-span-2">
-                <div className="bg-burgundy/10 h-20 w-full animate-pulse rounded"></div>
-                <div className="bg-burgundy/10 h-32 w-full animate-pulse rounded"></div>
+              <div className="lg:col-span-2 space-y-4">
+                <div className="w-full h-20 bg-burgundy/10 rounded animate-pulse"></div>
+                <div className="w-full h-32 bg-burgundy/10 rounded animate-pulse"></div>
               </div>
             </div>
           </div>
@@ -92,57 +90,58 @@ export default function FacultyProfilePage() {
 
   if (error || !facultyMember) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 pt-20">
-        <div className="mx-auto max-w-md px-4 text-center">
-          <div className="bg-burgundy/10 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
-            <User className="text-burgundy h-8 w-8" />
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center pt-20">
+        <div className="text-center max-w-md mx-auto px-4">
+          <div className="w-16 h-16 mx-auto mb-4 bg-burgundy/10 rounded-full flex items-center justify-center">
+            <User className="w-8 h-8 text-burgundy" />
           </div>
-          <h1 className="mb-2 text-2xl font-bold text-gray-900">Faculty Member Not Found</h1>
-          <p className="mb-6 text-gray-600">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Faculty Member Not Found</h1>
+          <p className="text-gray-600 mb-6">
             The faculty member you're looking for doesn't exist or may have been removed.
           </p>
           <Link href="/faculty">
-            <button className="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 font-medium text-white shadow-lg transition-colors hover:bg-indigo-700">
-              <ArrowLeft className="mr-2 h-4 w-4" />
+            <Button className="bg-burgundy hover:bg-burgundy/90 text-white">
+              <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Faculty
-            </button>
+            </Button>
           </Link>
         </div>
       </div>
     );
   }
 
-  const profileImageUrl = facultyMember.profile_image_url
+  const profileImageUrl = facultyMember.profile_image_url 
     ? getPublicPhotoUrl(facultyMember.profile_image_url)
     : null;
 
   return (
-    <motion.div
+    <motion.div 
       initial="hidden"
       animate="visible"
       variants={pageVariants}
-      className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 pt-20"
+      className="min-h-screen bg-gray-50 pt-20"
     >
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
-        <div className="mx-auto max-w-6xl">
+        <div className="max-w-6xl mx-auto">
+          
           {/* Back Navigation */}
           <div className="mb-6">
-            <Link
+            <Link 
               href="/faculty"
-              className="inline-flex items-center gap-2 font-medium text-gray-700 transition-colors hover:text-indigo-600"
+              className="inline-flex items-center gap-2 text-burgundy hover:text-burgundy/80 transition-colors font-medium"
             >
-              <ArrowLeft className="h-5 w-5" />
+              <ArrowLeft className="w-5 h-5" />
               Back to Faculty
             </Link>
           </div>
-
-          {/* Hero Section - Glass Effect */}
-          <motion.div
+          
+          {/* Hero Section */}
+          <motion.div 
             variants={sectionVariants}
-            className="mb-8 rounded-3xl border border-white/30 bg-white/20 p-8 shadow-2xl backdrop-blur-lg"
+            className="bg-gradient-to-r from-burgundy to-burgundy/90 rounded-2xl p-8 mb-8 text-white"
           >
-            <div className="flex flex-col items-start gap-8 lg:flex-row">
+            <div className="flex flex-col lg:flex-row items-start gap-8">
               {/* Profile Image */}
               <div className="flex-shrink-0">
                 {profileImageUrl ? (
@@ -151,36 +150,32 @@ export default function FacultyProfilePage() {
                     alt={facultyMember.name}
                     width={200}
                     height={200}
-                    className="rounded-3xl border-4 border-white/30 object-cover shadow-xl"
+                    className="rounded-2xl border-4 border-white/20 object-cover shadow-lg"
                   />
                 ) : (
-                  <div className="flex h-[200px] w-[200px] items-center justify-center rounded-3xl border-4 border-white/30 bg-white/10">
-                    <User className="h-20 w-20 text-gray-600" />
+                  <div className="w-[200px] h-[200px] rounded-2xl bg-white/20 border-4 border-white/20 flex items-center justify-center">
+                    <User className="h-20 w-20 text-white/60" />
                   </div>
                 )}
               </div>
-
+              
               {/* Basic Info */}
               <div className="flex-1">
-                <h1 className="mb-3 text-4xl font-bold text-gray-800 lg:text-5xl">
-                  {facultyMember.name}
-                </h1>
-                <p className="mb-4 text-xl text-gray-600">{facultyMember.designation}</p>
-
+                <h1 className="text-4xl lg:text-5xl font-bold mb-3">{facultyMember.name}</h1>
+                <p className="text-xl text-white/90 mb-4">{facultyMember.designation}</p>
+                
                 {/* Experience Badge */}
-                <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/30 px-4 py-2 backdrop-blur-sm">
-                  <Calendar className="h-4 w-4 text-gray-600" />
-                  <span className="font-medium text-gray-700">
-                    {facultyMember.experience}+ years experience
-                  </span>
+                <div className="inline-flex items-center gap-2 bg-white/20 rounded-full px-4 py-2 mb-6">
+                  <Calendar className="w-4 h-4" />
+                  <span className="font-medium">{facultyMember.experience}+ years experience</span>
                 </div>
-
+                
                 {/* Specializations */}
-                <div className="mb-6 flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2 mb-6">
                   {facultyMember.specialization.map((spec, index) => (
-                    <span
+                    <span 
                       key={index}
-                      className="rounded-full border border-white/30 bg-white/40 px-3 py-1 text-sm font-medium text-gray-700 backdrop-blur-sm"
+                      className="px-3 py-1 bg-white/20 rounded-full text-sm font-medium"
                     >
                       {spec}
                     </span>
@@ -188,30 +183,22 @@ export default function FacultyProfilePage() {
                 </div>
 
                 {/* Quick Stats */}
-                <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                   <div className="text-center lg:text-left">
-                    <div className="text-2xl font-bold text-indigo-600">
-                      {facultyMember.publications.length}
-                    </div>
-                    <div className="text-sm text-gray-600">Publications</div>
+                    <div className="text-2xl font-bold text-gold">{facultyMember.publications.length}</div>
+                    <div className="text-sm text-white/80">Publications</div>
                   </div>
                   <div className="text-center lg:text-left">
-                    <div className="text-2xl font-bold text-indigo-600">
-                      {facultyMember.achievements.length}
-                    </div>
-                    <div className="text-sm text-gray-600">Achievements</div>
+                    <div className="text-2xl font-bold text-gold">{facultyMember.achievements.length}</div>
+                    <div className="text-sm text-white/80">Achievements</div>
                   </div>
                   <div className="text-center lg:text-left">
-                    <div className="text-2xl font-bold text-indigo-600">
-                      {facultyMember.research_areas.length}
-                    </div>
-                    <div className="text-sm text-gray-600">Research Areas</div>
+                    <div className="text-2xl font-bold text-gold">{facultyMember.research_areas.length}</div>
+                    <div className="text-sm text-white/80">Research Areas</div>
                   </div>
                   <div className="text-center lg:text-left">
-                    <div className="text-2xl font-bold text-indigo-600">
-                      {facultyMember.education.length}
-                    </div>
-                    <div className="text-sm text-gray-600">Degrees</div>
+                    <div className="text-2xl font-bold text-gold">{facultyMember.education.length}</div>
+                    <div className="text-sm text-white/80">Degrees</div>
                   </div>
                 </div>
               </div>
@@ -219,70 +206,69 @@ export default function FacultyProfilePage() {
           </motion.div>
 
           {/* Content Grid */}
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
             {/* Sidebar - Contact & Links */}
-            <motion.div variants={sectionVariants} className="space-y-6 lg:col-span-1">
+            <motion.div 
+              variants={sectionVariants}
+              className="lg:col-span-1 space-y-6"
+            >
               {/* Contact Information */}
-              <div className="rounded-2xl border border-white/30 bg-white/20 shadow-xl backdrop-blur-lg">
-                <div className="p-6">
-                  <h3 className="mb-4 flex items-center text-lg font-semibold text-gray-800">
-                    <Mail className="mr-2 h-5 w-5 text-indigo-600" />
+              <Card>
+                <CardContent className="p-6">
+                  <h3 className="text-lg font-semibold mb-4 flex items-center text-burgundy">
+                    <Mail className="h-5 w-5 mr-2 text-burgundy" />
                     Contact Information
                   </h3>
-
+                  
                   <div className="space-y-4">
                     {facultyMember.email && (
                       <div className="flex items-center gap-3">
-                        <Mail className="h-4 w-4 flex-shrink-0 text-gray-400" />
-                        <a
-                          href={`mailto:${facultyMember.email}`}
-                          className="text-sm break-all text-blue-600 hover:underline"
+                        <Mail className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                        <a 
+                          href={`mailto:${facultyMember.email}`} 
+                          className="text-blue-600 hover:underline text-sm break-all"
                         >
                           {facultyMember.email}
                         </a>
                       </div>
                     )}
-
+                    
                     {facultyMember.phone && (
                       <div className="flex items-center gap-3">
-                        <Phone className="h-4 w-4 flex-shrink-0 text-gray-400" />
-                        <a
-                          href={`tel:${facultyMember.phone}`}
-                          className="text-sm text-blue-600 hover:underline"
+                        <Phone className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                        <a 
+                          href={`tel:${facultyMember.phone}`} 
+                          className="text-blue-600 hover:underline text-sm"
                         >
                           {facultyMember.phone}
                         </a>
                       </div>
                     )}
-
+                    
                     {facultyMember.office_location && (
                       <div className="flex items-center gap-3">
-                        <MapPin className="h-4 w-4 flex-shrink-0 text-gray-400" />
-                        <span className="text-sm text-gray-700">
-                          {facultyMember.office_location}
-                        </span>
+                        <MapPin className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                        <span className="text-gray-700 text-sm">{facultyMember.office_location}</span>
                       </div>
                     )}
-
+                    
                     {facultyMember.office_hours && (
                       <div className="flex items-center gap-3">
-                        <Clock className="h-4 w-4 flex-shrink-0 text-gray-400" />
-                        <span className="text-sm text-gray-700">{facultyMember.office_hours}</span>
+                        <Clock className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                        <span className="text-gray-700 text-sm">{facultyMember.office_hours}</span>
                       </div>
                     )}
                   </div>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
 
               {/* Professional Links */}
-              {(facultyMember.linkedin_url ||
-                facultyMember.google_scholar_url ||
-                facultyMember.personal_website ||
-                facultyMember.research_gate_url) && (
-                <div className="rounded-2xl border border-white/30 bg-white/20 shadow-xl backdrop-blur-lg">
-                  <div className="p-6">
-                    <h3 className="mb-4 flex items-center text-lg font-semibold text-gray-800">
-                      <Globe className="mr-2 h-5 w-5 text-indigo-600" />
+              {(facultyMember.linkedin_url || facultyMember.google_scholar_url || facultyMember.personal_website || facultyMember.research_gate_url) && (
+                <Card>
+                  <CardContent className="p-6">
+                    <h3 className="text-lg font-semibold mb-4 flex items-center text-burgundy">
+                      <Globe className="h-5 w-5 mr-2 text-burgundy" />
                       Professional Links
                     </h3>
                     <div className="space-y-3">
@@ -291,7 +277,7 @@ export default function FacultyProfilePage() {
                           href={facultyMember.linkedin_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-3 text-sm text-blue-600 hover:underline"
+                          className="flex items-center gap-3 text-blue-600 hover:underline text-sm"
                         >
                           <ExternalLink className="h-4 w-4" />
                           LinkedIn Profile
@@ -302,7 +288,7 @@ export default function FacultyProfilePage() {
                           href={facultyMember.google_scholar_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-3 text-sm text-blue-600 hover:underline"
+                          className="flex items-center gap-3 text-blue-600 hover:underline text-sm"
                         >
                           <ExternalLink className="h-4 w-4" />
                           Google Scholar
@@ -313,7 +299,7 @@ export default function FacultyProfilePage() {
                           href={facultyMember.research_gate_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-3 text-sm text-blue-600 hover:underline"
+                          className="flex items-center gap-3 text-blue-600 hover:underline text-sm"
                         >
                           <ExternalLink className="h-4 w-4" />
                           ResearchGate
@@ -324,126 +310,126 @@ export default function FacultyProfilePage() {
                           href={facultyMember.personal_website}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-3 text-sm text-blue-600 hover:underline"
+                          className="flex items-center gap-3 text-blue-600 hover:underline text-sm"
                         >
                           <ExternalLink className="h-4 w-4" />
                           Personal Website
                         </a>
                       )}
                     </div>
-                  </div>
-                </div>
+                  </CardContent>
+                </Card>
               )}
             </motion.div>
 
             {/* Main Content */}
-            <motion.div variants={sectionVariants} className="space-y-8 lg:col-span-2">
+            <motion.div 
+              variants={sectionVariants}
+              className="lg:col-span-2 space-y-8"
+            >
+              
               {/* Biography */}
               {facultyMember.bio && (
-                <div className="rounded-2xl border border-white/30 bg-white/20 shadow-xl backdrop-blur-lg">
-                  <div className="p-6">
-                    <h3 className="mb-4 text-xl font-semibold text-gray-800">About</h3>
-                    <p className="leading-relaxed text-gray-700">{facultyMember.bio}</p>
-                  </div>
-                </div>
+                <Card>
+                  <CardContent className="p-6">
+                    <h3 className="text-xl font-semibold mb-4 text-burgundy">About</h3>
+                    <p className="text-gray-700 leading-relaxed">{facultyMember.bio}</p>
+                  </CardContent>
+                </Card>
               )}
 
               {/* Education */}
               {facultyMember.education.length > 0 && (
-                <div className="rounded-2xl border border-white/30 bg-white/20 shadow-xl backdrop-blur-lg">
-                  <div className="p-6">
-                    <h3 className="mb-4 flex items-center text-xl font-semibold text-gray-800">
-                      <GraduationCap className="mr-2 h-5 w-5 text-indigo-600" />
+                <Card>
+                  <CardContent className="p-6">
+                    <h3 className="text-xl font-semibold mb-4 flex items-center text-burgundy">
+                      <GraduationCap className="h-5 w-5 mr-2 text-burgundy" />
                       Education
                     </h3>
                     <ul className="space-y-3">
                       {facultyMember.education.map((edu, index) => (
                         <li key={index} className="flex items-start gap-3">
-                          <div className="mt-2 h-2 w-2 flex-shrink-0 rounded-full bg-indigo-600"></div>
+                          <div className="w-2 h-2 bg-burgundy rounded-full mt-2 flex-shrink-0"></div>
                           <span className="text-gray-700">{edu}</span>
                         </li>
                       ))}
                     </ul>
-                  </div>
-                </div>
+                  </CardContent>
+                </Card>
               )}
 
               {/* Research Areas */}
               {facultyMember.research_areas.length > 0 && (
-                <div className="rounded-2xl border border-white/30 bg-white/20 shadow-xl backdrop-blur-lg">
-                  <div className="p-6">
-                    <h3 className="mb-4 flex items-center text-xl font-semibold text-gray-800">
-                      <BookOpen className="mr-2 h-5 w-5 text-indigo-600" />
+                <Card>
+                  <CardContent className="p-6">
+                    <h3 className="text-xl font-semibold mb-4 flex items-center text-burgundy">
+                      <BookOpen className="h-5 w-5 mr-2 text-burgundy" />
                       Research Areas
                     </h3>
                     <div className="flex flex-wrap gap-2">
                       {facultyMember.research_areas.map((area, index) => (
-                        <span
+                        <span 
                           key={index}
-                          className="rounded-lg border border-white/30 bg-white/40 px-3 py-2 text-sm font-medium text-gray-700 backdrop-blur-sm"
+                          className="px-3 py-2 bg-burgundy/10 text-burgundy rounded-lg text-sm font-medium border border-burgundy/20"
                         >
                           {area}
                         </span>
                       ))}
                     </div>
-                  </div>
-                </div>
+                  </CardContent>
+                </Card>
               )}
 
               {/* Achievements */}
               {facultyMember.achievements.length > 0 && (
-                <div className="rounded-2xl border border-white/30 bg-white/20 shadow-xl backdrop-blur-lg">
-                  <div className="p-6">
-                    <h3 className="mb-4 flex items-center text-xl font-semibold text-gray-800">
-                      <Award className="mr-2 h-5 w-5 text-indigo-600" />
+                <Card>
+                  <CardContent className="p-6">
+                    <h3 className="text-xl font-semibold mb-4 flex items-center text-burgundy">
+                      <Award className="h-5 w-5 mr-2 text-burgundy" />
                       Achievements & Awards
                     </h3>
                     <ul className="space-y-3">
                       {facultyMember.achievements.map((achievement, index) => (
                         <li key={index} className="flex items-start gap-3">
-                          <div className="mt-2 h-2 w-2 flex-shrink-0 rounded-full bg-yellow-500"></div>
+                          <div className="w-2 h-2 bg-gold rounded-full mt-2 flex-shrink-0"></div>
                           <span className="text-gray-700">{achievement}</span>
                         </li>
                       ))}
                     </ul>
-                  </div>
-                </div>
+                  </CardContent>
+                </Card>
               )}
 
               {/* Publications */}
               {facultyMember.publications.length > 0 && (
-                <div className="rounded-2xl border border-white/30 bg-white/20 shadow-xl backdrop-blur-lg">
-                  <div className="p-6">
-                    <h3 className="mb-4 flex items-center text-xl font-semibold text-gray-800">
-                      <FileText className="mr-2 h-5 w-5 text-indigo-600" />
+                <Card>
+                  <CardContent className="p-6">
+                    <h3 className="text-xl font-semibold mb-4 flex items-center text-burgundy">
+                      <FileText className="h-5 w-5 mr-2 text-burgundy" />
                       Publications ({facultyMember.publications.length})
                     </h3>
                     <div className="space-y-4">
                       {facultyMember.publications.map((pub, index) => (
-                        <div
-                          key={index}
-                          className="rounded-xl border-l-4 border-indigo-400 bg-white/30 py-3 pr-3 pl-4 backdrop-blur-sm"
-                        >
-                          <h4 className="mb-1 font-medium text-gray-900">{pub.title}</h4>
-                          <p className="mb-2 text-sm text-gray-600">
+                        <div key={index} className="border-l-4 border-burgundy/30 pl-4 py-3 bg-burgundy/5 rounded-r-lg">
+                          <h4 className="font-medium text-gray-900 mb-1">{pub.title}</h4>
+                          <p className="text-sm text-gray-600 mb-2">
                             <span className="font-medium">{pub.journal}</span> • {pub.year}
                           </p>
-                          {pub.url && (
-                            <a
-                              href={pub.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center text-xs font-medium text-indigo-600 hover:text-indigo-800 hover:underline"
-                            >
-                              <ExternalLink className="mr-1 h-3 w-3" />
+                          {pub.url && (                              <a
+                                href={pub.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center text-xs text-burgundy hover:text-burgundy/80 hover:underline font-medium"
+                              >
+                              <ExternalLink className="h-3 w-3 mr-1" />
                               View Publication
                             </a>
                           )}
                         </div>
                       ))}
                     </div>
-                  </div>
-                </div>
+                  </CardContent>
+                </Card>
               )}
             </motion.div>
           </div>
