@@ -56,8 +56,9 @@ export function ResearchFiltersPanel({ filters, onFiltersChange }: ResearchFilte
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         {/* Category Filter */}
         <div className="space-y-2">
-          <Label>Category</Label>
+          <Label htmlFor="category-select">Category</Label>
           <select
+            id="category-select"
             value={filters.category_id || ""}
             onChange={e => updateFilter("category_id", e.target.value)}
             className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
@@ -74,8 +75,9 @@ export function ResearchFiltersPanel({ filters, onFiltersChange }: ResearchFilte
 
         {/* Journal Filter */}
         <div className="space-y-2">
-          <Label>Journal</Label>
+          <Label htmlFor="journal-select">Journal</Label>
           <select
+            id="journal-select"
             value={filters.journal_id || ""}
             onChange={e => updateFilter("journal_id", e.target.value)}
             className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
@@ -92,8 +94,9 @@ export function ResearchFiltersPanel({ filters, onFiltersChange }: ResearchFilte
 
         {/* Author Filter */}
         <div className="space-y-2">
-          <Label>Author</Label>
+          <Label htmlFor="author-select">Author</Label>
           <select
+            id="author-select"
             value={filters.author_id || ""}
             onChange={e => updateFilter("author_id", e.target.value)}
             className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
