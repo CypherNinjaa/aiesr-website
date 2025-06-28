@@ -5,17 +5,17 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  X, 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Clock, 
-  ExternalLink, 
-  BookOpen, 
-  Award, 
+import {
+  X,
+  Mail,
+  Phone,
+  MapPin,
+  Clock,
+  ExternalLink,
+  BookOpen,
+  Award,
   GraduationCap,
-  User
+  User,
 } from "lucide-react";
 import Image from "next/image";
 import React from "react";
@@ -32,7 +32,7 @@ interface FacultyProfileModalProps {
 export function FacultyProfileModal({ faculty, isOpen, onClose }: FacultyProfileModalProps) {
   if (!faculty) return null;
 
-  const profileImageUrl = faculty.profile_image_url 
+  const profileImageUrl = faculty.profile_image_url
     ? getPublicPhotoUrl(faculty.profile_image_url)
     : null;
 
@@ -45,8 +45,8 @@ export function FacultyProfileModal({ faculty, isOpen, onClose }: FacultyProfile
   return (
     <AnimatePresence>
       {isOpen && (
-        <div 
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
           onClick={handleBackdropClick}
         >
           <motion.div
@@ -54,18 +54,18 @@ export function FacultyProfileModal({ faculty, isOpen, onClose }: FacultyProfile
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden"
+            className="max-h-[90vh] w-full max-w-4xl overflow-hidden rounded-xl bg-white shadow-2xl"
           >
             {/* Header */}
-            <div className="relative bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-6">
+            <div className="relative bg-gradient-to-r from-indigo-600 to-purple-600 p-6 text-white">
               <button
                 onClick={onClose}
-                className="absolute top-4 right-4 p-2 rounded-full hover:bg-white/20 transition-colors"
+                className="absolute top-4 right-4 rounded-full p-2 transition-colors hover:bg-white/20"
                 aria-label="Close profile"
               >
                 <X className="h-5 w-5" />
               </button>
-              
+
               <div className="flex items-start gap-6">
                 <div className="relative flex-shrink-0">
                   {profileImageUrl ? (
@@ -77,20 +77,20 @@ export function FacultyProfileModal({ faculty, isOpen, onClose }: FacultyProfile
                       className="rounded-full border-4 border-white/20 object-cover"
                     />
                   ) : (
-                    <div className="w-[120px] h-[120px] rounded-full bg-white/20 border-4 border-white/20 flex items-center justify-center">
+                    <div className="flex h-[120px] w-[120px] items-center justify-center rounded-full border-4 border-white/20 bg-white/20">
                       <User className="h-12 w-12 text-white/60" />
                     </div>
                   )}
                 </div>
-                
+
                 <div className="flex-1">
-                  <h2 className="text-3xl font-bold mb-2">{faculty.name}</h2>
-                  <p className="text-xl text-white/90 mb-2">{faculty.designation}</p>
+                  <h2 className="mb-2 text-3xl font-bold">{faculty.name}</h2>
+                  <p className="mb-2 text-xl text-white/90">{faculty.designation}</p>
                   <div className="flex flex-wrap gap-2">
                     {faculty.specialization.slice(0, 3).map((spec, index) => (
-                      <span 
+                      <span
                         key={index}
-                        className="px-3 py-1 bg-white/20 rounded-full text-sm font-medium"
+                        className="rounded-full bg-white/20 px-3 py-1 text-sm font-medium"
                       >
                         {spec}
                       </span>
@@ -101,54 +101,59 @@ export function FacultyProfileModal({ faculty, isOpen, onClose }: FacultyProfile
             </div>
 
             {/* Content */}
-            <div className="p-6 max-h-[calc(90vh-200px)] overflow-y-auto">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                
+            <div className="max-h-[calc(90vh-200px)] overflow-y-auto p-6">
+              <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
                 {/* Contact & Basic Info */}
                 <div className="lg:col-span-1">
-                  <h3 className="text-lg font-semibold mb-4 flex items-center">
-                    <Mail className="h-5 w-5 mr-2 text-indigo-600" />
+                  <h3 className="mb-4 flex items-center text-lg font-semibold">
+                    <Mail className="mr-2 h-5 w-5 text-indigo-600" />
                     Contact Information
                   </h3>
-                  
+
                   <div className="space-y-3">
                     {faculty.email && (
                       <div className="flex items-center text-sm">
-                        <Mail className="h-4 w-4 mr-3 text-gray-400" />
-                        <a href={`mailto:${faculty.email}`} className="text-blue-600 hover:underline">
+                        <Mail className="mr-3 h-4 w-4 text-gray-400" />
+                        <a
+                          href={`mailto:${faculty.email}`}
+                          className="text-blue-600 hover:underline"
+                        >
                           {faculty.email}
                         </a>
                       </div>
                     )}
-                    
+
                     {faculty.phone && (
                       <div className="flex items-center text-sm">
-                        <Phone className="h-4 w-4 mr-3 text-gray-400" />
+                        <Phone className="mr-3 h-4 w-4 text-gray-400" />
                         <a href={`tel:${faculty.phone}`} className="text-blue-600 hover:underline">
                           {faculty.phone}
                         </a>
                       </div>
                     )}
-                    
+
                     {faculty.office_location && (
                       <div className="flex items-center text-sm">
-                        <MapPin className="h-4 w-4 mr-3 text-gray-400" />
+                        <MapPin className="mr-3 h-4 w-4 text-gray-400" />
                         <span className="text-gray-700">{faculty.office_location}</span>
                       </div>
                     )}
-                    
+
                     {faculty.office_hours && (
                       <div className="flex items-center text-sm">
-                        <Clock className="h-4 w-4 mr-3 text-gray-400" />
+                        <Clock className="mr-3 h-4 w-4 text-gray-400" />
                         <span className="text-gray-700">{faculty.office_hours}</span>
                       </div>
                     )}
                   </div>
 
                   {/* External Links */}
-                  {(faculty.linkedin_url || faculty.google_scholar_url || faculty.personal_website || faculty.research_gate_url) && (
+                  {(faculty.linkedin_url ||
+                    faculty.google_scholar_url ||
+                    faculty.personal_website ||
+                    faculty.research_gate_url) && (
                     <div className="mt-6">
-                      <h4 className="text-md font-semibold mb-3">Professional Links</h4>
+                      <h4 className="text-md mb-3 font-semibold">Professional Links</h4>
                       <div className="space-y-2">
                         {faculty.linkedin_url && (
                           <a
@@ -157,7 +162,7 @@ export function FacultyProfileModal({ faculty, isOpen, onClose }: FacultyProfile
                             rel="noopener noreferrer"
                             className="flex items-center text-sm text-blue-600 hover:underline"
                           >
-                            <ExternalLink className="h-4 w-4 mr-2" />
+                            <ExternalLink className="mr-2 h-4 w-4" />
                             LinkedIn Profile
                           </a>
                         )}
@@ -168,7 +173,7 @@ export function FacultyProfileModal({ faculty, isOpen, onClose }: FacultyProfile
                             rel="noopener noreferrer"
                             className="flex items-center text-sm text-blue-600 hover:underline"
                           >
-                            <ExternalLink className="h-4 w-4 mr-2" />
+                            <ExternalLink className="mr-2 h-4 w-4" />
                             Google Scholar
                           </a>
                         )}
@@ -179,7 +184,7 @@ export function FacultyProfileModal({ faculty, isOpen, onClose }: FacultyProfile
                             rel="noopener noreferrer"
                             className="flex items-center text-sm text-blue-600 hover:underline"
                           >
-                            <ExternalLink className="h-4 w-4 mr-2" />
+                            <ExternalLink className="mr-2 h-4 w-4" />
                             ResearchGate
                           </a>
                         )}
@@ -190,7 +195,7 @@ export function FacultyProfileModal({ faculty, isOpen, onClose }: FacultyProfile
                             rel="noopener noreferrer"
                             className="flex items-center text-sm text-blue-600 hover:underline"
                           >
-                            <ExternalLink className="h-4 w-4 mr-2" />
+                            <ExternalLink className="mr-2 h-4 w-4" />
                             Personal Website
                           </a>
                         )}
@@ -200,27 +205,26 @@ export function FacultyProfileModal({ faculty, isOpen, onClose }: FacultyProfile
                 </div>
 
                 {/* Detailed Information */}
-                <div className="lg:col-span-2 space-y-6">
-                  
+                <div className="space-y-6 lg:col-span-2">
                   {/* Bio */}
                   {faculty.bio && (
                     <div>
-                      <h3 className="text-lg font-semibold mb-3">About</h3>
-                      <p className="text-gray-700 leading-relaxed">{faculty.bio}</p>
+                      <h3 className="mb-3 text-lg font-semibold">About</h3>
+                      <p className="leading-relaxed text-gray-700">{faculty.bio}</p>
                     </div>
                   )}
 
                   {/* Education */}
                   {faculty.education.length > 0 && (
                     <div>
-                      <h3 className="text-lg font-semibold mb-3 flex items-center">
-                        <GraduationCap className="h-5 w-5 mr-2 text-indigo-600" />
+                      <h3 className="mb-3 flex items-center text-lg font-semibold">
+                        <GraduationCap className="mr-2 h-5 w-5 text-indigo-600" />
                         Education
                       </h3>
                       <ul className="space-y-2">
                         {faculty.education.map((edu, index) => (
                           <li key={index} className="flex items-start">
-                            <div className="w-2 h-2 bg-indigo-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                            <div className="mt-2 mr-3 h-2 w-2 flex-shrink-0 rounded-full bg-indigo-600"></div>
                             <span className="text-gray-700">{edu}</span>
                           </li>
                         ))}
@@ -231,15 +235,15 @@ export function FacultyProfileModal({ faculty, isOpen, onClose }: FacultyProfile
                   {/* Research Areas */}
                   {faculty.research_areas.length > 0 && (
                     <div>
-                      <h3 className="text-lg font-semibold mb-3 flex items-center">
-                        <BookOpen className="h-5 w-5 mr-2 text-indigo-600" />
+                      <h3 className="mb-3 flex items-center text-lg font-semibold">
+                        <BookOpen className="mr-2 h-5 w-5 text-indigo-600" />
                         Research Areas
                       </h3>
                       <div className="flex flex-wrap gap-2">
                         {faculty.research_areas.map((area, index) => (
-                          <span 
+                          <span
                             key={index}
-                            className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"
+                            className="rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-700"
                           >
                             {area}
                           </span>
@@ -251,14 +255,14 @@ export function FacultyProfileModal({ faculty, isOpen, onClose }: FacultyProfile
                   {/* Achievements */}
                   {faculty.achievements.length > 0 && (
                     <div>
-                      <h3 className="text-lg font-semibold mb-3 flex items-center">
-                        <Award className="h-5 w-5 mr-2 text-indigo-600" />
+                      <h3 className="mb-3 flex items-center text-lg font-semibold">
+                        <Award className="mr-2 h-5 w-5 text-indigo-600" />
                         Achievements
                       </h3>
                       <ul className="space-y-2">
                         {faculty.achievements.map((achievement, index) => (
                           <li key={index} className="flex items-start">
-                            <div className="w-2 h-2 bg-yellow-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                            <div className="mt-2 mr-3 h-2 w-2 flex-shrink-0 rounded-full bg-yellow-500"></div>
                             <span className="text-gray-700">{achievement}</span>
                           </li>
                         ))}
@@ -269,10 +273,10 @@ export function FacultyProfileModal({ faculty, isOpen, onClose }: FacultyProfile
                   {/* Publications */}
                   {faculty.publications.length > 0 && (
                     <div>
-                      <h3 className="text-lg font-semibold mb-3">Publications</h3>
+                      <h3 className="mb-3 text-lg font-semibold">Publications</h3>
                       <div className="space-y-3">
                         {faculty.publications.slice(0, 5).map((pub, index) => (
-                          <div key={index} className="border-l-4 border-indigo-200 pl-4 py-2">
+                          <div key={index} className="border-l-4 border-indigo-200 py-2 pl-4">
                             <h4 className="font-medium text-gray-900">{pub.title}</h4>
                             <p className="text-sm text-gray-600">
                               {pub.journal} • {pub.year}
@@ -282,9 +286,9 @@ export function FacultyProfileModal({ faculty, isOpen, onClose }: FacultyProfile
                                 href={pub.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-xs text-blue-600 hover:underline flex items-center mt-1"
+                                className="mt-1 flex items-center text-xs text-blue-600 hover:underline"
                               >
-                                <ExternalLink className="h-3 w-3 mr-1" />
+                                <ExternalLink className="mr-1 h-3 w-3" />
                                 View Publication
                               </a>
                             )}
@@ -303,7 +307,7 @@ export function FacultyProfileModal({ faculty, isOpen, onClose }: FacultyProfile
             </div>
 
             {/* Footer */}
-            <div className="border-t bg-gray-50 px-6 py-4 flex justify-end">
+            <div className="flex justify-end border-t bg-gray-50 px-6 py-4">
               <Button onClick={onClose} variant="outline">
                 Close
               </Button>

@@ -234,6 +234,8 @@ export interface Event {
   createdAt?: Date;
   updatedAt?: Date;
   registrationDeadline?: Date;
+  // Sponsors relationship
+  sponsors?: EventSponsor[];
 }
 
 export interface Testimonial {
@@ -453,3 +455,75 @@ export interface GalleryImageUpload {
 }
 
 // ============================================
+// SPONSOR INTERFACES - Dynamic Event Sponsors
+// ============================================
+
+export interface Sponsor {
+  id: string;
+  name: string;
+  logo_url?: string;
+  website_url?: string;
+  description?: string;
+  contact_email?: string;
+  contact_phone?: string;
+  tier: "platinum" | "gold" | "silver" | "bronze" | "partner";
+  status: "active" | "inactive";
+  created_at: string;
+  updated_at: string;
+  created_by?: string;
+}
+
+export interface EventSponsor {
+  id: string;
+  event_id: string;
+  sponsor_id: string;
+  sponsor: Sponsor; // Populated sponsor data
+  display_order: number;
+  sponsor_tier: "platinum" | "gold" | "silver" | "bronze" | "partner";
+  is_featured: boolean;
+  custom_description?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// Data for creating new sponsors
+export interface CreateSponsorData {
+  name: string;
+  logo_url?: string;
+  website_url?: string;
+  description?: string;
+  contact_email?: string;
+  contact_phone?: string;
+  tier: "platinum" | "gold" | "silver" | "bronze" | "partner";
+  status?: "active" | "inactive";
+}
+
+// Data for updating existing sponsors
+export type UpdateSponsorData = Partial<CreateSponsorData>;
+
+// Data for adding sponsors to events
+export interface CreateEventSponsorData {
+  event_id: string;
+  sponsor_id: string;
+  display_order?: number;
+  sponsor_tier?: "platinum" | "gold" | "silver" | "bronze" | "partner";
+  is_featured?: boolean;
+  custom_description?: string;
+}
+
+// Sponsor tiers with display properties
+export interface SponsorTierConfig {
+  tier: "platinum" | "gold" | "silver" | "bronze" | "partner";
+  label: string;
+  color: string;
+  priority: number;
+  defaultLogoSize: "large" | "medium" | "small";
+}
+
+export const SPONSOR_TIERS: SponsorTierConfig[] = [
+  { tier: "platinum", label: "Platinum", color: "#E5E7EB", priority: 1, defaultLogoSize: "large" },
+  { tier: "gold", label: "Gold", color: "#F59E0B", priority: 2, defaultLogoSize: "large" },
+  { tier: "silver", label: "Silver", color: "#6B7280", priority: 3, defaultLogoSize: "medium" },
+  { tier: "bronze", label: "Bronze", color: "#CD7C2F", priority: 4, defaultLogoSize: "medium" },
+  { tier: "partner", label: "Partner", color: "#3B82F6", priority: 5, defaultLogoSize: "small" },
+];
