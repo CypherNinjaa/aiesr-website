@@ -40,7 +40,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { name: "Gallery", href: "/admin/gallery", icon: "🖼️" },
     { name: "Achievements", href: "/admin/achievements", icon: "🏆" },
     { name: "Testimonials", href: "/admin/testimonials", icon: "💬" },
-    { name: "Sponsors", href: "/admin/sponsors", icon: "🤝" },
     { name: "Categories", href: "/admin/categories", icon: "🏷️" },
     { name: "Analytics", href: "/admin/analytics", icon: "📊" },
     { name: "Activity", href: "/admin/activity", icon: "📋" },
