@@ -113,9 +113,10 @@ export function ResearchFiltersPanel({ filters, onFiltersChange }: ResearchFilte
 
         {/* Year Range */}
         <div className="space-y-2">
-          <Label>Year</Label>
+          <Label htmlFor="year-from">Year</Label>
           <div className="flex gap-2">
             <Input
+              id="year-from"
               type="number"
               placeholder="From"
               value={filters.year_from || ""}
@@ -126,6 +127,7 @@ export function ResearchFiltersPanel({ filters, onFiltersChange }: ResearchFilte
               max={new Date().getFullYear()}
             />
             <Input
+              id="year-to"
               type="number"
               placeholder="To"
               value={filters.year_to || ""}
@@ -140,8 +142,9 @@ export function ResearchFiltersPanel({ filters, onFiltersChange }: ResearchFilte
 
         {/* Publication Status */}
         <div className="space-y-2">
-          <Label>Status</Label>
+          <Label htmlFor="status-select">Status</Label>
           <select
+            id="status-select"
             value={filters.is_published?.toString() || ""}
             onChange={e =>
               updateFilter(
@@ -160,8 +163,9 @@ export function ResearchFiltersPanel({ filters, onFiltersChange }: ResearchFilte
 
         {/* Sort By */}
         <div className="space-y-2">
-          <Label>Sort By</Label>
+          <Label htmlFor="sort-by-select">Sort By</Label>
           <select
+            id="sort-by-select"
             value={filters.sort_by || "created_at"}
             onChange={e => updateFilter("sort_by", e.target.value)}
             className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
@@ -176,8 +180,9 @@ export function ResearchFiltersPanel({ filters, onFiltersChange }: ResearchFilte
 
         {/* Sort Order */}
         <div className="space-y-2">
-          <Label>Order</Label>
+          <Label htmlFor="sort-order-select">Order</Label>
           <select
+            id="sort-order-select"
             value={filters.sort_order || "desc"}
             onChange={e => updateFilter("sort_order", e.target.value)}
             className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
@@ -190,8 +195,9 @@ export function ResearchFiltersPanel({ filters, onFiltersChange }: ResearchFilte
 
         {/* Limit */}
         <div className="space-y-2">
-          <Label>Results per page</Label>
+          <Label htmlFor="limit-select">Results per page</Label>
           <select
+            id="limit-select"
             value={filters.limit?.toString() || "20"}
             onChange={e => updateFilter("limit", parseInt(e.target.value))}
             className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
@@ -208,7 +214,7 @@ export function ResearchFiltersPanel({ filters, onFiltersChange }: ResearchFilte
       {/* Active Filters */}
       {activeFiltersCount > 0 && (
         <div className="space-y-2">
-          <Label>Active Filters</Label>
+          <div className="text-sm font-medium text-gray-700">Active Filters</div>
           <div className="flex flex-wrap gap-2">
             {filters.category_id && (
               <Badge variant="secondary" className="px-3 py-1">
