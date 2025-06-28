@@ -13,12 +13,13 @@ import {
   Clock,
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import React, { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { useActiveFaculty } from "@/hooks/useFaculty";
 import { getPublicPhotoUrl } from "@/services/faculty";
-import { Faculty } from "@/types";
+import type { Faculty } from "@/types";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -281,6 +282,11 @@ interface FacultyCardProps {
 }
 
 function FacultyCard({ member, viewMode, cardVariants }: FacultyCardProps) {
+  // Generate URL-friendly slug from faculty name
+  const facultySlug = member.name
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "");
   if (viewMode === "list") {
     return (
       <motion.div variants={cardVariants}>
@@ -461,12 +467,14 @@ function FacultyCard({ member, viewMode, cardVariants }: FacultyCardProps) {
           {/* Action Buttons */}
           <div className="flex gap-2">
             <div className="flex-1">
-              <button
-                type="button"
-                className="border-burgundy text-burgundy focus:ring-burgundy h-9 w-full rounded-md border-2 bg-white px-3 text-sm font-medium focus:ring-2 focus:ring-offset-2 focus:outline-none"
-              >
-                View Profile
-              </button>
+              <Link href={`/faculty/${facultySlug}`}>
+                <button
+                  type="button"
+                  className="border-burgundy text-burgundy focus:ring-burgundy hover:bg-burgundy h-9 w-full rounded-md border-2 bg-white px-3 text-sm font-medium transition-colors hover:text-white focus:ring-2 focus:ring-offset-2 focus:outline-none"
+                >
+                  View Profile
+                </button>
+              </Link>
             </div>
             {(member.linkedin_url || member.google_scholar_url || member.personal_website) && (
               <Button variant="ghost" size="sm" className="px-3">
