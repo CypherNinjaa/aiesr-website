@@ -1,0 +1,66 @@
+.categoryColorButton {
+  height: 2rem;
+  width: 2rem;
+  border-radius: 9999px;
+  border-width: 2px;
+  border-style: solid;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.categoryColorButton.selected {
+  border-color: #1f2937; /* gray-800 */
+}
+
+.categoryColorButton.unselected {
+  border-color: #d1d5db; /* gray-300 */
+}
+
+.categoryColorDot {
+  height: 1rem;
+  width: 1rem;
+  border-radius: 9999px;
+  display: inline-block;
+}
+
+/* Dynamic background color for color buttons and dots */
+.categoryColorButton[data-color="#3B82F6"],
+.categoryColorDot[data-color="#3B82F6"] {
+  background-color: #3b82f6;
+}
+.categoryColorButton[data-color="#10B981"],
+.categoryColorDot[data-color="#10B981"] {
+  background-color: #10b981;
+}
+.categoryColorButton[data-color="#F59E0B"],
+.categoryColorDot[data-color="#F59E0B"] {
+  background-color: #f59e0b;
+}
+.categoryColorButton[data-color="#EF4444"],
+.categoryColorDot[data-color="#EF4444"] {
+  background-color: #ef4444;
+}
+.categoryColorButton[data-color="#8B5CF6"],
+.categoryColorDot[data-color="#8B5CF6"] {
+  background-color: #8b5cf6;
+}
+.categoryColorButton[data-color="#06B6D4"],
+.categoryColorDot[data-color="#06B6D4"] {
+  background-color: #06b6d4;
+}
+.categoryColorButton[data-color="#84CC16"],
+.categoryColorDot[data-color="#84CC16"] {
+  background-color: #84cc16;
+}
+.categoryColorButton[data-color="#F97316"],
+.categoryColorDot[data-color="#F97316"] {
+  background-color: #f97316;
+}
+.categoryColorButton[data-color="#EC4899"],
+.categoryColorDot[data-color="#EC4899"] {
+  background-color: #ec4899;
+}
+.categoryColorButton[data-color="#6B7280"],
+.categoryColorDot[data-color="#6B7280"] {
+  background-color: #6b7280;
+}
