@@ -527,3 +527,195 @@ export const SPONSOR_TIERS: SponsorTierConfig[] = [
   { tier: "bronze", label: "Bronze", color: "#CD7C2F", priority: 4, defaultLogoSize: "medium" },
   { tier: "partner", label: "Partner", color: "#3B82F6", priority: 5, defaultLogoSize: "small" },
 ];
+
+// ============================================
+// RESEARCH SYSTEM INTERFACES
+// ============================================
+
+export interface Author {
+  id: string;
+  name: string;
+  email?: string;
+  affiliation?: string;
+  orcid_id?: string;
+  bio?: string;
+  website_url?: string;
+  photo_url?: string;
+  status: "active" | "inactive";
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Journal {
+  id: string;
+  name: string;
+  publisher?: string;
+  impact_factor?: number;
+  issn?: string;
+  website_url?: string;
+  description?: string;
+  status: "active" | "inactive";
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ResearchCategory {
+  id: string;
+  name: string;
+  description?: string;
+  color: string;
+  status: "active" | "inactive";
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ResearchPaper {
+  id: string;
+  title: string;
+  abstract?: string;
+  publication_date?: string;
+  doi?: string;
+  journal_id?: string;
+  journal?: Journal;
+  volume?: string;
+  issue?: string;
+  pages?: string;
+  pdf_url?: string;
+  external_url?: string;
+  status: "draft" | "in-review" | "published" | "rejected";
+  citation_count: number;
+  is_featured: boolean;
+  keywords?: string[];
+  created_at: string;
+  updated_at: string;
+  created_by?: string;
+
+  // Related data
+  authors?: PaperAuthor[];
+  categories?: ResearchCategory[];
+}
+
+export interface PaperAuthor {
+  id: string;
+  paper_id: string;
+  author_id: string;
+  author: Author;
+  author_order: number;
+  is_corresponding: boolean;
+  created_at: string;
+}
+
+export interface PaperCategory {
+  id: string;
+  paper_id: string;
+  category_id: string;
+  category: ResearchCategory;
+  created_at: string;
+}
+
+// Create data interfaces
+export interface CreateAuthorData {
+  name: string;
+  email?: string;
+  affiliation?: string;
+  orcid_id?: string;
+  bio?: string;
+  website_url?: string;
+  photo_url?: string;
+  status?: "active" | "inactive";
+}
+
+export interface CreateJournalData {
+  name: string;
+  publisher?: string;
+  impact_factor?: number;
+  issn?: string;
+  website_url?: string;
+  description?: string;
+  status?: "active" | "inactive";
+}
+
+export interface CreateResearchCategoryData {
+  name: string;
+  description?: string;
+  color?: string;
+  status?: "active" | "inactive";
+}
+
+export interface CreateResearchPaperData {
+  title: string;
+  abstract?: string;
+  publication_date?: string;
+  doi?: string;
+  journal_id?: string;
+  volume?: string;
+  issue?: string;
+  pages?: string;
+  pdf_url?: string;
+  external_url?: string;
+  status?: "draft" | "in-review" | "published" | "rejected";
+  citation_count?: number;
+  is_featured?: boolean;
+  keywords?: string[];
+
+  // Author assignments
+  authors?: Array<{
+    author_id: string;
+    author_order: number;
+    is_corresponding?: boolean;
+  }>;
+
+  // Category assignments
+  category_ids?: string[];
+}
+
+export interface CreatePaperAuthorData {
+  paper_id: string;
+  author_id: string;
+  author_order: number;
+  is_corresponding?: boolean;
+}
+
+// Update data interfaces
+export type UpdateAuthorData = Partial<CreateAuthorData>;
+export type UpdateJournalData = Partial<CreateJournalData>;
+export type UpdateResearchCategoryData = Partial<CreateResearchCategoryData>;
+export type UpdateResearchPaperData = Partial<CreateResearchPaperData>;
+
+// Research paper status options
+export const RESEARCH_PAPER_STATUSES = [
+  { value: "draft", label: "Draft", color: "#6B7280" },
+  { value: "in-review", label: "In Review", color: "#F59E0B" },
+  { value: "published", label: "Published", color: "#10B981" },
+  { value: "rejected", label: "Rejected", color: "#EF4444" },
+] as const;
+
+// Research search and filter options
+export interface ResearchFilters {
+  status?: string;
+  category_id?: string;
+  author_id?: string;
+  journal_id?: string;
+  year?: number;
+  year_from?: number;
+  year_to?: number;
+  is_featured?: boolean;
+  is_published?: boolean;
+  search?: string;
+  sort_by?: string;
+  sort_order?: string;
+  limit?: number;
+  offset?: number;
+}
+
+// Research statistics
+export interface ResearchStats {
+  total_papers: number;
+  published_papers: number;
+  in_review_papers: number;
+  total_citations: number;
+  total_authors: number;
+  total_journals: number;
+  papers_by_year: Array<{ year: number; count: number }>;
+  papers_by_category: Array<{ category: string; count: number }>;
+}

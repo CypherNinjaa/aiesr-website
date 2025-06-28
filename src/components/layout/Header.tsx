@@ -9,16 +9,7 @@ import { NavigationItem } from "@/types";
 
 const navigationItems: NavigationItem[] = [
   { label: "Home", href: "/" },
-  {
-    label: "About",
-    href: "/about",
-    children: [
-      { label: "History & Legacy", href: "/about/history" },
-      { label: "Mission & Vision", href: "/about/mission" },
-      { label: "Leadership Team", href: "/about/leadership" },
-      { label: "Infrastructure", href: "/about/infrastructure" },
-    ],
-  },
+  { label: "About", href: "/about" },
   {
     label: "Programs",
     href: "/programs",
